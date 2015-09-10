@@ -1,0 +1,15 @@
+This file describes how to use the sample quagga-ixp topology
+provided with MiniNet.  The quagga-ixp topology simulates a small
+network w/a few ASes connected to each other via a switch.  Each AS is
+simulated by a single Quagga router.
+
+1)Clone MiniNet and build it.
+
+2)Cd to examples/quagga-ixp.
+
+3)sudo start.py
+
+4)MiniNext should start successfully.  Type xterm a1 to get a virtual
+shell for one of the ASes.  Then type vtysh in the shell.  This will
+log you into the AS1's quagga router shell.
+

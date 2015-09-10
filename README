@@ -1,0 +1,26 @@
+To get an unmodified Quagga installation to work as if it were
+installed by Ubuntu 12.04 LTE's apt-get mechanism:
+
+1)Copy config/samples/quagga to /etc/init.d.  Chown it to be owned
+by root and give root r/w/x permissions to this file.
+
+2)In quagga-0.99.24.1 subdirectory, type: 
+  ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
+
+3)Type: Sudo make; sudo make install
+
+4)Create group 'quaggavty' and add 'quagga' user to it
+
+5)Copy config/samples/{*.conf, daemons, debian} to /etc/quagga
+
+6)chown ownership of /etc/quagga and all files to quagga:quaggavty.
+To avoid issues, it's easiest to make all files in this directory
+world readable/writable.
+
+7)give user quagga permissions ot modify /var/run.  This has to be
+done in a script or every time the linux box is rebooted
+
+8)To see if things work: 
+    bpgd &
+    telnet bgpd localhost
+
