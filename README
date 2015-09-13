@@ -7,20 +7,37 @@ by root and give root r/w/x permissions to this file.
 2)In quagga-0.99.24.1 subdirectory, type: 
   ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
 
+NOte, on the wisconsin nodes, I had to install packages texinfo and libreadline6-dev.
+
 3)Type: Sudo make; sudo make install
 
 4)Create group 'quaggavty' and add 'quagga' user to it
+    sudo useradd -m quagga
+    sudo groupadd quaggavty
+    sudo usermod -a -G quaggavty quagga
 
-5)Copy config/samples/{*.conf, daemons, debian} to /etc/quagga
+5)Copy config/samples/{*.conf, daemons} to /etc/quagga
 
-6)chown ownership of /etc/quagga and all files to quagga:quaggavty.
+6)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
 To avoid issues, it's easiest to make all files in this directory
 world readable/writable.
 
-7)give user quagga permissions ot modify /var/run.  This has to be
-done in a script or every time the linux box is rebooted
+7)cp config/samples/quagga to /etc/init.d
 
-8)To see if things work: 
+8)Give user quagga permissions ot modify /var/run.  This has to be
+done in a script or every time the linux box is rebooted
+   mkdir -p /var/run/quagga
+   chown quagga:quagga /var/run/quagga
+   chmod 755 /var/run/quagga
+
+9)Run ldconfig so that install picks up on new libraries
+   ldconfig
+   ldconfig -p | grep libzebra
+
+9)To see if things work: 
     bpgd &
-    telnet bgpd localhost
+    telnet localhost bgpd
+    vtysh
+
+Note, must e user 'quagga' to use vtysh.
 
