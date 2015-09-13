@@ -1,36 +1,33 @@
 To get an unmodified Quagga installation to work as if it were
 installed by Ubuntu 12.04 LTE's apt-get mechanism:
 
-1)Copy config/samples/quagga to /etc/init.d.  Chown it to be owned
-by root and give root r/w/x permissions to this file.
-
-2)In quagga-0.99.24.1 subdirectory, type: 
+1)In quagga-0.99.24.1 subdirectory, type: 
   ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
 
-NOte, on the wisconsin nodes, I had to install packages texinfo and libreadline6-dev.
+Note, on the Wisconsin nodes, I had to install packages texinfo, libreadline6-dev, and automake.
 
-3)Type: Sudo make; sudo make install
+3)Type: sudo make; sudo make install
 
-4)Create group 'quaggavty' and add 'quagga' user to it
+4)Create group 'quaggavty' and add 'quagga' user to it.
     sudo useradd -m quagga
     sudo groupadd quaggavty
     sudo usermod -a -G quaggavty quagga
 
-5)Copy config/samples/{*.conf, daemons} to /etc/quagga
+5)Copy config/samples/{*.conf, daemons} to /etc/quagga.
 
 6)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
-To avoid issues, it's easiest to make all files in this directory
-world readable/writable.
 
-7)cp config/samples/quagga to /etc/init.d
+7)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
+    sudo cp config/samples/quagga /etc/init.d. 
+    sudo chown root /etc/init.d/quagga
+    sudo chmod u+rwx /etc/init.d/quagga
 
-8)Give user quagga permissions ot modify /var/run.  This has to be
-done in a script or every time the linux box is rebooted
+8)Give user quagga permissions to modify /var/run.  
    mkdir -p /var/run/quagga
    chown quagga:quagga /var/run/quagga
    chmod 755 /var/run/quagga
 
-9)Run ldconfig so that install picks up on new libraries
+9)Run ldconfig so that install picks up on new libraries.
    ldconfig
    ldconfig -p | grep libzebra
 
@@ -39,5 +36,5 @@ done in a script or every time the linux box is rebooted
     telnet localhost bgpd
     vtysh
 
-Note, must e user 'quagga' to use vtysh.
+Note, must be user 'quagga' to use vtysh.
 
