@@ -320,6 +320,7 @@ bgp_exit (int status)
 int
 main (int argc, char **argv)
 {
+	printf("TESasdfasddfasT\n");
   char *p;
   int opt;
   int daemon_mode = 0;

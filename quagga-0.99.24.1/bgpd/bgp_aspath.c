@@ -1125,8 +1125,8 @@ aspath_loop_check (struct aspath *aspath, as_t asno)
       int i;
       
       for (i = 0; i < seg->length; i++)
-	if (seg->as[i] == asno)
-	  count++;
+    	  if (seg->as[i] == asno)
+    		  count++;
       
       seg = seg->next;
     }

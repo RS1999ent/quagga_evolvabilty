@@ -35,6 +35,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_packet.h"
 #include "bgpd/bgp_fsm.h"
 #include "bgpd/bgp_mplsvpn.h"
+#include "config.h"
 
 /* BGP advertise attribute is used for pack same attribute update into
    one packet.  To do that we maintain attribute hash in struct
