@@ -2094,6 +2094,9 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
     if (ri->peer == peer && ri->type == type && ri->sub_type == sub_type)
       break;
 
+  if(p->family == AF_INET)
+	  zlog_info("IP received: %s,  my AS %i, ASpath= %s", inet_ntop (p->family, &p->u.prefix, buf, SU_ADDRSTRLEN), peer->local_as, attr->aspath->str);
+
   /* AS path local-as loop check. */
   if (peer->change_local_as)
     {
