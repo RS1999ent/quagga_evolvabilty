@@ -1131,7 +1131,8 @@ aspath_loop_check (struct aspath *aspath, as_t asno)
       seg = seg->next;
     }
 
-  zlog_info("Loop found for AS %i", asno);
+  if(count > 0)
+	  zlog_info("Loop found for AS %i", asno);
   return count;
 }
 
