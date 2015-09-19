@@ -5427,6 +5427,18 @@ bgp_init (void)
   /* BGP inits. */
   bgp_attr_init ();
   bgp_debug_init ();
+
+  DEBUG_ON (normal, NORMAL);
+  DEBUG_ON (events, EVENTS);
+  DEBUG_ON (keepalive, KEEPALIVE);
+  DEBUG_ON (update, UPDATE_IN);
+  DEBUG_ON (update, UPDATE_OUT);
+  DEBUG_ON (as4, AS4);
+  DEBUG_ON (as4, AS4_SEGMENT);
+  DEBUG_ON (fsm, FSM);
+  DEBUG_ON (filter, FILTER);
+  DEBUG_ON (zebra, ZEBRA);
+
   bgp_dump_init ();
   bgp_route_init ();
   bgp_route_map_init ();
