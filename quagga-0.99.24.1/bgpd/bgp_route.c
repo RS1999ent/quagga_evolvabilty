@@ -2062,7 +2062,6 @@ bgp_withdraw_rsclient (struct peer *rsclient, afi_t afi, safi_t safi,
   bgp_unlock_node (rn);
 }
 
-int debug_numUpdate_gottenHere = 0;
 
 static int
 bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
@@ -2096,11 +2095,10 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
     if (ri->peer == peer && ri->type == type && ri->sub_type == sub_type)
       break;
 
-  if(p->family == AF_INET){
-	  debug_numUpdate_gottenHere++;
-	  zlog_info("IP received: %s, updatesgottenhere=%i, ASpath= %s", inet_ntop (p->family, &p->u.prefix, buf, SU_ADDRSTRLEN), peer->local_as, debug_numUpdate_gottenHere, attr->aspath->str);
+ // if(p->family == AF_INET){
+//	  zlog_info("IP received: %s, ASpath= %s", inet_ntop (p->family, &p->u.prefix, buf, SU_ADDRSTRLEN), peer->local_as, attr->aspath->str);
 
-  }
+//  }
   /* AS path local-as loop check. */
   if (peer->change_local_as)
     {

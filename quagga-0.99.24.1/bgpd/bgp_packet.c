@@ -1671,7 +1671,7 @@ bgp_update_receive (struct peer *peer, bgp_size_t size)
 	return -1;
 
       if (BGP_DEBUG (packet, PACKET_RECV))
-	zlog_debug ("%s [Update:RECV] Unfeasible NLRI received", peer->host);
+    	  zlog_debug ("%s [Update:RECV] Unfeasible NLRI received", peer->host);
 
       withdraw.afi = AFI_IP;
       withdraw.safi = SAFI_UNICAST;
