@@ -328,6 +328,9 @@ main (int argc, char **argv)
   struct thread thread;
   int tmp_port;
 
+  //init nameservice
+  lus_initContext();
+
   /* Set umask before anything for security */
   umask (0027);
 

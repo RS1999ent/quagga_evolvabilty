@@ -1930,3 +1930,141 @@ aspath_print_all_vty (struct vty *vty)
 		aspath_show_all_iterator,
 		vty);
 }
+
+
+const int MAX_KEYSIZE = 25;
+//extracts the key (defined in .h) from the aspath vector.  assumes that the delim will appear at least twice (can be more this is fine)
+char* aspath_extractKey(struct aspath* aspath)
+{
+	as_t delim = atoi(KEY_DELIM); //the deliminator where the key will be sandwiched into (this is also part of the key)
+	struct assegment segment = aspath->segments;
+	int inKey = 0; //are we in the key
+	int leavingKey = 0; //are we leaving the key(for cases where we encounter delim, but might not be out ex "delim delim delim")
+	int keyLength = 0; //used for allocating a bigger buffer
+	int numReallocs = 0;  //number of times key was reallocatedd; used in buffer reallocation
+	char *keyString = malloc(DEFAULT_BUFFER_SIZE);
+	memset(keyString, 0, DEFAULT_BUFFER_SIZE);
+	while(segment->next != NULL)
+	{
+		//migth be the beginnign or beginning of end of key
+		if(segment->as == delim)
+		{
+			if(inKey = 1)
+			{
+				leavingKey = 1;
+			}
+			else{
+				inKey = 1;
+			}
+		}
+		//means that we encounted a potential end of key, and the current character is not the delminator anymore
+		else if(leavingKey)
+		{
+			inKey = 0;
+			leavingKey = 0;
+		}
+		if(inKey)
+		{
+			char tmpStr[MAX_KEYSIZE]; //hold the as integer as a string
+			sprintf(tmpStr, "%d ", segment->as); //convert asint to string
+			keyLength += strlen(tmpStr); //add the length of this string to the keylength
+			//if we need to reallocate memory
+			if(keyLength > DEFAULT_BUFFER_SIZE)
+			{
+				keyString = realloc(keyString, DEFAULT_BUFFER_SIZE * (numReallocs + 1));
+				keyLength = keyLength - DEFAULT_BUFFER_SIZE;
+			}
+			strcat(keyString, tmpStr );
+		}
+
+	}
+
+	zlog_info("KEY FOUND: %s", keyString );
+	return keyString;
+
+}
+
+//converts a string key into an assegment data structure untested becaues
+//this is not immediatly useful as i thought
+struct assegment convertKeyToAsSegment(const char* key)
+{
+	struct assegment segment, *lastSegment;
+	segment.length = 0;
+	segment.next = NULL;
+	char* keyCopy = malloc(strlen(key));//allocate memory for keycopy
+	keyCopy = strcpy(keyCopy, key, strlen(key)); //copy modifiable string
+
+	char* tokenized = strtok(keyCopy, " ");//tokenize
+
+	int inASSet = 0; //bool for determining when in AS set
+	int useTmpBuffer = 0;
+	while(tokenized != NULL)
+	{
+		char* tmpBuffer; //will hold the asnumber to put into the assegment
+		int endOfToken = strlen(tokenized) - 1; //holds the index of the end of token spot
+
+		struct assegment *workingSegment;
+		//find the current working segment, if next is null then we are
+		struct assegment *workingSegment = &segment;
+		//get to the last of the string of segments
+		for(int i = 1; i < segment.length; i++)
+		{
+			workingSegment = workingSegment->next;
+		}
+		lastSegment = workingSegment;  //point to the last segment (see the free() outside this loop for relevence)
+
+		//beginning and end of AS set
+		if(tokenized[0] == '{' && tokenized[endOfToken] == '}') //asset of 1
+		{
+			int subStringLength = strlen(tokenized) - 2;
+			//extract the substring
+			tmpBuffer = malloc(subStringLength);
+			tmpBuffer = strcpy(tmpBuffer, tokenized + 1, subStringLength);
+			useTmpBuffer = 1;
+
+		}
+		else if(tokenized[0] == '{') //beginning of a set of more than 1
+		{
+			int subStringLength = strlen(tokenized) - 1;
+			tmpBuffer = malloc(subStringLength);
+			tmpBuffer = strcpy(tmpBuffer, tokenized + 1, subStringLength);
+			inASSet = 1;
+			useTmpBuffer = 1;
+		}
+		else if (tokenized[endOfToken] == '}')
+		{
+			int subStringLength = strlen(tokenized) -1;
+			tmpBuffer = malloc(subStringLength);
+			tmpBuffer = strcpy(tmpBuffer, tokenized, subStringLength);
+			inASSet = 0;
+			useTmpBuffer = 1;
+		}
+		if(useTmpBuffer)
+		{
+			workingSegment->as = atoi(tmpBuffer);
+		}
+		else
+		{
+			workingSegment->as = atoi(tokenized);
+		}
+		if(inASSet)
+		{
+			workingSegment->type = AS_SET;
+		}
+		else
+		{
+			workingSegment->type = AS_SEQUENCE;
+		}
+		useTmpBuffer = 0;
+		free( tmpBuffer);
+		workingSegment->next = malloc(sizeof(struct assegment));
+
+		segment.length++;
+	}
+
+	//free the last segment, we allocate one too many
+	free(lastSegment->next);
+	lastSegment->next = NULL;
+	return segment;
+
+}

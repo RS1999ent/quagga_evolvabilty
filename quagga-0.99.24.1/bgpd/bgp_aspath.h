@@ -37,6 +37,11 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 /* Transition 16Bit AS as defined by IANA */
 #define BGP_AS_TRANS		 23456U
 
+//the key that sandwiches the key
+static const char* KEY_DELIM = "47065"; //no commas
+//const of the buffer sizes we are allocating. how many characters
+static const int DEFAULT_BUFFER_SIZE = 256;
+
 /* AS_PATH segment data in abstracted form, no limit is placed on length */
 struct assegment
 {
@@ -103,6 +108,9 @@ extern size_t aspath_put (struct stream *, struct aspath *, int);
 
 extern struct aspath *aspath_reconcile_as4 (struct aspath *, struct aspath *);
 extern unsigned int aspath_has_as4 (struct aspath *);
+
+//extracts key from aspathvector
+extern char* aspath_extractKey(struct aspath*);
 
 /* For SNMP BGP4PATHATTRASPATHSEGMENT, might be useful for debug */
 extern u_char *aspath_snmp_pathseg (struct aspath *, size_t *);
