@@ -2099,6 +2099,10 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 //	  zlog_info("IP received: %s, ASpath= %s", inet_ntop (p->family, &p->u.prefix, buf, SU_ADDRSTRLEN), peer->local_as, attr->aspath->str);
 
 //  }
+
+  //key extraction testing spot
+  aspath_extractKey(attr->aspath);
+
   /* AS path local-as loop check. */
   if (peer->change_local_as)
     {

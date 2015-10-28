@@ -1937,7 +1937,7 @@ const int MAX_KEYSIZE = 25;
 char* aspath_extractKey(struct aspath* aspath)
 {
 	as_t delim = atoi(KEY_DELIM); //the deliminator where the key will be sandwiched into (this is also part of the key)
-	struct assegment segment = aspath->segments;
+	struct assegment *segment = aspath->segments;
 	int inKey = 0; //are we in the key
 	int leavingKey = 0; //are we leaving the key(for cases where we encounter delim, but might not be out ex "delim delim delim")
 	int keyLength = 0; //used for allocating a bigger buffer
@@ -1992,7 +1992,7 @@ struct assegment convertKeyToAsSegment(const char* key)
 	segment.length = 0;
 	segment.next = NULL;
 	char* keyCopy = malloc(strlen(key));//allocate memory for keycopy
-	keyCopy = strcpy(keyCopy, key, strlen(key)); //copy modifiable string
+	keyCopy = strcpy(keyCopy, key); //copy modifiable string
 
 	char* tokenized = strtok(keyCopy, " ");//tokenize
 
@@ -2003,7 +2003,6 @@ struct assegment convertKeyToAsSegment(const char* key)
 		char* tmpBuffer; //will hold the asnumber to put into the assegment
 		int endOfToken = strlen(tokenized) - 1; //holds the index of the end of token spot
 
-		struct assegment *workingSegment;
 		//find the current working segment, if next is null then we are
 		struct assegment *workingSegment = &segment;
 		//get to the last of the string of segments
@@ -2019,7 +2018,7 @@ struct assegment convertKeyToAsSegment(const char* key)
 			int subStringLength = strlen(tokenized) - 2;
 			//extract the substring
 			tmpBuffer = malloc(subStringLength);
-			tmpBuffer = strcpy(tmpBuffer, tokenized + 1, subStringLength);
+			tmpBuffer = strncpy(tmpBuffer, tokenized + 1, subStringLength);
 			useTmpBuffer = 1;
 
 		}
@@ -2027,7 +2026,7 @@ struct assegment convertKeyToAsSegment(const char* key)
 		{
 			int subStringLength = strlen(tokenized) - 1;
 			tmpBuffer = malloc(subStringLength);
-			tmpBuffer = strcpy(tmpBuffer, tokenized + 1, subStringLength);
+			tmpBuffer = strncpy(tmpBuffer, tokenized + 1, subStringLength);
 			inASSet = 1;
 			useTmpBuffer = 1;
 		}
@@ -2035,7 +2034,7 @@ struct assegment convertKeyToAsSegment(const char* key)
 		{
 			int subStringLength = strlen(tokenized) -1;
 			tmpBuffer = malloc(subStringLength);
-			tmpBuffer = strcpy(tmpBuffer, tokenized, subStringLength);
+			tmpBuffer = strncpy(tmpBuffer, tokenized, subStringLength);
 			inASSet = 0;
 			useTmpBuffer = 1;
 		}
