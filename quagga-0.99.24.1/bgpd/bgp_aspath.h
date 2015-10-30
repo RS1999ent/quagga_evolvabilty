@@ -166,7 +166,7 @@ extern int lus_initContext();
 
 extern int lus_setIA(char* key, struct integratedAdvert);
 
-extern struct integratedAdvert lus_getIA(char* key);
+extern struct integratedAdvert* lus_getIA(char* key);
 
 extern void lus_initIntegratedAdvert(struct integratedAdvert* advert);
 

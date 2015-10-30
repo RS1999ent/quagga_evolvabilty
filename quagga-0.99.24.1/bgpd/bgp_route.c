@@ -2101,7 +2101,12 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 //  }
 
   //key extraction testing spot
-  aspath_extractKey(attr->aspath);
+  char* key = aspath_extractKey(attr->aspath);
+  if(key != NULL)
+  {
+	  zlog_info("KEY FOUND: %s", key);
+	  struct integratedAdvert *advert = lus_getIA(key);
+  }
 
   /* AS path local-as loop check. */
   if (peer->change_local_as)

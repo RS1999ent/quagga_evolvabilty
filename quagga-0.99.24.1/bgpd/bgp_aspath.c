@@ -1941,47 +1941,53 @@ char* aspath_extractKey(struct aspath* aspath)
 	as_t delim = atoi(KEY_DELIM); //the deliminator where the key will be sandwiched into (this is also part of the key)
 	struct assegment *segment = aspath->segments;
 	int inKey = 0; //are we in the key
-	int leavingKey = 0; //are we leaving the key(for cases where we encounter delim, but might not be out ex "delim delim delim")
+	int leavingKey = 0; //are we leaving the key(for cases where we encounter delim, but might not be out ex. "delim delim delim")
 	int keyLength = 0; //used for allocating a bigger buffer
 	int numReallocs = 0;  //number of times key was reallocatedd; used in buffer reallocation
 	char *keyString = malloc(DEFAULT_BUFFER_SIZE);
 	memset(keyString, 0, DEFAULT_BUFFER_SIZE);
-	while(segment->next != NULL)
+	//can contain multiple aspath segments
+	while(segment)
 	{
-		//migth be the beginnign or beginning of end of key
-		if(segment->as == delim)
-		{
-			if(inKey = 1)
+		for(int i = 0; i < segment->length; i++){
+			as_t asnum = segment->as[i];
+			//migth be the beginnign or beginning of end of key
+			if(asnum == delim)
 			{
-				leavingKey = 1;
+				if(inKey == 1) //if we are already in the key, means we could be leaving it
+				{
+					leavingKey = 1;
+				}
+				else{
+					inKey = 1;
+				}
 			}
-			else{
-				inKey = 1;
-			}
-		}
-		//means that we encounted a potential end of key, and the current character is not the delminator anymore
-		else if(leavingKey)
-		{
-			inKey = 0;
-			leavingKey = 0;
-		}
-		if(inKey)
-		{
-			char tmpStr[MAX_KEYSIZE]; //hold the as integer as a string
-			sprintf(tmpStr, "%d ", segment->as); //convert asint to string
-			keyLength += strlen(tmpStr); //add the length of this string to the keylength
-			//if we need to reallocate memory
-			if(keyLength > DEFAULT_BUFFER_SIZE)
+			//means that we encounted a potential end of key, and the current character is not the delminator anymore (meaning we've left the key)
+			else if(leavingKey)
 			{
-				keyString = realloc(keyString, DEFAULT_BUFFER_SIZE * (numReallocs + 1));
-				keyLength = keyLength - DEFAULT_BUFFER_SIZE;
+				inKey = 0;
+				leavingKey = 0;
 			}
-			strcat(keyString, tmpStr );
+			if(inKey)
+			{
+				char tmpStr[MAX_KEYSIZE]; //hold the as integer as a string
+				sprintf(tmpStr, "%d ", asnum); //convert asint to string
+				keyLength += strlen(tmpStr); //add the length of this string to the keylength
+				//if we need to reallocate memory
+				if(keyLength > DEFAULT_BUFFER_SIZE)
+				{
+					keyString = realloc(keyString, DEFAULT_BUFFER_SIZE * (numReallocs + 1));
+					keyLength = keyLength - DEFAULT_BUFFER_SIZE;
+				}
+				strcat(keyString, tmpStr );
+			}
 		}
-
+		segment = segment->next;
 	}
 
-	zlog_info("KEY FOUND: %s", keyString );
+	//zlog_info("KEY FOUND: %s", keyString );
+	//there's an extra space at the end, remove it
+	memset(keyString + strlen(keyString)-1, 0, 1);
 	return keyString;
 
 }
@@ -2159,19 +2165,18 @@ int lus_setIA(char* key, struct integratedAdvert advert)
 
 //will return a formed integrated advertisement based on a formed key (assuming pointing to a well formed string)
 //fields currently hard code, cannot handle more than 256 (arrlength (const above)).  unknown behavior beyond this point.
- struct integratedAdvert lus_getIA(char* key){
+ struct integratedAdvert* lus_getIA(char* key){
 	 if(DISABLE)
 	 {
-		 struct integratedAdvert advert;
-		 return advert;
+		 return NULL;
 	 }
 
 	char value[ARRLENGTH];
 	memset (value, 0, sizeof(value));
 
 	//init advert
-	struct integratedAdvert advert;
-	lus_initIntegratedAdvert(&advert);
+	struct integratedAdvert* advert = malloc(sizeof(struct integratedAdvert));
+	lus_initIntegratedAdvert(advert);
 
 
 	redisReply* reply = redisCommand(context, "hgetall %s", key, strlen(key) );
@@ -2197,8 +2202,8 @@ int lus_setIA(char* key, struct integratedAdvert advert)
 			}
 		}
 
-		advert.pathAttributes->fields->fields = aField;
-		advert.pathAttributes->fields->numFields = currentField;
+		advert->pathAttributes->fields->fields = aField;
+		advert->pathAttributes->fields->numFields = currentField;
 	}
 	return advert;
 }
