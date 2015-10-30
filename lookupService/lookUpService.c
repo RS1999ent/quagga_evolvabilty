@@ -22,7 +22,7 @@ int lus_initContext(){
 		}
 		exit(1);
 	}
-
+	return 1;
 }
 
 

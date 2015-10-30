@@ -21,6 +21,8 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #ifndef _QUAGGA_BGP_ASPATH_H
 #define _QUAGGA_BGP_ASPATH_H
 
+#include "hiredis/hiredis.h"
+
 /* AS path segment type.  */
 #define AS_SET                       1
 #define AS_SEQUENCE                  2
@@ -114,5 +116,75 @@ extern char* aspath_extractKey(struct aspath*);
 
 /* For SNMP BGP4PATHATTRASPATHSEGMENT, might be useful for debug */
 extern u_char *aspath_snmp_pathseg (struct aspath *, size_t *);
+
+
+
+
+
+static const int WISER = 555;
+static const char* HOSTNAME = "127.0.0.1";
+static const int PORT = 6379;
+static const int DISABLE = 0; //disables lus actions, quagga runs normally as if this were not here
+
+static redisContext* context;
+
+//structrue of integrated advertisement
+//leaving path and asdescriptors out for the time being
+struct integratedAdvert{
+	struct pathDescriptors* pathAttributes;
+	struct pathDescriptors* nodeAttributes;
+	struct pathDescriptors* edgeAttributes; //not done yet, may need some thinking
+};
+
+
+//holds the path attritubtes for each path
+struct pathDescriptors{
+	struct pathDescriptors* next; //next descriptor associated with another path
+	struct protoFields* fields; //the protocols and attributes associated with this path
+	int numProtoFields; //number of protoocols that have attributes for this path
+	int id; //the id for the path, node, or edge
+
+
+};
+
+//structure that holds the fields associated with a protocol
+struct protoFields{
+	struct field* fields;
+	int numFields;
+	int protoID; //number signifying what protocol is owner of these fields
+};
+
+//contains the essentially byte array associated with a field
+struct field{
+	char* fieldName;
+	char* aFieldValue;
+	int fieldValSize;
+	int fieldNameSize;
+};
+
+extern int lus_initContext();
+
+extern int lus_setIA(char* key, struct integratedAdvert);
+
+extern struct integratedAdvert lus_getIA(char* key);
+
+extern void lus_initIntegratedAdvert(struct integratedAdvert* advert);
+
+extern redisContext* lus_getContext();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif /* _QUAGGA_BGP_ASPATH_H */

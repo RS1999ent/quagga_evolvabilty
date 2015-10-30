@@ -52,7 +52,7 @@ struct field{
 	int fieldNameSize;
 };
 
-static extern int lusinitContext();
+extern int lus_initContext();
 
 extern int lus_setIA(char* key, struct integratedAdvert);
 

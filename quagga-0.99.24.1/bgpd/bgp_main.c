@@ -50,7 +50,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_filter.h"
 #include "bgpd/bgp_zebra.h"
 
-#include "lookupService/lookUpService.h"
+//#include "lookUpService.h"
 
 /* bgpd options, we use GNU getopt library. */
 static const struct option longopts[] = 
