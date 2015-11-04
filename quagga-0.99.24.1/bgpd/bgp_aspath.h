@@ -172,7 +172,7 @@ extern void lus_initIntegratedAdvert(struct integratedAdvert* advert);
 
 extern redisContext* lus_getContext();
 
-
+extern char* lus_printIA(const struct integratedAdvert* );
 
 
 

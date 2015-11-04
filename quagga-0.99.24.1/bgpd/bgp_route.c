@@ -1712,16 +1712,21 @@ bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,
 	  if(new_select != NULL)
 	  {
 		  new_key = aspath_extractKey(new_select->attr->aspath);
+		  zlog_info("new_select key: %s", new_key);
 	  }
 
 	  struct integratedAdvert *exist_advert = NULL, *new_advert = NULL;
 	  if(exist_key != NULL)
 	  {
 		  exist_advert = lus_getIA(exist_key);
+		  zlog_info("exist_key: %s", exist_key);
+		  zlog_info("existing IA: %s", lus_printIA(exist_advert));
+
 	  }
 	  if(new_key != NULL)
 	  {
 		  new_advert = lus_getIA(new_key);
+		  zlog_info("new received IA: %s", lus_printIA(new_advert));
 	  }
 
 	  int bgp_decision = bgp_info_cmp(bgp, ri, new_select, &paths_eq);

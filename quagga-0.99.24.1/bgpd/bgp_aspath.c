@@ -2224,7 +2224,31 @@ redisContext* lus_getContext(void)
 	return context;
 }
 
+char* lus_printIA(const struct integratedAdvert *advert )
+{
+	if(advert == NULL)
+	{
+		return NULL;
+	}
+	char *string = malloc(DEFAULT_BUFFER_SIZE);
+	memset(string, 0, DEFAULT_BUFFER_SIZE);
+	struct pathDescriptors* pathAttributes = advert->pathAttributes;
+	while(pathAttributes != NULL)
+	{
+		struct protoFields *protoField = pathAttributes->fields;
+		for(int i = 0; i < pathAttributes->numProtoFields; i++)
+		{
+			struct field aField = protoField->fields[i];
+			string = strcat(string, aField.fieldName);
+			string = strcat(string, ": ");
+			string = strcat(string, aField.aFieldValue);
+			string = strcat(string, "\n");
+		}
 
+		pathAttributes = pathAttributes->next;
+	}
+	return string;
+}
 
 
 
