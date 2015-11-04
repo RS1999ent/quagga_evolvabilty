@@ -1944,6 +1944,7 @@ char* aspath_extractKey(struct aspath* aspath)
 	int leavingKey = 0; //are we leaving the key(for cases where we encounter delim, but might not be out ex. "delim delim delim")
 	int keyLength = 0; //used for allocating a bigger buffer
 	int numReallocs = 0;  //number of times key was reallocatedd; used in buffer reallocation
+	int gotKey = 0;
 	char *keyString = malloc(DEFAULT_BUFFER_SIZE);
 	memset(keyString, 0, DEFAULT_BUFFER_SIZE);
 	//can contain multiple aspath segments
@@ -1967,6 +1968,7 @@ char* aspath_extractKey(struct aspath* aspath)
 			{
 				inKey = 0;
 				leavingKey = 0;
+				gotKey = 1;
 			}
 			if(inKey)
 			{
@@ -1988,7 +1990,14 @@ char* aspath_extractKey(struct aspath* aspath)
 	//zlog_info("KEY FOUND: %s", keyString );
 	//there's an extra space at the end, remove it
 	memset(keyString + strlen(keyString)-1, 0, 1);
-	return keyString;
+	if(gotKey){
+		return keyString;
+	}
+	else
+	{
+		free(keyString);
+		return NULL;
+	}
 
 }
 
