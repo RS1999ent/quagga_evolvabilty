@@ -1712,7 +1712,9 @@ bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,
 	  if(new_select != NULL)
 	  {
 		  new_key = aspath_extractKey(new_select->attr->aspath);
-		  zlog_info("new_select key: %s", new_key);
+		  if(new_key != NULL){
+			  zlog_info("new_select key: %s", new_key);
+		  }
 	  }
 
 	  struct integratedAdvert *exist_advert = NULL, *new_advert = NULL;
