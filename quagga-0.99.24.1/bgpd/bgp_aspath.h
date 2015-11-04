@@ -124,7 +124,7 @@ extern u_char *aspath_snmp_pathseg (struct aspath *, size_t *);
 static const int WISER = 555;
 static const char* HOSTNAME = "127.0.0.1";
 static const int PORT = 6379;
-static const int DISABLE = 0; //disables lus actions, quagga runs normally as if this were not here
+static int DISABLE = 0; //disables lus actions, quagga runs normally as if this were not here
 
 static redisContext* context;
 

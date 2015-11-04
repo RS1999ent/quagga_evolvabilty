@@ -2113,7 +2113,8 @@ int lus_initContext(){
 		} else {
 			printf("Connection error: can't allocate redis context\n");
 		}
-		exit(1);
+		DISABLE = 1;
+		//exit(1);
 	}
 	return 1;
 }
