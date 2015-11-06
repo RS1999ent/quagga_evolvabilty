@@ -2189,12 +2189,13 @@ int lus_setIA(char* key, struct integratedAdvert advert)
 	memset (value, 0, sizeof(value));
 
 	//init advert
-	struct integratedAdvert* advert = malloc(sizeof(struct integratedAdvert));
-	lus_initIntegratedAdvert(advert);
-
+	struct integratedAdvert* advert = NULL;
 
 	redisReply* reply = redisCommand(context, "hgetall %s", key, strlen(key) );
 	if (reply->type == REDIS_REPLY_ARRAY) {
+		advert = malloc(sizeof(struct integratedAdvert));
+		lus_initIntegratedAdvert(advert);
+
 		//only of elements of type path attribute being returned now, just for peering experiments
 		struct field aField[ARRLENGTH]; //HACK IN FOR PEERING EXPERIMENT, MUST GENERALIZE LATER
 		int currentField = 0;
@@ -2218,6 +2219,7 @@ int lus_setIA(char* key, struct integratedAdvert advert)
 
 		advert->pathAttributes->fields->fields = aField;
 		advert->pathAttributes->fields->numFields = currentField;
+		advert->pathAttributes->numProtoFields = 1;
 	}
 	return advert;
 }
