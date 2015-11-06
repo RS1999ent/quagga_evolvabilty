@@ -2250,16 +2250,17 @@ char* lus_printIA(const struct integratedAdvert *advert )
 	struct pathDescriptors* pathAttributes = advert->pathAttributes;
 	while(pathAttributes != NULL)
 	{
-		struct protoFields *protoField = pathAttributes->fields;
-		for(int i = 0; i < pathAttributes->numProtoFields; i++)
-		{
-			struct field aField = protoField->fields[i];
-			string = strcat(string, aField.fieldName);
-			string = strcat(string, ": ");
-			string = strcat(string, aField.aFieldValue);
-			string = strcat(string, "\n");
+		for(int i = 0; i < pathAttributes->numProtoFields; i ++){
+			struct protoFields *protoField = (pathAttributes->fields + i);
+			for(int i = 0; i < protoField->numFields; i++)
+			{
+				struct field aField = protoField->fields[i];
+				string = strcat(string, aField.fieldName);
+				string = strcat(string, ": ");
+				string = strcat(string, aField.aFieldValue);
+				string = strcat(string, "\n");
+			}
 		}
-
 		pathAttributes = pathAttributes->next;
 	}
 	return string;
