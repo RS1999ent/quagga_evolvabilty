@@ -1984,6 +1984,7 @@ char* aspath_extractKey(struct aspath* aspath)
 					keyLength = keyLength - DEFAULT_BUFFER_SIZE;
 				}
 				strcat(keyString, tmpStr );
+				zlog_info("keysofar: %s", keyString);
 			}
 		}
 		segment = segment->next;
