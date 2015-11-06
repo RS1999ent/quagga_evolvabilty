@@ -325,7 +325,7 @@ bgp_med_value (struct attr *attr, struct bgp *bgp)
 /* extracts wiser cost and normalizationfactor from an integrated Advertisement */
 static void bgp_extract_wiser_info(const struct integratedAdvert *advert, int *wiserCost, int *normalization)
 {
-	struct protoFields *pathFields;
+	struct protoFields *pathFields = NULL;
 	if(advert != NULL){
 		/*grab the wiser information */
 		for(int i = 0; i < advert->pathAttributes->numProtoFields; i++)
@@ -1707,6 +1707,8 @@ bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,
 	  bgp_info_unset_flag (rn, ri, BGP_INFO_DMED_SELECTED);
 
 	  /*Deployment Modal A logic */
+	  zlog_info("exist pathvector: %s", ri->attr->aspath->str);
+
 	  char *exist_key = aspath_extractKey(ri->attr->aspath);
 	  char *new_key = NULL;
 	  if(new_select != NULL)
