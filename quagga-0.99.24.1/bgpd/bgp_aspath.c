@@ -1961,6 +1961,7 @@ char* aspath_extractKey(struct aspath* aspath)
 				}
 				else{
 					inKey = 1;
+					gotKey = 1;
 					zlog_info("INkey: %s", aspath->str);
 				}
 			}
@@ -1969,7 +1970,6 @@ char* aspath_extractKey(struct aspath* aspath)
 			{
 				inKey = 0;
 				leavingKey = 0;
-				gotKey = 1;
 				zlog_info("gotkey: %s", aspath->str);
 			}
 			if(inKey)
