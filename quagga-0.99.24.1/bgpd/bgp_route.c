@@ -1707,7 +1707,7 @@ bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,
 	  bgp_info_unset_flag (rn, ri, BGP_INFO_DMED_SELECTED);
 
 	  /*Deployment Modal A logic */
-	  zlog_info("exist pathvector: %s", ri->attr->aspath->str);
+	  //zlog_info("exist pathvector: %s", ri->attr->aspath->str);
 
 	  char *exist_key = aspath_extractKey(ri->attr->aspath);
 	  char *new_key = NULL;

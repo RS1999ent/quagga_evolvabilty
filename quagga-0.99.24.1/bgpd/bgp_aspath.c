@@ -1961,6 +1961,7 @@ char* aspath_extractKey(struct aspath* aspath)
 				}
 				else{
 					inKey = 1;
+					zlog_info("INkey: %s", aspath->str);
 				}
 			}
 			//means that we encounted a potential end of key, and the current character is not the delminator anymore (meaning we've left the key)
@@ -1969,6 +1970,7 @@ char* aspath_extractKey(struct aspath* aspath)
 				inKey = 0;
 				leavingKey = 0;
 				gotKey = 1;
+				zlog_info("gotkey: %s", aspath->str);
 			}
 			if(inKey)
 			{
@@ -1991,6 +1993,7 @@ char* aspath_extractKey(struct aspath* aspath)
 	//there's an extra space at the end, remove it
 	memset(keyString + strlen(keyString)-1, 0, 1);
 	if(gotKey){
+		zlog_info("returnkey: %s", keyString);
 		return keyString;
 	}
 	else
