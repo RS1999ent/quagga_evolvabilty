@@ -2078,8 +2078,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   struct bgp_info *new;
   const char *reason;
   char buf[SU_ADDRSTRLEN];
-  int compilationtest = 2224;
-  compilationtest-= 4;
+
   bgp = peer->bgp;
   rn = bgp_afi_node_get (bgp->rib[afi][safi], afi, safi, p, prd);
   
@@ -2098,13 +2097,13 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   if (peer->change_local_as)
     {
       if (! CHECK_FLAG (peer->flags, PEER_FLAG_LOCAL_AS_NO_PREPEND))
-    	  aspath_loop_count = 1;
+	aspath_loop_count = 1;
 
       if (aspath_loop_check (attr->aspath, peer->change_local_as) > aspath_loop_count) 
-      {
-    	  reason = "as-path contains our own AS;";
-    	  goto filtered;
-      }
+	{
+	  reason = "as-path contains our own AS;";
+	  goto filtered;
+	}
     }
 
   /* AS path loop check. */
@@ -2112,10 +2111,10 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
       || (CHECK_FLAG(bgp->config, BGP_CONFIG_CONFEDERATION)
 	  && aspath_loop_check(attr->aspath, bgp->confed_id)
 	  > peer->allowas_in[afi][safi]))
-  {
-	  reason = "as-path contains our own AS;";
-//	    goto filtered;
-  }
+    {
+      reason = "as-path contains our own AS;";
+      goto filtered;
+    }
 
   /* Route reflector originator ID check.  */
   if (attr->flag & ATTR_FLAG_BIT (BGP_ATTR_ORIGINATOR_ID)

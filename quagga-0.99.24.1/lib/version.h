@@ -45,7 +45,7 @@
 
 #define QUAGGA_COPYRIGHT "Copyright 1996-2005 Kunihiro Ishiguro, et al."
 
-#define QUAGGA_CONFIG_ARGS "--sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga --no-create --no-recursion"
+#define QUAGGA_CONFIG_ARGS ""
 
 pid_t pid_output (const char *);
 
