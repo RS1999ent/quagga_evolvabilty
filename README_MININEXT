@@ -13,3 +13,8 @@ simulated by a single Quagga router.
 shell for one of the ASes.  Then type vtysh in the shell.  This will
 log you into the AS1's quagga router shell.
 
+4a) The xterm command doesn't work on some machines. In order to circumvent this,
+bo to MiniNext/util and run ./mx <host_name> to run commands inside the host.
+You can als o ./mx <host_name> <command> to run a command inside the host and
+return to your shell.
+
