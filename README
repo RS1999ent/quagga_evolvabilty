@@ -1,10 +1,17 @@
-To get an unmodified Quagga installation to work as if it were
-installed by Ubuntu 12.04 LTE's apt-get mechanism:
+To get Quagga to work as if it were
+installed by Ubuntu 14.04 LTE's apt-get mechanism:
+
+1) Install packages texinfo and libreadline6-dev
+
+2) Install redis (version used: 1.0) system wide
+
+2) Install hiredis (version used: ) system wide
+
 
 1)In quagga-0.99.24.1 subdirectory, type: 
   ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
 
-Note, on the Wisconsin nodes, I had to install packages texinfo, libreadline6-dev, and automake.
+
 
 3)Type: sudo make; sudo make install
 
