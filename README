@@ -1,44 +1,51 @@
 To get Quagga to work as if it were
 installed by Ubuntu 14.04 LTE's apt-get mechanism:
 
-1) Install packages texinfo and libreadline6-dev
+1) Install packages texinfo and libreadline6-dev using apt-get
 
 2) Install redis (version used: 1.0) system wide
 
 2) Install hiredis (version used: ) system wide
 
+3) Export $CFLAGS, $CPPFLAGS, and $LDFLAGS to reflect location of hiredis.h and its libhiredis.a.  I used: 
 
-1)In quagga-0.99.24.1 subdirectory, type: 
+$CFLAGS="$CFLAGS -I/usr/local/include/hiredis
+$CPPFLAGS="$CPPFLAGS -I/usr/local/include/hiredis"
+$LDFLAGS="$LDFLAGS -L/usr/local/lib"
+
+4)In quagga-0.99.24.1 subdirectory, type: Run autoconf and autoreconf --install
+
+5)In quagga-0.99.24.1 subdirectory, type: 
   ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
 
+6)Type: sudo make; sudo make install
 
-
-3)Type: sudo make; sudo make install
-
-4)Create group 'quaggavty' and add 'quagga' user to it.
+7)Create group 'quaggavty' and add 'quagga' user to it.
     sudo useradd -m quagga
     sudo groupadd quaggavty
     sudo usermod -a -G quaggavty quagga
 
-5)Copy config/samples/{*.conf, daemons} to /etc/quagga.
+---- Everything below here may change depending on how David's MiniNeXT config works
 
-6)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
+8)Copy config/samples/{*.conf, daemons} to /etc/quagga.
 
-7)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
+9)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
+
+10)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
     sudo cp config/samples/quagga /etc/init.d. 
     sudo chown root /etc/init.d/quagga
     sudo chmod u+rwx /etc/init.d/quagga
 
-8)Give user quagga permissions to modify /var/run.  
+11)Give user quagga permissions to modify /var/run.  
    mkdir -p /var/run/quagga
    chown quagga:quagga /var/run/quagga
    chmod 755 /var/run/quagga
 
-9)Run ldconfig so that install picks up on new libraries.
+12)Run ldconfig so that install picks up on new libraries.
    ldconfig
    ldconfig -p | grep libzebra
 
-9)To see if things work: 
+13)To see if things work: 
     bpgd &
     telnet localhost bgpd
     vtysh
