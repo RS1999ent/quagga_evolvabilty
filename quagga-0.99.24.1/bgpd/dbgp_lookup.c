@@ -9,7 +9,7 @@
 #include "lib/zebra.h"
 #include "bgpd/bgpd.h"
 #include "bgpd/bgp_attr.h"
-#include "bgpd/bgp_route.h" 
+//#include "bgpd/bgp_route.h" 
 #include "bgpd/dbgp_lookup.h"
 #include "hiredis/hiredis.h"
 
@@ -33,8 +33,8 @@ dbgp_result_status_t retrieve_control_info(struct attr *attr, dbgp_control_info_
    * community attributes
    */
   transit = attr->extra->transit; 
-  assert(transit->length == sizeof(unsigned int));
-  key = (unsigned int)*transit->val;
+  assert(transit->length == sizeof(int));
+  key = (int)*transit->val;
 
   c = redisConnect("REDIS_IP", REDIS_PORT);
   sprintf(redis_cmd, "GET %ud", key);
@@ -49,7 +49,8 @@ dbgp_result_status_t retrieve_control_info(struct attr *attr, dbgp_control_info_
 
 dbgp_result_status_t set_control_info(struct attr* attr, dbgp_control_info_t* control_info)
 {
-  unsigned int key;
+  struct transit* transit;
+  int *key;
   redisContext *c;
   redisReply* reply;
   char redis_cmd [256];
@@ -59,15 +60,24 @@ dbgp_result_status_t set_control_info(struct attr* attr, dbgp_control_info_t* co
     srand(time(NULL));
     rand_init = 1;
   }
-  key = rand();
+  key = (int *)malloc(sizeof(int));
+  *key = rand();
 
   /* Store control info in lookup service */
   c = redisConnect(REDIS_IP, REDIS_PORT);
-  sprintf(redis_cmd, "SET %ud %lld", key, *control_info);
+  sprintf(redis_cmd, "SET %d %lld", *key, *control_info);
   reply = redisCommand(c, redis_cmd); 
   assert(reply->type != REDIS_REPLY_ERROR);
   free(reply); 
 
+  /* Add key to advertisement */
+  /* transit should have already been allocated in bgp_attr.c */
+  assert(attr->extra->transit == NULL);
+  transit = attr->extra->transit;
+
+  transit->length = sizeof(int);
+  transit->val = (u_char *)key;
+						    
   return(DBGP_SUCCESS);
 }
    

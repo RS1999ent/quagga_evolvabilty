@@ -34,6 +34,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "plist.h"
 #include "thread.h"
 #include "workqueue.h"
+#include "hiredis/hiredis.h"
 
 #include "bgpd/bgpd.h"
 #include "bgpd/bgp_table.h"
@@ -55,6 +56,9 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_zebra.h"
 #include "bgpd/bgp_vty.h"
 #include "bgpd/bgp_mpath.h"
+
+#include "bgpd/dbgp_lookup.h"
+
 
 /* Extern from bgp_dump.c */
 extern const char *bgp_origin_str[];
@@ -1379,6 +1383,11 @@ bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,
   /* Check old selected route and new selected route. */
   old_select = NULL;
   new_select = NULL;
+
+  /* @note: rajas - I think what's going on here is that the code is
+   * going through every single route in the RIB for the selected
+   * prefix to pick a new one
+   */
   for (ri = rn->info; (ri != NULL) && (nextri = ri->next, 1); ri = nextri)
     {
       if (CHECK_FLAG (ri->flags, BGP_INFO_SELECTED))
@@ -1572,11 +1581,22 @@ bgp_process_main (struct work_queue *wq, void *data)
   struct bgp_info_pair old_and_new;
   struct listnode *node, *nnode;
   struct peer *peer;
-  
+  dbgp_control_info_t old_control_info;
+  dbgp_control_info_t* new_control_info;
+
   /* Best path selection. */
+  //@bug: get lookup key
+  //@bug: retrieve extra control info from redis
+  //@bug:  Call appropriate decision module 
   bgp_best_selection (bgp, rn, &bgp->maxpaths[afi][safi], &old_and_new);
   old_select = old_and_new.old;
   new_select = old_and_new.new;
+
+  /* Modfy old and new select with a new lookup key */
+  retrieve_control_info(old_select->attr, &old_control_info);
+  new_control_info = (dbgp_control_info_t *)malloc(sizeof(dbgp_control_info_t));
+  *new_control_info = old_control_info++;
+  set_control_info(new_select->attr, new_control_info);
 
   /* Nothing to do. */
   if (old_select && old_select == new_select)
@@ -1610,6 +1630,7 @@ bgp_process_main (struct work_queue *wq, void *data)
     }
 
   /* FIB update. */
+  // @bug; Might need to do something here special depending on protocol
   if ((safi == SAFI_UNICAST || safi == SAFI_MULTICAST) && (! bgp->name &&
       ! bgp_option_check (BGP_OPT_NO_FIB)))
     {
@@ -2601,9 +2622,9 @@ bgp_announce_table (struct peer *peer, afi_t afi, safi_t safi,
 	{
          if ( (rsclient) ?
               (bgp_announce_check_rsclient (ri, peer, &rn->p, &attr, afi, safi))
-              : (bgp_announce_check (ri, peer, &rn->p, &attr, afi, safi)))
+              : (bgp_announce_check (ri, peer, &rn->p, &attr, afi, safi))) {
 	    bgp_adj_out_set (rn, peer, &rn->p, &attr, afi, safi, ri);
-	  else
+	 } else
 	    bgp_adj_out_unset (rn, peer, &rn->p, afi, safi);
 	}
 }
