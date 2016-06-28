@@ -103,11 +103,6 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-_usr_local_lib_libhiredis_a_AR = $(AR) $(ARFLAGS)
-_usr_local_lib_libhiredis_a_LIBADD =
-_usr_local_lib_libhiredis_a_SOURCES = /usr/local/lib/libhiredis.c
-_usr_local_lib_libhiredis_a_OBJECTS = libhiredis.$(OBJEXT)
-am__dirstamp = $(am__leading_dot)dirstamp
 libbgp_a_AR = $(AR) $(ARFLAGS)
 libbgp_a_LIBADD =
 am_libbgp_a_OBJECTS = bgpd.$(OBJEXT) bgp_fsm.$(OBJEXT) \
@@ -125,8 +120,7 @@ am__installdirs = "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(examplesdir)"
 PROGRAMS = $(sbin_PROGRAMS)
 am_bgpd_OBJECTS = bgp_main.$(OBJEXT)
 bgpd_OBJECTS = $(am_bgpd_OBJECTS)
-bgpd_DEPENDENCIES = /usr/local/lib/libhiredis.a libbgp.a \
-	../lib/libzebra.la
+bgpd_DEPENDENCIES = libbgp.a ../lib/libzebra.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -165,10 +159,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = /usr/local/lib/libhiredis.c $(libbgp_a_SOURCES) \
-	$(bgpd_SOURCES)
-DIST_SOURCES = /usr/local/lib/libhiredis.c $(libbgp_a_SOURCES) \
-	$(bgpd_SOURCES)
+SOURCES = $(libbgp_a_SOURCES) $(bgpd_SOURCES)
+DIST_SOURCES = $(libbgp_a_SOURCES) $(bgpd_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -275,6 +267,7 @@ LATEXMK = @LATEXMK@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBCAP = @LIBCAP@
+LIBHIREDIS = @LIBHIREDIS@
 LIBM = @LIBM@
 LIBOBJS = @LIBOBJS@
 LIBPAM = @LIBPAM@
@@ -397,7 +390,7 @@ AM_CPPFLAGS = -I.. -I$(top_srcdir) -I$(top_srcdir)/lib -I$(top_builddir)/lib
 INSTALL_SDATA = @INSTALL@ -m 600
 AM_CFLAGS = $(PICFLAGS)
 AM_LDFLAGS = $(PILDFLAGS) 
-noinst_LIBRARIES = libbgp.a /usr/local/lib/libhiredis.a
+noinst_LIBRARIES = libbgp.a
 libbgp_a_SOURCES = \
 	bgpd.c bgp_fsm.c bgp_aspath.c bgp_community.c bgp_attr.c \
 	bgp_debug.c bgp_route.c bgp_zebra.c bgp_open.c bgp_routemap.c \
@@ -413,7 +406,7 @@ noinst_HEADERS = \
 	bgp_advertise.h bgp_snmp.h bgp_vty.h bgp_mpath.h dbgp_lookup.h
 
 bgpd_SOURCES = bgp_main.c
-bgpd_LDADD = /usr/local/lib/libhiredis.a libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@
+bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ @LIBHIREDIS@
 examplesdir = $(exampledir)
 dist_examples_DATA = bgpd.conf.sample bgpd.conf.sample2
 EXTRA_DIST = BGP4-MIB.txt
@@ -454,14 +447,6 @@ $(am__aclocal_m4_deps):
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-/usr/local/lib/$(am__dirstamp):
-	@$(MKDIR_P) /usr/local/lib
-	@: > /usr/local/lib/$(am__dirstamp)
-
-/usr/local/lib/libhiredis.a: $(_usr_local_lib_libhiredis_a_OBJECTS) $(_usr_local_lib_libhiredis_a_DEPENDENCIES) $(EXTRA__usr_local_lib_libhiredis_a_DEPENDENCIES) /usr/local/lib/$(am__dirstamp)
-	$(AM_V_at)-rm -f /usr/local/lib/libhiredis.a
-	$(AM_V_AR)$(_usr_local_lib_libhiredis_a_AR) /usr/local/lib/libhiredis.a $(_usr_local_lib_libhiredis_a_OBJECTS) $(_usr_local_lib_libhiredis_a_LIBADD)
-	$(AM_V_at)$(RANLIB) /usr/local/lib/libhiredis.a
 
 libbgp.a: $(libbgp_a_OBJECTS) $(libbgp_a_DEPENDENCIES) $(EXTRA_libbgp_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libbgp.a
@@ -554,7 +539,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bgp_zebra.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bgpd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbgp_lookup.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhiredis.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -576,20 +560,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-
-libhiredis.o: /usr/local/lib/libhiredis.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libhiredis.o -MD -MP -MF $(DEPDIR)/libhiredis.Tpo -c -o libhiredis.o `test -f '/usr/local/lib/libhiredis.c' || echo '$(srcdir)/'`/usr/local/lib/libhiredis.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhiredis.Tpo $(DEPDIR)/libhiredis.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='/usr/local/lib/libhiredis.c' object='libhiredis.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libhiredis.o `test -f '/usr/local/lib/libhiredis.c' || echo '$(srcdir)/'`/usr/local/lib/libhiredis.c
-
-libhiredis.obj: /usr/local/lib/libhiredis.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libhiredis.obj -MD -MP -MF $(DEPDIR)/libhiredis.Tpo -c -o libhiredis.obj `if test -f '/usr/local/lib/libhiredis.c'; then $(CYGPATH_W) '/usr/local/lib/libhiredis.c'; else $(CYGPATH_W) '$(srcdir)//usr/local/lib/libhiredis.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhiredis.Tpo $(DEPDIR)/libhiredis.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='/usr/local/lib/libhiredis.c' object='libhiredis.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libhiredis.obj `if test -f '/usr/local/lib/libhiredis.c'; then $(CYGPATH_W) '/usr/local/lib/libhiredis.c'; else $(CYGPATH_W) '$(srcdir)//usr/local/lib/libhiredis.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -733,7 +703,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f /usr/local/lib/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

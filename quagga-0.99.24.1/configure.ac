@@ -763,6 +763,24 @@ fi
 LIBS="$TMPLIBS"
 AC_SUBST(LIBM)
 
+dnl -------------------------------
+dnl dbgp needs hiredis
+dnl -------------------------------
+TMPLIBS="$LIBS"
+AC_CHECK_HEADER([hiredis.h],
+[AC_CHECK_LIB([hiredis], [redisCommand],
+    [LIBHIREDIS="-lhiredis"
+     LIBS="$LIBS $LIBHIREDIS"
+     AC_DEFINE(HAVE_LIBHIREDIS,, Have libhiredis)
+     AC_CHECK_FUNCS(redisCommand,[],[LIBHIREDIS=""])
+    ])
+])
+if test x"$LIBHIREDIS" = x ; then
+AC_MSG_WARN([Unable to find hiredis - bgpd may not link])
+fi
+LIBS="$TMPLIBS"
+AC_SUBST(LIBHIREDIS)
+
 dnl ---------------
 dnl other functions
 dnl ---------------
@@ -776,7 +794,7 @@ AC_CHECK_FUNCS([dup2 ftruncate getcwd gethostbyname getpagesize gettimeofday \
 	if_nametoindex if_indextoname getifaddrs \
 	uname fcntl])
 
-AC_CHECK_FUNCS(setproctitle, ,
+AC_CHECK_FUNCS(setproctitle,,
   [AC_CHECK_LIB(util, setproctitle, 
      [LIBS="$LIBS -lutil"
       AC_DEFINE(HAVE_SETPROCTITLE,, Have setproctitle)

@@ -163,6 +163,9 @@
 /* Define to 1 if you have the `crypt' library (-lcrypt). */
 #undef HAVE_LIBCRYPT
 
+/* Have libhiredis */
+#undef HAVE_LIBHIREDIS
+
 /* Have libm */
 #undef HAVE_LIBM
 
@@ -279,6 +282,9 @@
 
 /* prctl */
 #undef HAVE_PR_SET_KEEPCAPS
+
+/* Define to 1 if you have the `redisCommand' function. */
+#undef HAVE_REDISCOMMAND
 
 /* Have RFC3678 protocol-independed API */
 #undef HAVE_RFC3678
