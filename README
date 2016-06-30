@@ -1,8 +1,11 @@
 Branches: 
 --------- 
+
 rajas/simple_lookup_test: adds a sentinal value (5) as D-BGP control
 info associated with each advertisement.  Whenever a advertisement is
-received, the code checks to see if this sentinel value is set.
+received, the code checks to see if this sentinel value is set. NOTE:
+The sentinel value is not set or checked on the route server code
+path.
 
 
 Insructions
