@@ -1103,6 +1103,12 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 	  return 0;
 	}
     }
+
+  /** D-BGP: Set sentinel value */
+  dbgp_control_info_t new_control_info;
+  new_control_info = 5;
+  set_control_info(attr, &new_control_info);
+
   return 1;
 }
 
@@ -1581,7 +1587,6 @@ bgp_process_main (struct work_queue *wq, void *data)
   struct bgp_info_pair old_and_new;
   struct listnode *node, *nnode;
   struct peer *peer;
-  dbgp_control_info_t* new_control_info;
 
   /* Best path selection. */
   //@bug: get lookup key
@@ -1592,9 +1597,13 @@ bgp_process_main (struct work_queue *wq, void *data)
   new_select = old_and_new.new;
 
   /* D-BGP Modfy new select with D-BGP sentinal value */
-  new_control_info = (dbgp_control_info_t *)malloc(sizeof(dbgp_control_info_t));
-  *new_control_info = 5;
-  set_control_info(new_select->attr, new_control_info);
+  /** @bug: If new_select already has a lookup key attached, we will
+     lose it and insert a new one.  This may induce a memory leak, but
+     this is fine for this test.
+   */
+  dbgp_control_info_t new_control_info;
+  new_control_info = 5;
+  set_control_info(new_select->attr, &new_control_info);
 
   /* Nothing to do. */
   if (old_select && old_select == new_select)
@@ -2160,7 +2169,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   new_attr.extra = &new_extra;
   bgp_attr_dup (&new_attr, attr);
 
-  /** D-BGP: Check that the advertisement carries sentinal of 5  */
+  /** D-BGP: Check sentinel value */
   dbgp_control_info_t old_control_info;
   retrieve_control_info(&new_attr, &old_control_info);
   assert(old_control_info == 5);
@@ -2592,7 +2601,13 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
       if (! CHECK_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE))
         {
           SET_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE);
-          bgp_default_update_send (peer, &attr, afi, safi, from);
+
+	  /** D-BGP: Set sentinal value */
+	  dbgp_control_info_t new_control_info;
+	  new_control_info = 5;
+	  set_control_info(&attr, &new_control_info);
+
+          bgp_default_update_send (peer, &attr, afi, safi, from);	  
         }
     }
   
