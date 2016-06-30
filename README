@@ -9,43 +9,44 @@ installed by Ubuntu 14.04 LTE's apt-get mechanism:
 
 3) Export $CFLAGS, $CPPFLAGS, and $LDFLAGS to reflect location of hiredis.h and its libhiredis.a.  I used: 
 
-$CFLAGS="$CFLAGS -I/usr/local/include/hiredis
-$CPPFLAGS="$CPPFLAGS -I/usr/local/include/hiredis"
-$LDFLAGS="$LDFLAGS -L/usr/local/lib"
+CFLAGS="$CFLAGS -I/usr/local/include/hiredis
+CPPFLAGS="$CPPFLAGS -I/usr/local/include/hiredis"
+LDFLAGS="$LDFLAGS -L/usr/local/lib"
 
-4)In quagga-0.99.24.1 subdirectory, type: Run autoconf and autoreconf --install
+To add debugging, add 'g -O0' $AM_CFLAGS in bgpd/Makefile.am 
 
-5)In quagga-0.99.24.1 subdirectory, type: 
+4)In quagga-0.99.24.1 subdirectory, type: 
   ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
 
-6)Type: sudo make; sudo make install
+5)Type: make; sudo make install
 
-7)Create group 'quaggavty' and add 'quagga' user to it.
+6)Create group 'quaggavty' and add 'quagga' user to it.
     sudo useradd -m quagga
     sudo groupadd quaggavty
     sudo usermod -a -G quaggavty quagga
 
----- Everything below here may change depending on how David's MiniNeXT config works
-
-8)Copy config/samples/{*.conf, daemons} to /etc/quagga.
-
-9)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
-
-10)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
-    sudo cp config/samples/quagga /etc/init.d. 
-    sudo chown root /etc/init.d/quagga
-    sudo chmod u+rwx /etc/init.d/quagga
-
-11)Give user quagga permissions to modify /var/run.  
+6)Give user quagga permissions to modify /var/run.  
    mkdir -p /var/run/quagga
    chown quagga:quagga /var/run/quagga
    chmod 755 /var/run/quagga
 
-12)Run ldconfig so that install picks up on new libraries.
-   ldconfig
-   ldconfig -p | grep libzebra
+7)Run ldconfig so that install picks up on new libraries.
+   sudo ldconfig
+   sudo ldconfig -p | grep libzebra
 
-13)To see if things work: 
+8)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
+
+9)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
+    sudo cp config/samples/quagga /etc/init.d. 
+    sudo chown root /etc/init.d/quagga
+    sudo chmod u+rwx /etc/init.d/quagga
+
+
+---- The following allows you test if a base version of quagga works
+
+10)Copy config/samples/{*.conf, daemons} to /etc/quagga and make sure all files are owned by quagga:quaggavty
+
+11)To see if things work: 
     bpgd &
     telnet localhost bgpd
     vtysh

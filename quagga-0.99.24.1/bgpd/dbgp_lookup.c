@@ -21,7 +21,7 @@ static int rand_init = 0;
 
 /* ********************* Public functions ********************* */
 
-dbgp_result_status_t retrieve_control_info(struct attr *attr, dbgp_control_info_t *control_info)
+dbgp_result_status_t retrieve_control_info(struct attr const * const attr, dbgp_control_info_t * const control_info)
 {
   struct transit* transit;
   unsigned int key;
@@ -47,7 +47,7 @@ dbgp_result_status_t retrieve_control_info(struct attr *attr, dbgp_control_info_
 }
 
 
-dbgp_result_status_t set_control_info(struct attr* attr, dbgp_control_info_t* control_info)
+dbgp_result_status_t set_control_info(struct attr * const attr, dbgp_control_info_t const * const control_info)
 {
   struct transit* transit;
   int *key;
@@ -72,10 +72,11 @@ dbgp_result_status_t set_control_info(struct attr* attr, dbgp_control_info_t* co
 
   /* Add key to advertisement */
   /* transit should have already been allocated in bgp_attr.c */
-  assert(attr->extra->transit == NULL);
+  assert(attr->extra->transit != NULL);
   transit = attr->extra->transit;
 
   transit->length = sizeof(int);
+  /* transit->val should be de-allocated in bgp_attr.c eventually */
   transit->val = (u_char *)key;
 						    
   return(DBGP_SUCCESS);

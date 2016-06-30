@@ -1593,10 +1593,10 @@ bgp_process_main (struct work_queue *wq, void *data)
   new_select = old_and_new.new;
 
   /* Modfy old and new select with a new lookup key */
-  retrieve_control_info(old_select->attr, &old_control_info);
-  new_control_info = (dbgp_control_info_t *)malloc(sizeof(dbgp_control_info_t));
-  *new_control_info = old_control_info++;
-  set_control_info(new_select->attr, new_control_info);
+  //retrieve_control_info(old_select->attr, &old_control_info);
+  //new_control_info = (dbgp_control_info_t *)malloc(sizeof(dbgp_control_info_t));
+  //*new_control_info = old_control_info++;
+  //set_control_info(new_select->attr, new_control_info);
 
   /* Nothing to do. */
   if (old_select && old_select == new_select)
@@ -1630,7 +1630,7 @@ bgp_process_main (struct work_queue *wq, void *data)
     }
 
   /* FIB update. */
-  // @bug; Might need to do something here special depending on protocol
+  // @rajas: Might need to do something here special depending on protocol
   if ((safi == SAFI_UNICAST || safi == SAFI_MULTICAST) && (! bgp->name &&
       ! bgp_option_check (BGP_OPT_NO_FIB)))
     {
