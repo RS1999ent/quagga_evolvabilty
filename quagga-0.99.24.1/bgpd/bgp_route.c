@@ -1581,7 +1581,6 @@ bgp_process_main (struct work_queue *wq, void *data)
   struct bgp_info_pair old_and_new;
   struct listnode *node, *nnode;
   struct peer *peer;
-  dbgp_control_info_t old_control_info;
   dbgp_control_info_t* new_control_info;
 
   /* Best path selection. */
@@ -1592,11 +1591,10 @@ bgp_process_main (struct work_queue *wq, void *data)
   old_select = old_and_new.old;
   new_select = old_and_new.new;
 
-  /* Modfy old and new select with a new lookup key */
-  //retrieve_control_info(old_select->attr, &old_control_info);
-  //new_control_info = (dbgp_control_info_t *)malloc(sizeof(dbgp_control_info_t));
-  //*new_control_info = old_control_info++;
-  //set_control_info(new_select->attr, new_control_info);
+  /* D-BGP Modfy new select with D-BGP sentinal value */
+  new_control_info = (dbgp_control_info_t *)malloc(sizeof(dbgp_control_info_t));
+  *new_control_info = 5;
+  set_control_info(new_select->attr, new_control_info);
 
   /* Nothing to do. */
   if (old_select && old_select == new_select)
@@ -2162,6 +2160,11 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   new_attr.extra = &new_extra;
   bgp_attr_dup (&new_attr, attr);
 
+  /** D-BGP: Check that the advertisement carries sentinal of 5  */
+  dbgp_control_info_t old_control_info;
+  retrieve_control_info(&new_attr, &old_control_info);
+  assert(old_control_info == 5);
+
   /* Apply incoming route-map.
    * NB: new_attr may now contain newly allocated values from route-map "set"
    * commands, so we need bgp_attr_flush in the error paths, until we intern
@@ -2198,7 +2201,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	  goto filtered;
 	}
     }
-
+  
   attr_new = bgp_attr_intern (&new_attr);
 
   /* If the update is implicit withdraw. */

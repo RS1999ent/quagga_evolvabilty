@@ -1,5 +1,14 @@
+Branches: 
+--------- 
+rajas/simple_lookup_test: adds a sentinal value (5) as D-BGP control
+info associated with each advertisement.  Whenever a advertisement is
+received, the code checks to see if this sentinel value is set.
+
+
+Insructions
+-----------
 To get Quagga to work as if it were
-installed by Ubuntu 14.04 LTE's apt-get mechanism:
+installed by Ubuntu 12.04 LTE's apt-get mechanism:
 
 1) Install packages texinfo and libreadline6-dev using apt-get
 
@@ -7,7 +16,7 @@ installed by Ubuntu 14.04 LTE's apt-get mechanism:
 
 2) Install hiredis (version used: 0.13.3 ) system wide
 
-3) Add the following to .bashrc or .profile: 
+3) Add the following to .bashrc or .profile and re-source it.
 
 export CPATH=/usr/local/include:/usr/local/include/hiredis
 export LIBRARY_PATH=/usr/local/lib
