@@ -3,15 +3,15 @@ installed by Ubuntu 14.04 LTE's apt-get mechanism:
 
 1) Install packages texinfo and libreadline6-dev using apt-get
 
-2) Install redis (version used: 1.0) system wide
+2) Install redis (version used: 2.2.12 from apt-get) system wide 
 
-2) Install hiredis (version used: ) system wide
+2) Install hiredis (version used: 0.13.3 ) system wide
 
-3) Export $CFLAGS, $CPPFLAGS, and $LDFLAGS to reflect location of hiredis.h and its libhiredis.a.  I used: 
+3) Add the following to .bashrc or .profile: 
 
-CFLAGS="$CFLAGS -I/usr/local/include/hiredis
-CPPFLAGS="$CPPFLAGS -I/usr/local/include/hiredis"
-LDFLAGS="$LDFLAGS -L/usr/local/lib"
+export CPATH=/usr/local/include:/usr/local/include/hiredis
+export LIBRARY_PATH=/usr/local/lib
+export LD_LIBRARY_PATH=/usr/local/lib
 
 To add debugging, add 'g -O0' $AM_CFLAGS in bgpd/Makefile.am 
 
