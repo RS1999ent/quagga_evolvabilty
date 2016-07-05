@@ -7,19 +7,21 @@ simulated by a single Quagga router.
 
 1)Clone MiniNeXt and build it.
 
-2)Cd to examples/quagga-ixp.
+2)Cd to examples/manualQuagga
 
-3)sudo start.py
+3)sudo start.py to start mininet with a default config.
 
-4)Type the following
-sudo service openvswitch-controller stop
-sudo update-rc.d openvswitch-controller disable
+start.py commandline:
+         -f/--protobuf_config_file - name of file in current
+         directoy or fully qualified path to file that contains the configuration in
+         protobuf text format. By default, it uses the file named "protobufconfig" if
+         this isn't specified
+         -h - displays helpline for commandline options
 
-5)Test mininet by typing 'mn'
+Configuration format:
 
-6)Run start.py in MiniNeXT/examples/quagga-ixp.  MiniNext should start
-successfully.  Type xterm a1 to get a virtual shell for one of the
-ASes.  Then type vtysh in the shell.  This will log you into the AS1's
-quagga router shell.
+Each top level message is demarcated by a <begin ''messagetype''> ... <end ''messagetype''>
 
-
+Each message specification is defined by the protobuf, QuaggaTopo.proto. See
+the file "protobufconfig" for an example configuation. See documentation in
+QuaggaTopo.proto for more information.
