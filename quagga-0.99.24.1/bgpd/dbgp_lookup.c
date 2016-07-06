@@ -26,7 +26,7 @@ dbgp_result_status_t retrieve_control_info(struct attr const * const attr, dbgp_
 {
   struct transit* transit;
   uint32_t key;
-  redisContext *c;
+  redisContext *c = NULL;
   redisReply* reply;
   char redis_cmd[256];
 
@@ -39,6 +39,7 @@ dbgp_result_status_t retrieve_control_info(struct attr const * const attr, dbgp_
   key = ntohl(*(uint32_t *)transit->val);
 
   c = redisConnect(REDIS_IP, REDIS_PORT);
+  assert (c != NULL);
   sprintf(redis_cmd, "GET %"PRIu32"", key);
   reply = redisCommand(c, redis_cmd); 
   assert(reply->type != REDIS_REPLY_ERROR || REDIS_REPLY_ARRAY);
@@ -53,7 +54,7 @@ dbgp_result_status_t set_control_info(struct attr * const attr, dbgp_control_inf
 {
   struct transit* transit;
   int *key;
-  redisContext *c;
+  redisContext *c = NULL;
   redisReply* reply;
   char redis_cmd [256];
 
@@ -67,7 +68,8 @@ dbgp_result_status_t set_control_info(struct attr * const attr, dbgp_control_inf
 
   /* Store control info in lookup service */
   c = redisConnect(REDIS_IP, REDIS_PORT);
-  sprintf(redis_cmd, "SET %"PRIu32" %PRIu64", *key, *control_info);
+  assert(c != NULL);
+  sprintf(redis_cmd, "SET %"PRIu32" %"PRIu64"", *key, *control_info);
   reply = redisCommand(c, redis_cmd); 
   assert(reply->type != REDIS_REPLY_ERROR);
   free(reply); 
