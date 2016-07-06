@@ -25,3 +25,9 @@ Each top level message is demarcated by a <begin ''messagetype''> ... <end ''mes
 Each message specification is defined by the protobuf, QuaggaTopo.proto. See
 the file "protobufconfig" for an example configuation. See documentation in
 QuaggaTopo.proto for more information.
+
+Dependencies:
+libprotoc 2.6.1
+protobuf-compiler
+python-protobuf
+pip install jinja2
