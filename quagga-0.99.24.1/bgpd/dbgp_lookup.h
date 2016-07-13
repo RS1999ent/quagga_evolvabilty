@@ -9,7 +9,7 @@
 #include "bgpd/bgp_attr.h" 
 #include "hiredis/hiredis.h"
 
-#define REDIS_IP "172.2.0.5.1"
+#define REDIS_IP "172.0.5.1"
 #define REDIS_PORT 6379
 
 /**

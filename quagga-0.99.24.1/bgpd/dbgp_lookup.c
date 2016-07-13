@@ -17,8 +17,10 @@
 
 
 /* ********************* Global vars ************************** */
-static int rand_init = 0;
+static int g_rand_init = 0;
 
+/** Timeout for connecting to redis */
+static struct timeval g_timeout = { 5, 500000}; // 5.5 seconds
 
 /* ********************* Public functions ********************* */
 
@@ -26,9 +28,13 @@ dbgp_result_status_t retrieve_control_info(struct attr const * const attr, dbgp_
 {
   struct transit* transit;
   uint32_t key;
-  redisContext *c = NULL;
+  redisContext *c;
   redisReply* reply;
   char redis_cmd[256];
+
+  /** @bug: (rajas) I am using this as a hook to attch to the bgpd
+   * process for debugging */
+  //sleep(50);
 
   /* First retrieve the lookup key, which is stored in transitive
    * community attributes
@@ -38,11 +44,21 @@ dbgp_result_status_t retrieve_control_info(struct attr const * const attr, dbgp_
   /* Convert from network to host byte order */
   key = ntohl(*(uint32_t *)transit->val);
 
-  c = redisConnect(REDIS_IP, REDIS_PORT);
-  assert (c != NULL);
+  c = NULL;
+  c = redisConnectWithTimeout(REDIS_IP, REDIS_PORT, g_timeout);
+  if (c == NULL) {
+    zlog_err("%s:, failed to connect to redis", __func__);
+    //assert(0);
+  }
+
+  /* Get D-BGP control info from lookup service */
   sprintf(redis_cmd, "GET %"PRIu32"", key);
   reply = redisCommand(c, redis_cmd); 
-  assert(reply->type != REDIS_REPLY_ERROR || REDIS_REPLY_ARRAY);
+  if(reply->type != REDIS_REPLY_INTEGER) {
+    zlog_err("%s:, failed to retrieve D-BGP control info. Key=%"PRIu32"", __func__, key);
+    //assert(0);
+  }
+
   *control_info = reply->integer; 
   free(reply);
 
@@ -54,29 +70,54 @@ dbgp_result_status_t set_control_info(struct attr * const attr, dbgp_control_inf
 {
   struct transit* transit;
   int *key;
-  redisContext *c = NULL;
+  redisContext *c;
   redisReply* reply;
   char redis_cmd [256];
 
+  /** @bug: (rajas) I am using this as a hook to attch to the bgpd
+   * process for debugging */
+  //sleep(50);
+
+  /* Input sanity checks */
+  assert(attr != NULL || control_info != NULL);
+
   /* Get a number that will serve as the new lookup key */
-  if (rand_init == 0) {
+  if (g_rand_init == 0) {
     srand(time(NULL));
-    rand_init = 1;
+    g_rand_init = 1;
   }
   key = (int *)malloc(sizeof(int));
   *key = rand();
 
+  c = NULL;
+  c = redisConnectWithTimeout(REDIS_IP, REDIS_PORT, g_timeout);
+  if (c == NULL) {
+    zlog_err("%s:, failed to connect to redis", __func__);
+    //assert(0);
+  }
+
   /* Store control info in lookup service */
-  c = redisConnect(REDIS_IP, REDIS_PORT);
-  assert(c != NULL);
   sprintf(redis_cmd, "SET %"PRIu32" %"PRIu64"", *key, *control_info);
   reply = redisCommand(c, redis_cmd); 
-  assert(reply->type != REDIS_REPLY_ERROR);
+  if (reply->type == REDIS_REPLY_ERROR) {
+    zlog_err("%s: failed to store control info. Key=%"PRIu32", control info="PRIu64"", __func__, *key, *control_info);
+    //assert(0);
+  }
   free(reply); 
 
   /* Add key to advertisement */
   /* transit should have already been allocated in bgp_attr.c */
-  assert(attr->extra->transit != NULL);
+  if (attr->extra->transit != NULL) {
+    if(attr->extra->transit->val != NULL) { 
+      free(attr->extra->transit->val);
+    }
+    free(attr->extra->transit);
+  }
+  attr->extra->transit = NULL;
+
+  if (attr->extra->transit == NULL) { 
+    attr->extra->transit = (struct transit *)malloc(sizeof(struct transit));
+  }
   transit = attr->extra->transit;
 
   transit->length = sizeof(uint32_t);
