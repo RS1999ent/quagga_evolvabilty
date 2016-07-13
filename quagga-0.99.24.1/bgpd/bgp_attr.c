@@ -227,7 +227,7 @@ transit_hash_alloc (void *p)
   return p;
 }
 
-static struct transit *
+struct transit *
 transit_intern (struct transit *transit)
 {
   struct transit *find;

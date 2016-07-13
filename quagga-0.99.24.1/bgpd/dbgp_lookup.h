@@ -31,7 +31,8 @@ typedef long long int dbgp_control_info_t;
  * @param control_info: Memory location where the extra ctrl info can be
  * @return The control information
  */
-dbgp_result_status_t retrieve_control_info(struct attr const * const attr, dbgp_control_info_t * const control_info);
+dbgp_result_status_t retrieve_control_info(struct attr *attr, 
+					   dbgp_control_info_t *control_info);
 
 
 /** 
@@ -44,5 +45,6 @@ dbgp_result_status_t retrieve_control_info(struct attr const * const attr, dbgp_
  *
  * @param DBGP_SUCCESS or DBGP_FAILURe
  */
-dbgp_result_status_t  set_control_info(struct attr * const attr, dbgp_control_info_t const * const control_info);
+dbgp_result_status_t  set_control_info(struct attr *attr, 
+				       dbgp_control_info_t *control_info);
 
