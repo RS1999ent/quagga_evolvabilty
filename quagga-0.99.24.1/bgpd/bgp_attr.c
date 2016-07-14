@@ -1702,26 +1702,19 @@ bgp_attr_dbgp_key(struct bgp_attr_parser_args *args)
   /* Forward read pointer of input stream. */
   stream_forward_getp (peer->ibuf, length);
 
-  /* Store DBGP lookup key to the end of attr->transit. */
+  /* Store DBGP lookup key in transitive attribute */
   if (! ((attre = bgp_attr_extra_get(attr))->transit) )
       attre->transit = XCALLOC (MTYPE_TRANSIT, sizeof (struct transit));
 
   transit = attre->transit;
 
-  if (transit->val)
-    transit->val = XREALLOC (MTYPE_TRANSIT_VAL, transit->val, 
-			     transit->length + total);
-  else
-    transit->val = XMALLOC (MTYPE_TRANSIT_VAL, total);
+  transit->val = XMALLOC (MTYPE_TRANSIT_VAL, length);
 
   memcpy (transit->val, startp, length);
   transit->length = length;
 
   return BGP_ATTR_PARSE_PROCEED;
 }
-
-  
-
 
 /* BGP unknown attribute treatment. */
 static bgp_attr_parse_ret_t
@@ -2023,6 +2016,7 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
 	  break;
 	case BGP_ATTR_DBGP_KEY:
 	  ret = bgp_attr_dbgp_key(&attr_args);
+	  break;
 	default:
 	  ret = bgp_attr_unknown (&attr_args);
 	  break;

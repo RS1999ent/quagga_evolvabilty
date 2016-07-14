@@ -1591,17 +1591,16 @@ bgp_process_main (struct work_queue *wq, void *data)
   struct peer *peer;
 
   /* Best path selection. */
-  //@bug: get lookup key
-  //@bug: retrieve extra control info from redis
-  //@bug:  Call appropriate decision module 
   bgp_best_selection (bgp, rn, &bgp->maxpaths[afi][safi], &old_and_new);
   old_select = old_and_new.old;
   new_select = old_and_new.new;
 
   /* D-BGP Modfy new select with D-BGP sentinal value */
-  dbgp_control_info_t new_control_info;
-  new_control_info = DBGP_SENTINEL_VALUE;
-  set_control_info(new_select->attr, &new_control_info);
+  if (new_select != NULL) { 
+    dbgp_control_info_t new_control_info;
+    new_control_info = DBGP_SENTINEL_VALUE;
+    set_control_info(new_select->attr, &new_control_info);
+  }
 
   /* Nothing to do. */
   if (old_select && old_select == new_select)
