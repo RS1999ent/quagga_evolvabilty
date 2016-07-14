@@ -1105,9 +1105,11 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
     }
 
   /** D-BGP: Set sentinel value */
-  dbgp_control_info_t new_control_info;
-  new_control_info = 5;
-  set_control_info(attr, &new_control_info);
+  /* @rajas: No need to set this here, I think... */
+  /* Probably should add a check to make sure transitive attributes are set */
+  //dbgp_control_info_t new_control_info;
+  //new_control_info = DBGP_SENTINEL_VALUE;
+  //set_control_info(attr, &new_control_info);
 
   return 1;
 }
@@ -1597,12 +1599,8 @@ bgp_process_main (struct work_queue *wq, void *data)
   new_select = old_and_new.new;
 
   /* D-BGP Modfy new select with D-BGP sentinal value */
-  /** @bug: If new_select already has a lookup key attached, we will
-     lose it and insert a new one.  This may induce a memory leak, but
-     this is fine for this test.
-   */
   dbgp_control_info_t new_control_info;
-  new_control_info = 5;
+  new_control_info = DBGP_SENTINEL_VALUE;
   set_control_info(new_select->attr, &new_control_info);
 
   /* Nothing to do. */
@@ -2170,9 +2168,9 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   bgp_attr_dup (&new_attr, attr);
 
   /** D-BGP: Check sentinel value */
-  dbgp_control_info_t old_control_info;
-  retrieve_control_info(&new_attr, &old_control_info);
-  assert(old_control_info == 5);
+  //dbgp_control_info_t old_control_info;
+  //retrieve_control_info(&new_attr, &old_control_info);
+  //assert(old_control_info == DBGP_SENTINEL_VALUE);
 
   /* Apply incoming route-map.
    * NB: new_attr may now contain newly allocated values from route-map "set"
@@ -2604,7 +2602,7 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
 
 	  /** D-BGP: Set sentinal value */
 	  dbgp_control_info_t new_control_info;
-	  new_control_info = 5;
+	  new_control_info = DBGP_SENTINEL_VALUE;
 	  set_control_info(&attr, &new_control_info);
 
           bgp_default_update_send (peer, &attr, afi, safi, from);	  

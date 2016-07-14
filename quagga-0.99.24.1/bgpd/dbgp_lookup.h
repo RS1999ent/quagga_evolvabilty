@@ -11,7 +11,7 @@
 
 #define REDIS_IP "172.0.5.1"
 #define REDIS_PORT 6379
-
+#define DBGP_SENTINEL_VALUE 5
 /**
  * @enum Used to indicate success or failure
  */

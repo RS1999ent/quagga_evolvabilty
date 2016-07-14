@@ -1672,6 +1672,57 @@ bgp_attr_ext_communities (struct bgp_attr_parser_args *args)
   return BGP_ATTR_PARSE_PROCEED;
 }
 
+/**
+ * De-serialize D-BGP lookup key and store it in attr->extra->transit 
+ *
+ * @param attr_args: Information about the current serialized stream
+ * @return BGP_ATTR_PARSE_PROCEED on success 
+ *         BGP_ATTR_PARSE_ERROR_NOTIFYPLS on failure
+ */
+bgp_attr_dbgp_key(struct bgp_attr_parser_args *args) 
+{
+  bgp_size_t total = args->total;
+  struct transit *transit;
+  struct attr_extra *attre;
+  struct peer *const peer = args->peer; 
+  struct attr *const attr = args->attr;
+  u_char *const startp = args->startp;
+  const u_char type = args->type;
+  const u_char flag = args->flags;  
+  const bgp_size_t length = args->length;
+
+  if (BGP_DEBUG (normal, NORMAL))
+    zlog_debug ("%s DBGP transitive attributed is received (type: %d, length %d)",
+		peer->host, type, length);
+  
+  if (BGP_DEBUG (events, EVENTS)) 
+    zlog_debug ("%s DBGP transitive attributed is received (type: %d, length %d)",
+		peer->host, type, length);
+
+  /* Forward read pointer of input stream. */
+  stream_forward_getp (peer->ibuf, length);
+
+  /* Store DBGP lookup key to the end of attr->transit. */
+  if (! ((attre = bgp_attr_extra_get(attr))->transit) )
+      attre->transit = XCALLOC (MTYPE_TRANSIT, sizeof (struct transit));
+
+  transit = attre->transit;
+
+  if (transit->val)
+    transit->val = XREALLOC (MTYPE_TRANSIT_VAL, transit->val, 
+			     transit->length + total);
+  else
+    transit->val = XMALLOC (MTYPE_TRANSIT_VAL, total);
+
+  memcpy (transit->val, startp, length);
+  transit->length = length;
+
+  return BGP_ATTR_PARSE_PROCEED;
+}
+
+  
+
+
 /* BGP unknown attribute treatment. */
 static bgp_attr_parse_ret_t
 bgp_attr_unknown (struct bgp_attr_parser_args *args)
@@ -1970,6 +2021,8 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
 	case BGP_ATTR_EXT_COMMUNITIES:
 	  ret = bgp_attr_ext_communities (&attr_args);
 	  break;
+	case BGP_ATTR_DBGP_KEY:
+	  ret = bgp_attr_dbgp_key(&attr_args);
 	default:
 	  ret = bgp_attr_unknown (&attr_args);
 	  break;
@@ -2553,9 +2606,14 @@ bgp_packet_attribute (struct bgp *bgp, struct peer *peer,
       stream_put_ipv4 (s, attr->extra->aggregator_addr.s_addr);
     }
   
-  /* Unknown transit attribute. */
-  if (attr->extra && attr->extra->transit)
+  /* Unknown transit attribute */
+  /* Being repurposed for D-BGP's lookup key */
+  if (attr->extra && attr->extra->transit) {
+    stream_putc (s, BGP_ATTR_FLAG_TRANS|BGP_ATTR_FLAG_EXTLEN);
+    stream_putc (s, BGP_ATTR_DBGP_KEY);
+    stream_putw (s, attr->extra->transit->length);
     stream_put (s, attr->extra->transit->val, attr->extra->transit->length);
+  }
 
   /* Return total size of attribute. */
   return stream_get_endp (s) - cp;
