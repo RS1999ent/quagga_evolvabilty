@@ -1,0 +1,46 @@
+syntax = "proto2";
+
+// Toplevel message the holds the configuration information for Quagga and
+// implemented protocols.
+message Configuration {
+  optional WiserProtocolConfig wiser_protocol_config = 1;
+}
+
+// Holds information for nodes running the wiser protocol. Thus far, this is
+// just a topology with the link costs being present in the 'links' of the
+// adjacency list.
+message WiserProtocolConfig{
+  optional Topology topology = 1;
+}
+
+// Holds the topology information, which currently includes an adjacency list of
+// nodes.
+message Topology {
+
+  repeated NodeLink node_links = 1;
+
+}
+
+// Describes the properties of a primary node and any links that it is connected
+// to.
+message NodeLink {
+  // The primary node in an adjacency list entry. That is the node where links
+  // are evaulated away from.
+  optional NodeProperty primary_node = 1;
+  // A list of links the primary_node is connected to.
+  repeated Link links = 2;
+}
+
+// Specifies the properties of the end of a link. That is, the node properties
+// being connected to as well as any other properties associated with the link.
+message Link {
+
+  optional NodeProperty adjacent_node = 1;
+  optional uint64 link_cost = 2;
+}
+
+// Holds properties associated with a node.
+message NodeProperty {
+  optional string node_name = 1;
+  optional string interface_ip = 2;
+}

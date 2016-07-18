@@ -1,40 +1,80 @@
-To get an unmodified Quagga installation to work as if it were
+Branches: 
+--------- 
+
+rajas/simple_lookup_test: adds a sentinal value (5) as D-BGP control
+info associated with each advertisement.  Whenever a advertisement is
+received, the code checks to see if this sentinel value is set. NOTE:
+The sentinel value is not set or checked on the route server code
+path.
+
+davids/quagga_configuration: adds a protobuf configuration format that bgpd can
+read. Contains configuration information for the router and the specific
+protocols. See 'bgpd/quaga_config.proto' for details.
+
+Branch dependencies:
+       1. google test.  Follow top rated answers instructions from
+       stackoverflow.com/questions/13513905/how-to-setup-google-test-as-a-shared-library-on-linux.
+       2.  google protobuf 2.6.0.
+
+
+
+
+Insructions
+-----------
+To get Quagga to work as if it were
 installed by Ubuntu 12.04 LTE's apt-get mechanism:
 
-1)In quagga-0.99.24.1 subdirectory, type: 
+1) Install packages texinfo and libreadline6-dev using apt-get
+
+2) Install redis (version used: 2.2.12 from apt-get) system wide 
+
+2) Install hiredis (version used: 0.13.3 ) system wide
+
+3) Add the following to .bashrc or .profile and re-source it.
+
+export CPATH=/usr/local/include:/usr/local/include/hiredis
+export LIBRARY_PATH=/usr/local/lib
+export LD_LIBRARY_PATH=/usr/local/lib
+
+To add debugging, add 'g -O0' $AM_CFLAGS in bgpd/Makefile.am 
+
+4)In quagga-0.99.24.1 subdirectory, type: 
   ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
 
-Note, on the Wisconsin nodes, I had to install packages texinfo, libreadline6-dev, and automake.
+5)Type: make; sudo make install
 
-3)Type: sudo make; sudo make install
-
-4)Create group 'quaggavty' and add 'quagga' user to it.
+6)Create group 'quaggavty' and add 'quagga' user to it.
     sudo useradd -m quagga
     sudo groupadd quaggavty
     sudo usermod -a -G quaggavty quagga
 
-5)Copy config/samples/{*.conf, daemons} to /etc/quagga.
-
-6)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
-
-7)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
-    sudo cp config/samples/quagga /etc/init.d. 
-    sudo chown root /etc/init.d/quagga
-    sudo chmod u+rwx /etc/init.d/quagga
-
-8)Give user quagga permissions to modify /var/run.  
+6)Give user quagga permissions to modify /var/run.  
    mkdir -p /var/run/quagga
    chown quagga:quagga /var/run/quagga
    chmod 755 /var/run/quagga
 
-9)Run ldconfig so that install picks up on new libraries.
-   ldconfig
-   ldconfig -p | grep libzebra
+7)Run ldconfig so that install picks up on new libraries.
+   sudo ldconfig
+   sudo ldconfig -p | grep libzebra
 
-9)To see if things work: 
+8)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
+
+9)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
+    sudo cp config/samples/quagga /etc/init.d. 
+    sudo chown root /etc/init.d/quagga
+    sudo chmod u+rwx /etc/init.d/quagga
+
+10)Enable IP forwarding: 
+   sysctl -w net.ipv4.ip_forward=1
+
+
+---- The following allows you test if a base version of quagga works
+
+11)Copy config/samples/{*.conf, daemons} to /etc/quagga and make sure all files are owned by quagga:quaggavty
+
+12)To see if things work: 
     bpgd &
     telnet localhost bgpd
     vtysh
 
 Note, must be user 'quagga' to use vtysh.
-
