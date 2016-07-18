@@ -4,8 +4,8 @@ AM_CPPFLAGS = -I.. -I$(top_srcdir) -I$(top_srcdir)/lib -I$(top_builddir)/lib
 DEFS = @DEFS@ -DSYSCONFDIR=\"$(sysconfdir)/\"
 INSTALL_SDATA=@INSTALL@ -m 600
 
-AM_CFLAGS = '-fPIC' $(PICFLAGS) 
-AM_LDFLAGS = $(PILDFLAGS) '-lgtest' #lgtest in order to link in google test
+AM_CFLAGS =  $(PICFLAGS) 
+AM_LDFLAGS = $(PILDFLAGS)   #lgtest in order to link in google test
 
 noinst_LIBRARIES = libbgp.a
 sbin_PROGRAMS = bgpd unittests
@@ -28,7 +28,7 @@ bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@
 
 unittests_SOURCES = wiser_config_test.cc
 # unittests_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ ~/third-party/libs/googletest/googletest
-unittests_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ 
+unittests_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ ~/third-party/libs/googletest-release-1.7.0/lib/*
 
 examplesdir = $(exampledir)
 dist_examples_DATA = bgpd.conf.sample bgpd.conf.sample2
