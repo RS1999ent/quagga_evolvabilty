@@ -2,12 +2,19 @@
 #define BGPD_WISER_CONFIG_H
 #include "quagga_config.pb.h"
 
-/* using quagga_config.pb.h::Configuration; */
+namespace quagga_bgpd {
+using std::string;
 class WiserConfig {
 
-  WiserConfig();
+ public:
+  WiserConfig(WiserProtocolConfig wiser_config);
 
-  Configuration config_;
+  int GetLinkCost(string ip1, string ip2);
+
+ private:
+
+  WiserProtocolConfig wiser_config_;
 };
+} // namespace quagga_bgpd
 
 #endif // BGPD_WISER_CONFIG_H

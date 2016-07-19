@@ -67,3 +67,7 @@
 # Debug files
 *.dSYM/
 *.su
+
+MakeFile.in
+*.m4
+*.in
