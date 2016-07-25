@@ -1589,18 +1589,25 @@ bgp_process_main (struct work_queue *wq, void *data)
   struct bgp_info_pair old_and_new;
   struct listnode *node, *nnode;
   struct peer *peer;
+  //struct attr* new_attr;
+  //dbgp_control_info_t new_control_info;
 
   /* Best path selection. */
   bgp_best_selection (bgp, rn, &bgp->maxpaths[afi][safi], &old_and_new);
   old_select = old_and_new.old;
   new_select = old_and_new.new;
 
-  /* D-BGP Modfy new select with D-BGP sentinal value */
-  if (new_select != NULL) { 
-    dbgp_control_info_t new_control_info;
-    new_control_info = DBGP_SENTINEL_VALUE;
-    set_control_info(new_select->attr, &new_control_info);
-  }
+  //  /* D-BGP Modify new select with D-BGP sentinal value */
+  // if (new_select != NULL && new_select->attr->extra->transit == NULL) { 
+  //  new_control_info = DBGP_SENTINEL_VALUE;
+  //  new_attr = calloc(1, sizeof(struct attr));
+  //  bgp_attr_dup(new_attr, new_select->attr);
+
+  //  set_control_info(new_attr, &new_control_info);
+    
+  //  bgp_attr_unintern(&new_select->attr);
+  //  new_select->attr = bgp_attr_intern(new_attr);
+  // }
 
   /* Nothing to do. */
   if (old_select && old_select == new_select)
@@ -2166,7 +2173,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   new_attr.extra = &new_extra;
   bgp_attr_dup (&new_attr, attr);
 
-  /** D-BGP: Check sentinel value */
+  ///** D-BGP: Check sentinel value */
   //dbgp_control_info_t old_control_info;
   //retrieve_control_info(&new_attr, &old_control_info);
   //assert(old_control_info == DBGP_SENTINEL_VALUE);
@@ -2599,9 +2606,10 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
         {
           SET_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE);
 
-	  /** D-BGP: Set sentinal value */
+	  ///** D-BGP: Set sentinal value */
 	  dbgp_control_info_t new_control_info;
 	  new_control_info = DBGP_SENTINEL_VALUE;
+	  attr->transit = bgp_attr_transit_get(attr->extra);	  
 	  set_control_info(&attr, &new_control_info);
 
           bgp_default_update_send (peer, &attr, afi, safi, from);	  
@@ -2829,7 +2837,7 @@ bgp_clear_node_queue_del (struct work_queue *wq, void *data)
   
   bgp_unlock_node (rn); 
   bgp_table_unlock (table);
-  XFREE (MTYPE_BGP_CLEAR_NODE_QUEUE, cnq);
+  XFREE (MTYP_EBGP_CLEAR_NODE_QUEUE, cnq);
 }
 
 static void

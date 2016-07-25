@@ -38,6 +38,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_debug.h"
 #include "bgpd/bgp_packet.h"
 #include "bgpd/bgp_ecommunity.h"
+#include "bgpd/dbgp_lookup.h"
 
 /* Attribute strings for logging. */
 static const struct message attr_str [] = 
@@ -309,6 +310,39 @@ bgp_attr_extra_get (struct attr *attr)
   if (!attr->extra)
     attr->extra = bgp_attr_extra_new();
   return attr->extra;
+}
+
+static struct transit *
+bgp_attr_extra_transit_new(int length) 
+{
+  struct transit *transit;
+
+  transit = XCALLOC(MTYPE_TRANSIT, sizeof(struct transit));
+  transit->val = XCALLOC(MTYPE_TRANSIT_VAL, length);
+
+  return transit;
+}
+
+void
+bgp_attr_extra_transit_free(struct transit *transit)
+{
+  if(transit->val)
+      XFREE(MTYPE_TRANSIT_VAL, transit->val);
+      XFREE(MTYPE_TRANSIT, transit);
+}
+
+struct transit *
+bgp_attr_extra_transit_get(struct attr *attr, int length) 
+{
+  bgp_attr_extra *attre;
+
+  attre = bgp_attr_extra_get(attr);
+
+  if (!attre->transit)
+    attre->transit = bgp_attr_extra_transit_new(length);
+
+  return attre->transit;
+  return NULL;
 }
 
 /* Shallow copy of an attribute
@@ -1673,30 +1707,34 @@ bgp_attr_ext_communities (struct bgp_attr_parser_args *args)
 }
 
 /**
- * De-serialize D-BGP lookup key and store it in attr->extra->transit 
+ * De-serialize D-BGP lookup key.  Call function that can retrieve
+ * extra control info associated with key, modify it, and associate it
+ * with a new key.  Insert new key in advertisement.
  *
  * @param attr_args: Information about the current serialized stream
  * @return BGP_ATTR_PARSE_PROCEED on success 
  *         BGP_ATTR_PARSE_ERROR_NOTIFYPLS on failure
  */
-bgp_attr_dbgp_key(struct bgp_attr_parser_args *args) 
+static bgp_attr_parse_ret_t 
+bgp_attr_dbgp(struct bgp_attr_parser_args *args) 
 {
-  bgp_size_t total = args->total;
   struct transit *transit;
   struct attr_extra *attre;
   struct peer *const peer = args->peer; 
   struct attr *const attr = args->attr;
   u_char *const startp = args->startp;
   const u_char type = args->type;
-  const u_char flag = args->flags;  
   const bgp_size_t length = args->length;
+  dbgp_lookup_key_t val;
+
+  assert(length == sizeof(dbgp_lookup_key_t));
 
   if (BGP_DEBUG (normal, NORMAL))
-    zlog_debug ("%s DBGP transitive attributed is received (type: %d, length %d)",
+    zlog_debug ("%s D-BGP lookup key is received (type: %d, length %d)",
 		peer->host, type, length);
   
   if (BGP_DEBUG (events, EVENTS)) 
-    zlog_debug ("%s DBGP transitive attributed is received (type: %d, length %d)",
+    zlog_debug ("%s D-BGP lookup key is received (type: %d, length %d)",
 		peer->host, type, length);
 
   /* Forward read pointer of input stream. */
@@ -1710,8 +1748,22 @@ bgp_attr_dbgp_key(struct bgp_attr_parser_args *args)
 
   transit->val = XMALLOC (MTYPE_TRANSIT_VAL, length);
 
+  /* Copy current lookup key to transit structure */
   memcpy (transit->val, startp, length);
   transit->length = length;
+
+  /* Convert to host byte order */
+  val = ntohl(*(dbgp_lookup_key_t *)transit->val);
+  *transit->val = val; 	 
+
+  /* Allow Protocol-specific modules to modify extra control
+     information and insert an new lookup key if necessary */
+  /* For now, just call a generic function stored in dbgp_lookup.c.
+     Eventually, eahc protocol will have it's own .c file.  These .c
+     files will contain modification functions that will be called
+     here.  So, to be clear, there will be one modification function
+     per protocol.  */
+  insert_check_sentinel(transit);
 
   return BGP_ATTR_PARSE_PROCEED;
 }
@@ -2014,14 +2066,16 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
 	case BGP_ATTR_EXT_COMMUNITIES:
 	  ret = bgp_attr_ext_communities (&attr_args);
 	  break;
-	case BGP_ATTR_DBGP_KEY:
-	  ret = bgp_attr_dbgp_key(&attr_args);
+	case BGP_ATTR_DBGP:
+	  ret = bgp_attr_dbgp(&attr_args);
 	  break;
 	default:
 	  ret = bgp_attr_unknown (&attr_args);
 	  break;
 	}
       
+      /* @rajas XXXX : Needs to be a way to insert a lookp key if none exists */
+
       if (ret == BGP_ATTR_PARSE_ERROR_NOTIFYPLS)
 	{
 	  bgp_notify_send (peer, 
@@ -2265,6 +2319,7 @@ bgp_packet_attribute (struct bgp *bgp, struct peer *peer,
   int send_as4_aggregator = 0;
   int use32bit = (CHECK_FLAG (peer->cap, PEER_CAP_AS4_RCV)) ? 1 : 0;
   size_t mpattrlen_pos = 0;
+  dbgp_lookup_key_t transit_val;
 
   if (! bgp)
     bgp = bgp_get_default ();
@@ -2603,10 +2658,19 @@ bgp_packet_attribute (struct bgp *bgp, struct peer *peer,
   /* Unknown transit attribute */
   /* Being repurposed for D-BGP's lookup key */
   if (attr->extra && attr->extra->transit) {
-    stream_putc (s, BGP_ATTR_FLAG_TRANS|BGP_ATTR_FLAG_EXTLEN);
-    stream_putc (s, BGP_ATTR_DBGP_KEY);
+
+  /* First do a htonl translation on the lookup key */
+    assert(attr->extra->transit->length == sizeof(dbgp_lookup_key_t));
+    memcpy((void *)&transit_val, attr->extra->transit->val, attr->extra->transit->length);
+    transit_val = htonl(transit_val);
+
+    /* Put network-byte oriented lookup key in attributes */
+    /* BGP_ATTR_FLAG_OPTIONAL should allow this attribute to be passed
+       through even routers w/o our D-BGP modifications */
+    stream_putc (s, BGP_ATTR_FLAG_TRANS|BGP_ATTR_FLAG_EXTLEN|BGP_ATTR_FLAG_OPTIONAL);
+    stream_putc (s, BGP_ATTR_DBGP);
     stream_putw (s, attr->extra->transit->length);
-    stream_put (s, attr->extra->transit->val, attr->extra->transit->length);
+    stream_put (s, &transit_val, attr->extra->transit->length);
   }
 
   /* Return total size of attribute. */

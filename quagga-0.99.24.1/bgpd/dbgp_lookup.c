@@ -42,28 +42,42 @@ static redisContext *connect_to_redis() {
 
 /* ********************* Public functions ********************* */
 
-dbgp_result_status_t retrieve_control_info(struct attr * attr, 
+dbgp_result_status_t insert_check_sentinel(struct transit *transit)
+{
+  dbgp_control_info_t control_info;
+  dbgp_result_status_t retval;
+
+  retval = retrieve_control_info(transit, &control_info);
+  assert(retval == DBGP_SUCCESS);
+  
+  /* Check sentinal value */
+  assert(control_info == DBGP_SENTINEL_VALUE);
+  
+  /* Insert a new lookup key with the same sentinel value */
+  retval = set_control_info(transit, &control_info);
+  assert(retval == DBGP_SUCCESS);
+  
+  return(DBGP_SUCCESS);
+}
+
+
+dbgp_result_status_t retrieve_control_info(struct transit * transit,
 					   dbgp_control_info_t * control_info)
 {
-  struct transit* transit;
   uint32_t key;
   redisContext *c;
   redisReply* reply;
   char redis_cmd[256];
 
   /* Input sanity checks */
-  assert( attr != NULL && control_info != NULL);
+  assert(transit != NULL && control_info != NULL);
 
   /** @bug: (rajas) I am using this as a hook to attch to the bgpd
    * process for debugging */
   //sleep(50);
 
   /* First retrieve the lookup key */
-  transit = bgp_attr_extra_get(attr)->transit;
-  assert(transit->length == sizeof(uint32_t));
-
-  /* Convert from network to host byte order */
-  key = ntohl(*(uint32_t *)transit->val);
+  assert(transit->length == sizeof(dbgp_lookup_key_t));
 
   /* Get D-BGP control info from lookup service */
   c = connect_to_redis();
@@ -83,17 +97,16 @@ dbgp_result_status_t retrieve_control_info(struct attr * attr,
 }
 
 
-dbgp_result_status_t set_control_info(struct attr * attr, 
+dbgp_result_status_t set_control_info(struct transit *transit, 
 				      dbgp_control_info_t *control_info)
 {
-  struct transit* transit;
-  int *key;
+  uint32_t *key = NULL;
   redisContext *c;
   redisReply* reply;
   char redis_cmd [256];
 
   /* Input sanity checks */
-  assert(attr != NULL && control_info != NULL);
+  assert(transit != NULL && control_info != NULL);
 
   /** @bug: (rajas) I am using this as a hook to attch to the bgpd
    * process for debugging */
@@ -104,7 +117,7 @@ dbgp_result_status_t set_control_info(struct attr * attr,
     srand(time(NULL));
     g_rand_init = 1;
   }
-  key = (int *)malloc(sizeof(int));
+  key = (dbgp_lookup_key_t *)malloc(sizeof(dbgp_lookup_key_t));
   *key = rand();
 
   /* Store control info in lookup service */
@@ -117,25 +130,13 @@ dbgp_result_status_t set_control_info(struct attr * attr,
     assert(0);
   }
 
-  /* If there is a previous transitive attribute, et rid of it */
-  transit = bgp_attr_extra_get(attr)->transit;
-  if (attr->extra->transit != NULL) {
-    transit_unintern(transit);
-  }
-
   /* Create new transitive attribute structure */
-  attr->extra->transit = (struct transit *)calloc(1, sizeof(struct transit));
-  transit = attr->extra->transit;
-  transit->refcnt = 0;
+  assert(transit->val != NULL);
 
   /* Add key to advertisement */
-  transit->length = sizeof(uint32_t);
+  transit->length = sizeof(dbgp_lookup_key_t);
   /* Make sure to convert from host to network byte order*/
-  *key = htonl(*key);
   transit->val = (u_char *)key;
-
-  /* Intern new transitive attribute (increments refcnt) */
-  transit_intern(transit);
 
   free(reply); 
   free(c);
