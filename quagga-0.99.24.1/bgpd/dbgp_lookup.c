@@ -64,7 +64,6 @@ dbgp_result_status_t insert_check_sentinel(struct transit *transit)
 dbgp_result_status_t retrieve_control_info(struct transit * transit,
 					   dbgp_control_info_t * control_info)
 {
-  uint32_t key;
   redisContext *c;
   redisReply* reply;
   char redis_cmd[256];
@@ -81,11 +80,11 @@ dbgp_result_status_t retrieve_control_info(struct transit * transit,
 
   /* Get D-BGP control info from lookup service */
   c = connect_to_redis();
-  sprintf(redis_cmd, "GET %"PRIu32"", key);
+  sprintf(redis_cmd, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
   reply = redisCommand(c, redis_cmd); 
   if(reply->type != REDIS_REPLY_INTEGER) {
     zlog_err("%s:, failed to retrieve D-BGP control info. Key=%"PRIu32"",
-	     __func__, key);
+	     __func__, *(dbgp_lookup_key_t *)transit->val);
     assert(0);
   }
 
@@ -136,7 +135,7 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   /* Add key to advertisement */
   transit->length = sizeof(dbgp_lookup_key_t);
   /* Make sure to convert from host to network byte order*/
-  transit->val = (u_char *)key;
+  transit->val = key;
 
   free(reply); 
   free(c);

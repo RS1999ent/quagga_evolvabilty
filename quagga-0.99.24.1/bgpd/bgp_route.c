@@ -1104,12 +1104,15 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 	}
     }
 
-  /** D-BGP: Set sentinel value */
-  /* @rajas: No need to set this here, I think... */
-  /* Probably should add a check to make sure transitive attributes are set */
-  //dbgp_control_info_t new_control_info;
-  //new_control_info = DBGP_SENTINEL_VALUE;
-  //set_control_info(attr, &new_control_info);
+  /** @rajas: D-BGP - need to insert initial lookup key and extra
+      control information here.  This is where all routes are
+      initially announced.
+  */
+  dbgp_control_info_t new_control_info;
+  struct transit* transit;
+  new_control_info = DBGP_SENTINEL_VALUE;
+  transit = bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));	  
+  set_control_info(transit, &new_control_info);
 
   return 1;
 }
@@ -2594,6 +2597,9 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
         withdraw = 1;
     }
 
+  ///** D-BGP: Set sentinal value */
+
+
   if (withdraw)
     {
       if (CHECK_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE))
@@ -2606,16 +2612,19 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
         {
           SET_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE);
 
-	  ///** D-BGP: Set sentinal value */
 	  dbgp_control_info_t new_control_info;
+	  struct transit* transit;
 	  new_control_info = DBGP_SENTINEL_VALUE;
-	  attr->transit = bgp_attr_transit_get(attr->extra);	  
-	  set_control_info(&attr, &new_control_info);
+	  transit = bgp_attr_extra_transit_get(&attr, sizeof(dbgp_lookup_key_t));	  
+	  set_control_info(transit, &new_control_info);
 
           bgp_default_update_send (peer, &attr, afi, safi, from);	  
+
+	  bgp_attr_extra_transit_free(&attr);
+
         }
     }
-  
+
   bgp_attr_extra_free (&attr);
   aspath_unintern (&aspath);
 }
@@ -2837,7 +2846,7 @@ bgp_clear_node_queue_del (struct work_queue *wq, void *data)
   
   bgp_unlock_node (rn); 
   bgp_table_unlock (table);
-  XFREE (MTYP_EBGP_CLEAR_NODE_QUEUE, cnq);
+  XFREE (MTYPE_BGP_CLEAR_NODE_QUEUE, cnq);
 }
 
 static void

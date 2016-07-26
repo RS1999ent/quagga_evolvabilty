@@ -154,7 +154,7 @@ extern void bgp_attr_extra_free (struct attr *);
 /* The value for length is irrelevant if the transitive attribute already exists.  */
 extern struct transit *bgp_attr_extra_transit_get(struct attr *, int length);
 /* D-BGP addition */
-extern void bgp_attr_extra_transit_free(struct transit *);
+extern void bgp_attr_extra_transit_free(struct attr *);
 
 extern void bgp_attr_dup (struct attr *, struct attr *);
 extern struct attr *bgp_attr_intern (struct attr *attr);

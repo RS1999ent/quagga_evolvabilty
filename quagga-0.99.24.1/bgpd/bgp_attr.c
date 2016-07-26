@@ -324,17 +324,18 @@ bgp_attr_extra_transit_new(int length)
 }
 
 void
-bgp_attr_extra_transit_free(struct transit *transit)
+bgp_attr_extra_transit_free(struct attr *attr)
 {
-  if(transit->val)
-      XFREE(MTYPE_TRANSIT_VAL, transit->val);
-      XFREE(MTYPE_TRANSIT, transit);
+  if(attr->extra->transit->val)
+    XFREE(MTYPE_TRANSIT_VAL, attr->extra->transit->val);
+
+  XFREE(MTYPE_TRANSIT, attr->extra->transit);
 }
 
 struct transit *
 bgp_attr_extra_transit_get(struct attr *attr, int length) 
 {
-  bgp_attr_extra *attre;
+  struct attr_extra *attre;
 
   attre = bgp_attr_extra_get(attr);
 
@@ -764,6 +765,7 @@ static bgp_attr_parse_ret_t
 bgp_attr_malformed (struct bgp_attr_parser_args *args, u_char subcode,
                     bgp_size_t length)
 {
+
   struct peer *const peer = args->peer; 
   const u_int8_t flags = args->flags;
   /* startp and length must be special-cased, as whether or not to
@@ -1719,7 +1721,6 @@ static bgp_attr_parse_ret_t
 bgp_attr_dbgp(struct bgp_attr_parser_args *args) 
 {
   struct transit *transit;
-  struct attr_extra *attre;
   struct peer *const peer = args->peer; 
   struct attr *const attr = args->attr;
   u_char *const startp = args->startp;
@@ -1741,12 +1742,7 @@ bgp_attr_dbgp(struct bgp_attr_parser_args *args)
   stream_forward_getp (peer->ibuf, length);
 
   /* Store DBGP lookup key in transitive attribute */
-  if (! ((attre = bgp_attr_extra_get(attr))->transit) )
-      attre->transit = XCALLOC (MTYPE_TRANSIT, sizeof (struct transit));
-
-  transit = attre->transit;
-
-  transit->val = XMALLOC (MTYPE_TRANSIT_VAL, length);
+  transit = bgp_attr_extra_transit_get(attr, length);
 
   /* Copy current lookup key to transit structure */
   memcpy (transit->val, startp, length);
@@ -1754,7 +1750,7 @@ bgp_attr_dbgp(struct bgp_attr_parser_args *args)
 
   /* Convert to host byte order */
   val = ntohl(*(dbgp_lookup_key_t *)transit->val);
-  *transit->val = val; 	 
+  memcpy(transit->val, &val, length);
 
   /* Allow Protocol-specific modules to modify extra control
      information and insert an new lookup key if necessary */
@@ -1902,6 +1898,9 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
   struct aspath *as4_path = NULL;
   as_t as4_aggregator = 0;
   struct in_addr as4_aggregator_addr = { 0 };
+
+  /** @note - rajas: used to attach gdb */
+  sleep(50);
 
   /* Initialize bitmap. */
   memset (seen, 0, BGP_ATTR_BITMAP_SIZE);
@@ -2320,6 +2319,9 @@ bgp_packet_attribute (struct bgp *bgp, struct peer *peer,
   int use32bit = (CHECK_FLAG (peer->cap, PEER_CAP_AS4_RCV)) ? 1 : 0;
   size_t mpattrlen_pos = 0;
   dbgp_lookup_key_t transit_val;
+
+  /** @note: raja - used to attach gdb */
+  sleep(50); 
 
   if (! bgp)
     bgp = bgp_get_default ();
