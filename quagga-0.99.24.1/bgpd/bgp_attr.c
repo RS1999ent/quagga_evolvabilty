@@ -2076,8 +2076,6 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
 	  ret = bgp_attr_unknown (&attr_args);
 	  break;
 	}
-      
-      /* @rajas XXXX : Needs to be a way to insert a lookp key if none exists */
 
       if (ret == BGP_ATTR_PARSE_ERROR_NOTIFYPLS)
 	{
@@ -2124,6 +2122,17 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
 	  return BGP_ATTR_PARSE_ERROR;
 	}
     }
+  
+  /**
+   * @note: D-BGP : Allow for extra ctrl info to be inserted if the
+   * incoming advertisement didn't already have it.
+   */
+  if (CHECK_BITMAP(seen, BGP_ATTR_DBGP) == 0) { 
+    assert(attr->extra->transit == NULL); 
+    bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
+    insert_sentinel(attr->extra->transit);
+  }
+    
   /* Check final read pointer is same as end pointer. */
   if (BGP_INPUT_PNT (peer) != endp)
     {
