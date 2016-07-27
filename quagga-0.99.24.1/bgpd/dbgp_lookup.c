@@ -66,7 +66,6 @@ dbgp_result_status_t retrieve_control_info(struct transit * transit,
 {
   redisContext *c;
   redisReply* reply;
-  char redis_cmd[256];
 
   /* Input sanity checks */
   assert(transit != NULL && control_info != NULL);
@@ -80,15 +79,15 @@ dbgp_result_status_t retrieve_control_info(struct transit * transit,
 
   /* Get D-BGP control info from lookup service */
   c = connect_to_redis();
-  sprintf(redis_cmd, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
-  reply = redisCommand(c, redis_cmd); 
-  if(reply->type != REDIS_REPLY_INTEGER) {
+  reply = redisCommand(c, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
+
+  if(reply->type == REDIS_REPLY_ERROR) {
     zlog_err("%s:, failed to retrieve D-BGP control info. Key=%"PRIu32"",
 	     __func__, *(dbgp_lookup_key_t *)transit->val);
     assert(0);
   }
 
-  *control_info = reply->integer; 
+  *control_info = (dbgp_control_info_t)(atoll(reply->str));
   free(reply);
   free(c);
 
@@ -102,7 +101,6 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   uint32_t *key = NULL;
   redisContext *c;
   redisReply* reply;
-  char redis_cmd [256];
 
   /* Input sanity checks */
   assert(transit != NULL && control_info != NULL);
@@ -117,12 +115,12 @@ dbgp_result_status_t set_control_info(struct transit *transit,
     g_rand_init = 1;
   }
   key = (dbgp_lookup_key_t *)malloc(sizeof(dbgp_lookup_key_t));
-  *key = rand();
+  *key = 02; //rand();
 
   /* Store control info in lookup service */
   c = connect_to_redis();
-  sprintf(redis_cmd, "SET %"PRIu32" %"PRIu64"", *key, *control_info);
-  reply = redisCommand(c, redis_cmd); 
+  reply = redisCommand(c, "SET %"PRIu32" %"PRIu64"", *key, *control_info);
+
   if (reply->type == REDIS_REPLY_ERROR) {
     zlog_err("%s: failed to store control info.  Key=%"PRIu32", control info=%"PRIu64"",
 	     __func__, *key, *control_info);

@@ -1739,13 +1739,17 @@ bgp_attr_dbgp(struct bgp_attr_parser_args *args)
 		peer->host, type, length);
 
   /* Forward read pointer of input stream. */
+  /** @bug: rajas - should we use total instead of length here? */
   stream_forward_getp (peer->ibuf, length);
 
   /* Store DBGP lookup key in transitive attribute */
   transit = bgp_attr_extra_transit_get(attr, length);
 
   /* Copy current lookup key to transit structure */
-  memcpy (transit->val, startp, length);
+  /** @bug: raja - startp seems to point to the 4 bytes prior to the
+   *   data value...wish I knew why :( 
+   */ 
+  memcpy (transit->val, startp + 4, length);
   transit->length = length;
 
   /* Convert to host byte order */
