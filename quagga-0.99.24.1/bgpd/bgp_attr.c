@@ -1904,7 +1904,7 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
   struct in_addr as4_aggregator_addr = { 0 };
 
   /** @note - rajas: used to attach gdb */
-  sleep(50);
+  //sleep(50);
 
   /* Initialize bitmap. */
   memset (seen, 0, BGP_ATTR_BITMAP_SIZE);
@@ -2325,7 +2325,7 @@ bgp_packet_attribute (struct bgp *bgp, struct peer *peer,
   dbgp_lookup_key_t transit_val;
 
   /** @note: raja - used to attach gdb */
-  sleep(50); 
+  //sleep(50); 
 
   if (! bgp)
     bgp = bgp_get_default ();

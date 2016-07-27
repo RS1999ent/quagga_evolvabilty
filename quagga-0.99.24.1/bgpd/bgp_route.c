@@ -1104,15 +1104,19 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 	}
     }
 
-  /** @rajas: D-BGP - need to insert initial lookup key and extra
-      control information here.  This is where all routes are
-      initially announced.
-  */
-  dbgp_control_info_t new_control_info;
-  struct transit* transit;
-  new_control_info = DBGP_SENTINEL_VALUE;
-  transit = bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));	  
-  set_control_info(transit, &new_control_info);
+  /** @rajas: D-BGP - If a route is being originated by this router,
+   * it will not have control info associated with it.  We add it
+   * here.  This code block should *only* be called if this router is
+   * originating an advertisement.
+   */
+  if (attr->extra->transit == NULL) {
+    char buf[256];
+    prefix2str (p, buf, sizeof (buf));
+    zlog_info("Found an advertisement w/o existing D-BGP info: %s\n", buf);
+
+    bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
+    insert_sentinel(attr->extra->transit);
+  }
 
   return 1;
 }
@@ -2612,11 +2616,12 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
         {
           SET_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE);
 
-	  dbgp_control_info_t new_control_info;
-	  struct transit* transit;
-	  new_control_info = DBGP_SENTINEL_VALUE;
-	  transit = bgp_attr_extra_transit_get(&attr, sizeof(dbgp_lookup_key_t));	  
-	  set_control_info(transit, &new_control_info);
+	  /** @note: D-BGP - need to insert extra control info with
+	   * default route.
+	   */
+	  /** @bug: Not quite sure what this extra ctrl info might be */
+	  bgp_attr_extra_transit_get(&attr, sizeof(dbgp_lookup_key_t));
+	  insert_sentinel((attr.extra)->transit);
 
           bgp_default_update_send (peer, &attr, afi, safi, from);	  
 

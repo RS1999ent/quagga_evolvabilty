@@ -33,7 +33,16 @@ typedef uint32_t dbgp_lookup_key_t;
  * structure. Transit->val must also be allocated.
  * @return DBGP_SUCCESS or DBGP_FAILURE
  */
-dbgp_result_status_t insert_check_sentinel(struct transit *);
+dbgp_result_status_t insert_check_sentinel(struct transit *transit);
+
+/**
+ * Inserts a new lookup key associated with a new sentinel value.
+ *
+ * @param transit: A pre-allocated transiive attribute structure.
+ * Transit->val must also be allocated.
+ * @return DBGP_SUCCESS or DBGP_FAILURE
+ */
+dbgp_result_status_t insert_sentinel(struct transit *transit);
 
 /**
  * Retrieves the D-BGP control info associated with this advertisement
@@ -44,7 +53,6 @@ dbgp_result_status_t insert_check_sentinel(struct transit *);
  */
 dbgp_result_status_t retrieve_control_info(struct transit *transit, 
 					   dbgp_control_info_t *control_info);
-
 
 /** 
  * Sets extra D-BGP control info associated with this advertisement 

@@ -24,6 +24,28 @@ static struct timeval g_timeout = { 5, 500000}; // 5.5 seconds
 
 /* ********************* Private functions ********************* */
 
+/** 
+ * Creates a random seed by mixing three values
+ * 
+ * @param a: first value to be mixed in
+ * @param b: second value to be mixed in
+ * @param c: third value to be mixed in
+ *
+ * @return: a random number
+ */
+static unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
+{
+    a=a-b;  a=a-c;  a=a^(c >> 13);
+    b=b-c;  b=b-a;  b=b^(a << 8);
+    c=c-a;  c=c-b;  c=c^(b >> 13);
+    a=a-b;  a=a-c;  a=a^(c >> 12);
+    b=b-c;  b=b-a;  b=b^(a << 16);
+    c=c-a;  c=c-b;  c=c^(b >> 5);
+    a=a-b;  a=a-c;  a=a^(c >> 3);
+    b=b-c;  b=b-a;  b=b^(a << 10);
+    c=c-a;  c=c-b;  c=c^(b >> 15);
+    return c;
+}
 /**
  * Connects to redis service.  Asserts on failure.
  */
@@ -47,6 +69,8 @@ dbgp_result_status_t insert_check_sentinel(struct transit *transit)
   dbgp_control_info_t control_info;
   dbgp_result_status_t retval;
 
+  assert(transit != NULL && transit->val != NULL);
+
   retval = retrieve_control_info(transit, &control_info);
   assert(retval == DBGP_SUCCESS);
   
@@ -60,6 +84,20 @@ dbgp_result_status_t insert_check_sentinel(struct transit *transit)
   return(DBGP_SUCCESS);
 }
 
+dbgp_result_status_t insert_sentinel(struct transit *transit) 
+{ 
+  dbgp_control_info_t new_control_info;
+
+  /** @note: (rajas) I am using this as a hook to attch to the bgpd
+   * process for debugging */
+  sleep(50);
+
+  new_control_info = DBGP_SENTINEL_VALUE;
+  set_control_info(transit, &new_control_info); 
+
+  return (DBGP_SUCCESS);
+}
+  
 
 dbgp_result_status_t retrieve_control_info(struct transit * transit,
 					   dbgp_control_info_t * control_info)
@@ -70,7 +108,7 @@ dbgp_result_status_t retrieve_control_info(struct transit * transit,
   /* Input sanity checks */
   assert(transit != NULL && control_info != NULL);
 
-  /** @bug: (rajas) I am using this as a hook to attch to the bgpd
+  /** @note: (rajas) I am using this as a hook to attch to the bgpd
    * process for debugging */
   //sleep(50);
 
@@ -105,17 +143,21 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   /* Input sanity checks */
   assert(transit != NULL && control_info != NULL);
 
-  /** @bug: (rajas) I am using this as a hook to attch to the bgpd
+  /** @note: (rajas) I am using this as a hook to attch to the bgpd
    * process for debugging */
   //sleep(50);
 
   /* Get a number that will serve as the new lookup key */
   if (g_rand_init == 0) {
-    srand(time(NULL));
+    /** @bug: rajas - sleep to guarantee two instances
+     * of Quagga started by MiniNExT don't use same seed
+     */
+    sleep(2); 
+    srand(mix(clock(), time(NULL), pthread_self()));
     g_rand_init = 1;
   }
   key = (dbgp_lookup_key_t *)malloc(sizeof(dbgp_lookup_key_t));
-  *key = 02; //rand();
+  *key = rand();
 
   /* Store control info in lookup service */
   c = connect_to_redis();
