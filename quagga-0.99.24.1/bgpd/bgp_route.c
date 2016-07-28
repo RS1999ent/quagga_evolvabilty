@@ -1104,10 +1104,11 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 	}
     }
 
-  /** @rajas: D-BGP - If a route is being originated by this router,
-   * it will not have control info associated with it.  We add it
-   * here.  This code block should *only* be called if this router is
-   * originating an advertisement.
+  /** 
+   * @note: D-BGP: rajas - If a route is being originated by this
+   * router, it will not have control info associated with it.  We can
+   * add it here if necessary.  This code block should *only* be
+   * called if this router is originating an advertisement.
    */
   if (attr->extra->transit == NULL) {
     char buf[256];
@@ -2616,7 +2617,8 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
         {
           SET_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE);
 
-	  /** @note: D-BGP - need to insert extra control info with
+	  /** 
+	   * @note: D-BGP: rajas - insert extra control info with
 	   * default route.
 	   */
 	  /** @bug: Not quite sure what this extra ctrl info might be */

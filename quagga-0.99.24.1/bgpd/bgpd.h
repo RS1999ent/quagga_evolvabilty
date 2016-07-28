@@ -648,6 +648,7 @@ struct bgp_nlri
 #define BGP_ATTR_AS4_PATH                       17
 #define BGP_ATTR_AS4_AGGREGATOR                 18
 #define BGP_ATTR_AS_PATHLIMIT                   21
+/** @note: D-BGP: rajas - added to encode D-BGP's lookup key */
 #define BGP_ATTR_DBGP                           22
 
 /* BGP update origin.  */

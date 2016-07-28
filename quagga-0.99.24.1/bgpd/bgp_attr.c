@@ -2069,6 +2069,9 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
 	case BGP_ATTR_EXT_COMMUNITIES:
 	  ret = bgp_attr_ext_communities (&attr_args);
 	  break;
+	  /** @note: D-BGP - extra code added to de-serialize D-BGP's
+	   *  lookup key 
+	   */
 	case BGP_ATTR_DBGP:
 	  ret = bgp_attr_dbgp(&attr_args);
 	  break;
@@ -2124,8 +2127,8 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
     }
   
   /**
-   * @note: D-BGP : Allow for extra ctrl info to be inserted if the
-   * incoming advertisement didn't already have it.
+   * @note: D-BGP : rajas - Allow for extra D-BGP ctrl info to be
+   * inserted if the incoming advertisement didn't already have it.
    */
   if (CHECK_BITMAP(seen, BGP_ATTR_DBGP) == 0) { 
     assert(attr->extra->transit == NULL); 
@@ -2671,7 +2674,10 @@ bgp_packet_attribute (struct bgp *bgp, struct peer *peer,
     }
   
   /* Unknown transit attribute */
-  /* Being repurposed for D-BGP's lookup key */
+  /**
+   * @note: D-BGP - rajas - unknown transitive attribute is Being
+   * repurposed for D-BGP's lookup key 
+   */
   if (attr->extra && attr->extra->transit) {
 
   /* First do a htonl translation on the lookup key */
