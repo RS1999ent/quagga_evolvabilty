@@ -78,6 +78,8 @@ static dbgp_control_info_t *unpack_redis_reply(char *reply, int len)
 {
   dbgp_control_info_t *control_info;
 
+  assert(reply != NULL);
+
   control_info = calloc(1, sizeof(dbgp_control_info_t));
   
   /* Currently just unpacking sentinel value */
@@ -99,6 +101,9 @@ static dbgp_control_info_t *unpack_redis_reply(char *reply, int len)
 static dbgp_result_status_t pack_dbgp_control_info(dbgp_control_info_t *control_info, 
 				    char *packed_val)
 {
+
+  assert(control_info != NULL && packed_val != NULL);
+
   /* Currently just packing sentinel value */
   snprintf(packed_val, DBGP_PACKED_VAL_LEN, "%"PRIu64"", control_info->sentinel);
 
@@ -114,6 +119,12 @@ dbgp_result_status_t insert_check_sentinel(struct transit *transit)
   dbgp_result_status_t retval;
 
   assert(transit != NULL && transit->val != NULL);
+
+/** 
+   * @note: (rajas) I am using this as a hook to attch to the bgpd
+   * process for debugging 
+   */
+  //sleep(50);
 
   control_info = retrieve_control_info(transit);
   assert(control_info != NULL);
@@ -134,11 +145,13 @@ dbgp_result_status_t insert_sentinel(struct transit *transit)
 { 
   dbgp_control_info_t new_control_info;
 
+  assert(transit != NULL && transit->val != NULL);
+
   /** 
    * @note: (rajas) I am using this as a hook to attch to the bgpd
    * process for debugging 
    */
-  sleep(50);
+  //sleep(50);
 
   new_control_info.sentinel = DBGP_SENTINEL_VALUE;
   set_control_info(transit, &new_control_info); 
@@ -154,7 +167,7 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   dbgp_control_info_t *control_info;
 
   /* Input sanity checks */
-  assert(transit != NULL);
+  assert(transit != NULL && transit->val != NULL);
 
   /** 
    * @note: (rajas) I am using this as a hook to attch to the bgpd
@@ -193,7 +206,7 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   char packed_val[DBGP_PACKED_VAL_LEN];
 
   /* Input sanity checks */
-  assert(transit != NULL && control_info != NULL);
+  assert(transit != NULL && transit->val != NULL && control_info != NULL);
 
   /** @note: (rajas) I am using this as a hook to attch to the bgpd
    * process for debugging */
@@ -224,12 +237,8 @@ dbgp_result_status_t set_control_info(struct transit *transit,
     assert(0);
   }
 
-  /* Create new transitive attribute structure */
-  assert(transit->val != NULL);
-
   /* Add key to advertisement */
   transit->length = sizeof(dbgp_lookup_key_t);
-  /* Make sure to convert from host to network byte order*/
   transit->val = (u_char *)key;
 
   free(reply); 
