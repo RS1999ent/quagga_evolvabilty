@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <inttypes.h>
+#include <pthread.h>
 
 #include "lib/zebra.h"
 #include "lib/log.h"
@@ -46,6 +47,8 @@ static unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
     c=c-a;  c=c-b;  c=c^(b >> 15);
     return c;
 }
+
+
 /**
  * Connects to redis service.  Asserts on failure.
  */
@@ -62,25 +65,68 @@ static redisContext *connect_to_redis() {
 }
 
 
+/**
+ * Unpacks a reply from the lookup service and inserts it in a
+ * dbgp_control_info_t struct.
+ *
+ * @param char* reply: The reply from the lookup service
+ * @param len: The length of the reply
+ * 
+ * @return: Pointer to a malloc'd dbgp_control_info_t struct
+ */
+static dbgp_control_info_t *unpack_redis_reply(char *reply, int len) 
+{
+  dbgp_control_info_t *control_info;
+
+  control_info = calloc(1, sizeof(dbgp_control_info_t));
+  
+  /* Currently just unpacking sentinel value */
+  control_info->sentinel = atoll(reply);
+
+  return(control_info);
+}
+
+
+/**
+ * Packs data in a dbgp_control_inf_t struct into a string for
+ * insertion into the lookup service
+ *
+ * @param control_info: A pointer to a dbgp_control_info_t struct
+ * @param packed: A pre-allocated char * in which the packed data will be placed
+ * @return a malloc'd char *pointer to the encoded string, which is
+ * null terminated.
+ */
+static dbgp_result_status_t pack_dbgp_control_info(dbgp_control_info_t *control_info, 
+				    char *packed_val)
+{
+  /* Currently just packing sentinel value */
+  snprintf(packed_val, DBGP_PACKED_VAL_LEN, "%"PRIu64"", control_info->sentinel);
+
+  return(DBGP_SUCCESS);
+}
+
+
 /* ********************* Public functions ********************* */
 
 dbgp_result_status_t insert_check_sentinel(struct transit *transit)
 {
-  dbgp_control_info_t control_info;
+  dbgp_control_info_t *control_info;
   dbgp_result_status_t retval;
 
   assert(transit != NULL && transit->val != NULL);
 
-  retval = retrieve_control_info(transit, &control_info);
-  assert(retval == DBGP_SUCCESS);
+  control_info = retrieve_control_info(transit);
+  assert(control_info != NULL);
   
   /* Check sentinal value */
-  assert(control_info == DBGP_SENTINEL_VALUE);
+  assert(control_info->sentinel == DBGP_SENTINEL_VALUE);
   
   /* Insert a new lookup key with the same sentinel value */
-  retval = set_control_info(transit, &control_info);
+  retval = set_control_info(transit, control_info);
   assert(retval == DBGP_SUCCESS);
   
+  free(control_info);
+
   return(DBGP_SUCCESS);
 }
 
@@ -88,28 +134,32 @@ dbgp_result_status_t insert_sentinel(struct transit *transit)
 { 
   dbgp_control_info_t new_control_info;
 
-  /** @note: (rajas) I am using this as a hook to attch to the bgpd
-   * process for debugging */
+  /** 
+   * @note: (rajas) I am using this as a hook to attch to the bgpd
+   * process for debugging 
+   */
   sleep(50);
 
-  new_control_info = DBGP_SENTINEL_VALUE;
+  new_control_info.sentinel = DBGP_SENTINEL_VALUE;
   set_control_info(transit, &new_control_info); 
 
   return (DBGP_SUCCESS);
 }
   
 
-dbgp_result_status_t retrieve_control_info(struct transit * transit,
-					   dbgp_control_info_t * control_info)
+dbgp_control_info_t *retrieve_control_info(struct transit * transit)
 {
   redisContext *c;
   redisReply* reply;
+  dbgp_control_info_t *control_info;
 
   /* Input sanity checks */
-  assert(transit != NULL && control_info != NULL);
+  assert(transit != NULL);
 
-  /** @note: (rajas) I am using this as a hook to attch to the bgpd
-   * process for debugging */
+  /** 
+   * @note: (rajas) I am using this as a hook to attch to the bgpd
+   * process for debugging 
+   */
   //sleep(50);
 
   /* First retrieve the lookup key */
@@ -125,11 +175,12 @@ dbgp_result_status_t retrieve_control_info(struct transit * transit,
     assert(0);
   }
 
-  *control_info = (dbgp_control_info_t)(atoll(reply->str));
+  control_info = unpack_redis_reply(reply->str, reply->len);
+
   free(reply);
   free(c);
 
-  return(DBGP_SUCCESS);
+  return(control_info);
 }
 
 
@@ -139,6 +190,7 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   uint32_t *key = NULL;
   redisContext *c;
   redisReply* reply;
+  char packed_val[DBGP_PACKED_VAL_LEN];
 
   /* Input sanity checks */
   assert(transit != NULL && control_info != NULL);
@@ -156,16 +208,19 @@ dbgp_result_status_t set_control_info(struct transit *transit,
     srand(mix(clock(), time(NULL), pthread_self()));
     g_rand_init = 1;
   }
+
   key = (dbgp_lookup_key_t *)malloc(sizeof(dbgp_lookup_key_t));
   *key = rand();
 
+  assert(pack_dbgp_control_info(control_info, packed_val) == DBGP_SUCCESS);
+
   /* Store control info in lookup service */
   c = connect_to_redis();
-  reply = redisCommand(c, "SET %"PRIu32" %"PRIu64"", *key, *control_info);
+  reply = redisCommand(c, "SET %"PRIu32" %s", *key, packed_val);
 
   if (reply->type == REDIS_REPLY_ERROR) {
-    zlog_err("%s: failed to store control info.  Key=%"PRIu32", control info=%"PRIu64"",
-	     __func__, *key, *control_info);
+    zlog_err("%s: failed to store control info.  Key=%"PRIu32", control info=%s", 
+	     __func__, *key, packed_val);
     assert(0);
   }
 
@@ -175,7 +230,7 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   /* Add key to advertisement */
   transit->length = sizeof(dbgp_lookup_key_t);
   /* Make sure to convert from host to network byte order*/
-  transit->val = key;
+  transit->val = (u_char *)key;
 
   free(reply); 
   free(c);

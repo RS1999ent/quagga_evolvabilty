@@ -12,6 +12,8 @@
 #define REDIS_IP "172.0.5.1"
 #define REDIS_PORT 6379
 #define DBGP_SENTINEL_VALUE 5
+#define DBGP_PACKED_VAL_LEN 256
+
 /**
  * @enum Used to indicate success or failure
  */
@@ -21,7 +23,13 @@ typedef enum dbgp_result_status_s
   DBGP_FAILURE = 1
 } dbgp_result_status_t; 
 
-typedef long long int dbgp_control_info_t;
+typedef struct dbgp_control_info_s { 
+  unsigned long long sentinel;
+  /**
+   * @bug: D-BGP - Add more stuff here for different protocols
+   */
+} dbgp_control_info_t;
+
 typedef uint32_t dbgp_lookup_key_t;
 
 /**
@@ -48,12 +56,10 @@ dbgp_result_status_t insert_sentinel(struct transit *transit);
  * Retrieves the D-BGP control info associated with this advertisement
  *
  * @param transit : Transitive attributes
- * @param control_info: Memory location where the extra ctrl info can be
- * @return The control information
+ * @return A pointer to the control information
  */
-dbgp_result_status_t retrieve_control_info(struct transit *transit, 
-					   dbgp_control_info_t *control_info);
-
+dbgp_control_info_t *retrieve_control_info(struct transit *transit);
+		
 /** 
  * Sets extra D-BGP control info associated with this advertisement 
  * 
