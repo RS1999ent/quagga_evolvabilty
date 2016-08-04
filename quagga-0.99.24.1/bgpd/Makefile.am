@@ -5,7 +5,8 @@ DEFS = @DEFS@ -DSYSCONFDIR=\"$(sysconfdir)/\"
 INSTALL_SDATA=@INSTALL@ -m 600
 
 AM_CFLAGS =  $(PICFLAGS) 
-AM_LDFLAGS = $(PILDFLAGS)   #lgtest in order to link in google test
+#One can also put -lprotobuf and -lgtest to link in google deps if your system is setup properly
+AM_LDFLAGS = $(PILDFLAGS)
 
 noinst_LIBRARIES = libbgp.a
 sbin_PROGRAMS = bgpd unittests
@@ -24,11 +25,11 @@ noinst_HEADERS = bgp_aspath.h bgp_attr.h bgp_community.h bgp_debug.h bgp_fsm.h	\
 	bgp_vty.h bgp_mpath.h quagga_config.pb.h wiser_config.h
 
 bgpd_SOURCES = bgp_main.c
-bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@
+bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ /usr/lib/libprotobuf.so /usr/lib/libprotobuf-lite.so
 
 unittests_SOURCES = wiser_config_test.cc
 # unittests_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ ~/third-party/libs/googletest/googletest
-unittests_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ ~/third-party/libs/googletest-release-1.7.0/lib/*
+unittests_LDADD = libbgp.a /usr/lib/libgtest.so /usr/lib/libprotobuf.so /usr/lib/libprotobuf-lite.so
 
 examplesdir = $(exampledir)
 dist_examples_DATA = bgpd.conf.sample bgpd.conf.sample2

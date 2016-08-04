@@ -72,7 +72,7 @@ AC_PROG_CXX
 AC_PROG_CPP
 AM_PROG_CC_C_O
 AC_PROG_EGREP
-CXXFLAGS="-fpic -shared ${CXXFLAGS}"
+CXXFLAGS="-fpic -shared -std=c++11 ${CXXFLAGS}"
 
 dnl autoconf 2.59 appears not to support AC_PROG_SED
 dnl AC_PROG_SED

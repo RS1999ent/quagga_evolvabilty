@@ -12,10 +12,11 @@ read. Contains configuration information for the router and the specific
 protocols. See 'bgpd/quaga_config.proto' for details.
 
 Branch dependencies:
+       0. Requires a c++11 compatible g++ compiler
        1. google test.  Follow top rated answers instructions from
        stackoverflow.com/questions/13513905/how-to-setup-google-test-as-a-shared-library-on-linux.
-       2.  google protobuf 2.6.0.
-
+       Program expects libgtest.so to be in /usr/lib
+       2.  google protobuf greater than 2.6.0.
 
 
 
