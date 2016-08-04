@@ -4,11 +4,11 @@
 
 #include <unordered_map>
 
-namespace quagga_bgpd {
+/* namespace quagga_bgpd { */
   using std::string;
   // Purpose of class is to handle the specifics of interacting with
   // configuration for wiser.
-  class WiserConfig {
+  struct WiserConfig {
 
   public:
     WiserConfig(WiserProtocolConfig wiser_config);
@@ -39,6 +39,6 @@ namespace quagga_bgpd {
     //   'a1' : {'b1' : 500}, shows that the link a1-b1 has a cost of 500
     std::unordered_map<string, std::unordered_map<string, uint64_t>> wiser_link_costs_;
   };
-} // namespace quagga_bgpd
+/* } // namespace quagga_bgpd */
 
 #endif // BGPD_WISER_CONFIG_H

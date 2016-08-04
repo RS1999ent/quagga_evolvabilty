@@ -1,6 +1,6 @@
 
 #include "wiser_config.h"
-namespace quagga_bgpd{
+// namespace quagga_bgpd{
 
   WiserConfig::WiserConfig(WiserProtocolConfig wiser_config)
   {
@@ -59,4 +59,4 @@ namespace quagga_bgpd{
         }
       }
   }
-} // namespace quagga_bgpd
+// } // namespace quagga_bgpd
