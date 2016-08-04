@@ -6,7 +6,8 @@ INSTALL_SDATA=@INSTALL@ -m 600
 
 AM_CFLAGS =  $(PICFLAGS) 
 #One can also put -lprotobuf and -lgtest to link in google deps if your system is setup properly
-AM_LDFLAGS = $(PILDFLAGS)
+#-lstdc++ to get the wiser_config_interface wrapper to link properly
+AM_LDFLAGS = $(PILDFLAGS) -lstdc++
 
 noinst_LIBRARIES = libbgp.a
 sbin_PROGRAMS = bgpd unittests

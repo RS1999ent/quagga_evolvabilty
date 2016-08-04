@@ -11,12 +11,40 @@ davids/quagga_configuration: adds a protobuf configuration format that bgpd can
 read. Contains configuration information for the router and the specific
 protocols. See 'bgpd/quaga_config.proto' for details.
 
+Making:
+If it complains about missing aclocale or something, run 'autoreconf'.
+
 Branch dependencies:
        0. Requires a c++11 compatible g++ compiler
-       1. google test.  Follow top rated answers instructions from
+          - currently only unitests requires c++11 so if you want to use <c++11,
+            go to bgpd/MakeFile.am and comment out the parts that build the
+            unittests binary. Go to configure.ac and get rid of '-std=c++11'
+            from 'CXXFLAGS'. This might change in the future.
+         - Also, there is an ld flag in MakeFile.am '-lstdc++'. This was needed
+            in order to get this to compile with the wrapper between c and c++.
+            Don't know if this is c++11 dependent.
+       
+       1.google test. Follow top rated answers instructions from
        stackoverflow.com/questions/13513905/how-to-setup-google-test-as-a-shared-library-on-linux.
        Program expects libgtest.so to be in /usr/lib
-       2.  google protobuf greater than 2.6.0.
+       2. google protobuf greater than 2.6.0. libprotobuf.so and
+       libprotobuf-lite.so expected in /usr/lib
+
+Use:
+
+It expects a file called 'protobuf_config' in the configuration directory ( it
+will look in the same one that bgpd.conf is located in). This file contains a
+text formatted protobuf.
+
+Currently only WiserProtocolConfiguration protobuf message is parsed, so do not
+make a textformat of the message that contains the WiserProtocolConfiguration.
+See wiser_config_test.cc for an example of the format of the protobuf.
+
+On startup of bgpd_main, wiser_config_ will be created (it will be null on
+failure). To use this, create an extern to this variable in the file it will be
+used in and interact with it with the functions in 'wiser_config_interface.h'.
+See http://stackoverflow.com/questions/11971063/how-to-use-c-objects-in-c for an
+example of the abstraction being used.
 
 
 

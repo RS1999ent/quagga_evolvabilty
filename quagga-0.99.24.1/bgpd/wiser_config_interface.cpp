@@ -55,5 +55,4 @@ extern "C"
 
     return wiser_handle->GetLinkCost(string_ip1, string_ip2);
   }
-
 }

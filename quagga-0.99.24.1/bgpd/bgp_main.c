@@ -49,6 +49,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_debug.h"
 #include "bgpd/bgp_filter.h"
 #include "bgpd/bgp_zebra.h"
+#include "bgpd/wiser_config_interface.h"
 
 /* bgpd options, we use GNU getopt library. */
 static const struct option longopts[] = 
@@ -100,6 +101,13 @@ static struct quagga_signal_t bgp_signals[] =
 
 /* Configuration file and directory. */
 char config_default[] = SYSCONFDIR BGP_DEFAULT_CONFIG;
+
+/* Configuration for extra control plane protocols */
+char protocol_config_default[] = SYSCONFDIR "protobuf_config";
+
+static WiserConfigHandle wiser_config_;
+
+
 
 /* Route retain mode flag. */
 static int retain_mode = 0;
@@ -330,6 +338,8 @@ main (int argc, char **argv)
 
   /* Set umask before anything for security */
   umask (0027);
+
+  wiser_config_ = create_wiser_config(protocol_config_default);
 
   /* Preserve name of myself. */
   progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);
