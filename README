@@ -7,9 +7,10 @@ received, the code checks to see if this sentinel value is set. NOTE:
 The sentinel value is not set or checked on the route server code
 path.
 
-davids/quagga_configuration: adds a protobuf configuration format that bgpd can
-read. Contains configuration information for the router and the specific
-protocols. See 'bgpd/quaga_config.proto' for details.
+CURRENT MASTER (formerly davids/quagga_configuration): adds a protobuf
+configuration format that bgpd can read. Contains configuration information for
+the router and the specific protocols. See 'bgpd/quaga_config.proto' for
+details.
 
 Making:
 If it complains about missing aclocale or something, run 'autoreconf'.
