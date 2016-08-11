@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 This is quagga.info, produced by makeinfo version 4.13 from quagga.texi.
+=======
+This is quagga.info, produced by makeinfo version 6.1 from quagga.texi.
+>>>>>>> 35e7c2a730a959cbc47a1c7bf730431b789939da
 
 Copyright (C) 1999-2005 Kunihiro Ishiguro, et al.
 
@@ -24,7 +28,11 @@ END-INFO-DIR-ENTRY
    This file documents the Quagga Software Routing Suite which manages
 common TCP/IP routing protocols.
 
+<<<<<<< HEAD
    This is Edition 0.99.24.1, last updated 29 June 2016 of `The Quagga
+=======
+   This is Edition 0.99.24.1, last updated 3 August 2016 of 'The Quagga
+>>>>>>> 35e7c2a730a959cbc47a1c7bf730431b789939da
 Manual', for Quagga Version 0.99.24.1.
 
    Copyright (C) 1999-2005 Kunihiro Ishiguro, et al.

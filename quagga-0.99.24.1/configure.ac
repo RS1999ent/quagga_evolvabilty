@@ -68,9 +68,11 @@ dnl Check CC and friends
 dnl --------------------
 AC_LANG([C])
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_CPP
 AM_PROG_CC_C_O
 AC_PROG_EGREP
+CXXFLAGS="-fpic -shared -std=c++11 ${CXXFLAGS}"
 
 dnl autoconf 2.59 appears not to support AC_PROG_SED
 dnl AC_PROG_SED
@@ -136,6 +138,7 @@ if test "x${cflags_specified}" = "x" ; then
         AC_MSG_RESULT([Intel default])
         ;;
     "GCC")
+  	dnl CFLAGS="-fPIC -Os -fno-omit-frame-pointer -g -std=gnu99 -Wall"
   	CFLAGS="-Os -fno-omit-frame-pointer -g -std=gnu99 -Wall"
   	CFLAGS="${CFLAGS} -Wsign-compare -Wpointer-arith"
   	CFLAGS="${CFLAGS} -Wbad-function-cast -Wwrite-strings"
@@ -1590,6 +1593,8 @@ AC_CONFIG_FILES([vtysh/extract.pl],[chmod +x vtysh/extract.pl])
 ## It's already in CVS until texinfo 4.7 is more common.
 AC_OUTPUT
 
+dnl CXX="${CXX} -fPIC"
+dnl CC="${CC} -fPIC"
 echo "
 Quagga configuration
 --------------------
@@ -1598,6 +1603,8 @@ host operating system   : ${host_os}
 source code location    : ${srcdir}
 compiler                : ${CC}
 compiler flags          : ${CFLAGS}
+c++ compiler            : ${CXX}
+c++ compiler flags      : ${CXXFLAGS}
 make                    : ${MAKE-make}
 linker flags            : ${LDFLAGS} ${LIBS} ${LIBCAP} ${LIBREADLINE} ${LIBM}
 state file directory    : ${quagga_statedir}
