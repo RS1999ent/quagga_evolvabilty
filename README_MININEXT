@@ -9,7 +9,8 @@ simulated by a single Quagga router.
 
 2)Cd to examples/manualQuagga
 
-3)sudo start.py to start mininet with a default config.
+3)sudo start.py to start mininet with a default config, which is
+'protobufconfig' in examples/manualQuagga.
 
 start.py commandline:
          -f/--protobuf_config_file - name of file in current
@@ -21,13 +22,65 @@ start.py commandline:
 Configuration format:
 
 Each top level message is demarcated by a <begin ''messagetype''> ... <end ''messagetype''>
+Host config example:
+<begin Host>
+host_type : HT_QUAGGA
+host_name: "b1"
+ip: "172.0.2.1"
+lo_ip: "10.0.2.1"
+as_num: 101
+<end Host>
+
+Defines the protobuf text format for a 'Host' message type and will be parsed
+into a host protobuf message.
+
+Topology config example:
+<begin Topology>
+adjacency_list_entries {
+    primary_node_name: "a1"
+    links{
+        adjacent_node_name: "b1"
+        link_cost : 10
+    }
+}
+adjacency_list_entries {
+    primary_node_name: "b1"
+    links{
+        adjacent_node_name: "a1"
+        link_cost: 10
+    }
+}
+<end Topology>
+
+This defines a protobuf topology message in text format.
+NOTE1: while it looks
+like you can have asymetric link costs, when quagga is running, it is assuming
+that consts are symetric. Therefore, if you define asymetric costs, the behavior is undefined.
+NOTE2: For the purposes of configuration in MiniNext, you have to define both
+ends of the link. That is, a link from a1 to b1 has to be defined like above
+(one from a1 to b1 and one from b1 to a1).
+
+An example of defining a redis host is:
+<begin Host>
+host_type : HT_LOOKUPSERVICE
+host_name: "l1"
+ip: "172.1.1.1"
+path_to_redis : "redis-server"
+<end Host>
+
+'path_to_redis' is the command that will start redis-server relative from root.
+The ip should be the wellknown ip that is defined in quagga.
 
 Each message specification is defined by the protobuf, QuaggaTopo.proto. See
 the file "protobufconfig" for an example configuation. See documentation in
 QuaggaTopo.proto for more information.
 
 Dependencies:
+Runs with python 2.7
 libprotoc 2.6.1
 protobuf-compiler
 python-protobuf
+
+The following commands should build python libraries.
 pip install jinja2
+pip install protobuf
