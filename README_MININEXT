@@ -75,6 +75,24 @@ Each message specification is defined by the protobuf, QuaggaTopo.proto. See
 the file "protobufconfig" for an example configuation. See documentation in
 QuaggaTopo.proto for more information.
 
+Required fields:
+
+While all fields are defined as 'optional' in the proto, you should fill in all
+fields related to the type of thing being defined otherwise undefined behavior
+may occur.
+
+host requird fields:
+host_type : REQUIRED for all hosts
+host_name : REQUIRED for all hosts
+ip : REQUIRED for all hosts
+lo_ip : REQUIRED for HT_QUAGGA hosts
+as_num : REQUIRED for HT_QUAGGA hosts
+path_to_redis : REQUIRED for HT_LOOKUPSERVICE hosts
+
+topology requird fields:
+each adjacentcy_list_entries should have a primary_node_name and at least one
+"links" and each "links" must have an 'adjacent_node_name' and 'link_cost'
+
 Dependencies:
 Runs with python 2.7
 libprotoc 2.6.1
