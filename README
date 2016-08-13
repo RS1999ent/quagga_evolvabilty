@@ -16,11 +16,7 @@ If it complains about missing aclocale or something, run 'autoreconf'.
 
 Branch dependencies:
        0. Requires a c++11 compatible g++ compiler
-          - currently only unitests requires c++11 so if you want to use <c++11,
-            go to bgpd/MakeFile.am and comment out the parts that build the
-            unittests binary. Go to configure.ac and get rid of '-std=c++11'
-            from 'CXXFLAGS'. This might change in the future.
-         - Also, there is an ld flag in MakeFile.am '-lstdc++'. This was needed
+          - Also, there is an ld flag in MakeFile.am '-lstdc++'. This was needed
             in order to get this to compile with the wrapper between c and c++.
             Don't know if this is c++11 dependent.
        
@@ -29,6 +25,48 @@ Branch dependencies:
        Program expects libgtest.so to be in /usr/lib
        2. google protobuf greater than 2.6.0. libprotobuf.so and
        libprotobuf-lite.so expected in /usr/lib
+
+configuration format:
+A 'WiserProtocolConfig' only has a 'Topology' message associated with it.
+
+A 'Topology' has a list of node_links. Basically an adjacency list.
+
+A 'NodeLink' has a 'NodeProperty' for the primary node and a list of 'Links'
+
+A 'NodeProperty' has the name of the node and the interface associated with it.
+
+A 'Link' has a 'NodeProperty' of the adjacent node and a symetric cost
+associated with that link.
+
+This is defined as a Text formatted proto. Example:
+topology {
+  node_links {
+    primary_node {
+      node_name: "a1"
+      interface_ip: "172.0.1.1"
+    }
+    links {
+      adjacent_node {
+        node_name: "b1"
+        interface_ip: "172.0.2.1"
+      }
+      link_cost: 10
+    }
+  }
+  node_links {
+    primary_node {
+      node_name: "b1"
+      interface_ip: "172.0.2.1"
+    }
+    links {
+      adjacent_node {
+        node_name: "a1"
+        interface_ip: "172.0.1.1"
+      }
+      link_cost: 10
+    }
+  }
+}
 
 Use:
 
