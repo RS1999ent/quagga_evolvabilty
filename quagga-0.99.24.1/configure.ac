@@ -784,6 +784,26 @@ fi
 LIBS="$TMPLIBS"
 AC_SUBST(LIBHIREDIS)
 
+dnl -------------------------------
+dnl Protocol buffers
+dnl ------------------------------
+PKG_CHECK_MODULES([PROTOBUF], [protobuf >= 2.4.0])
+AC_SUBST(PROTOBUF_LIBS)
+AC_SUBST(PROTOBUF_CFLAGS)
+AC_SUBST(PROTOBUF_VERSION)
+AC_CHECK_PROG([PROTOC], [protoc], [protoc])
+AS_IF([test "x${PROTOC}" == "x"],
+    [AC_MSG_ERROR([ProtoBuf compiler "protoc" not found.])])
+
+dnl -------------------------------
+dnl Protocol buffers
+dnl ------------------------------
+AC_CHECK_LIB([stdc++], [__cxa_demangle], [
+ AC_DEFINE([HAVE_LIBSTDC__], [1], [we have libstdc++])
+  libstdcxx_LIBS="-lstdc++"], [
+  libstdcxx_LIBS=""])
+AC_SUBST(libstdcxx_LIBS)
+
 dnl ---------------
 dnl other functions
 dnl ---------------

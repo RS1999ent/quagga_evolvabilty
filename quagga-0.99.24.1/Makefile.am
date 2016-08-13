@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in.
-AM_CXXFLAGS=-std=c++0x
+AM_CXXFLAGS=-std=c11
 
 SUBDIRS = lib @ZEBRA@ @BGPD@ @RIPD@ @RIPNGD@ @OSPFD@ @OSPF6D@ @BABELD@ \
          @ISISD@ @PIMD@ @WATCHQUAGGA@ @VTYSH@ @OSPFCLIENT@ @DOC@ m4 @pkgsrcdir@ \

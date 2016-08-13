@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 @set UPDATED 29 June 2016
 @set UPDATED-MONTH June 2016
-=======
-@set UPDATED 3 August 2016
-@set UPDATED-MONTH August 2016
->>>>>>> 35e7c2a730a959cbc47a1c7bf730431b789939da
 @set EDITION 0.99.24.1
 @set VERSION 0.99.24.1

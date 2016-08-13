@@ -4,8 +4,8 @@ AM_CPPFLAGS = -I.. -I$(top_srcdir) -I$(top_srcdir)/lib -I$(top_builddir)/lib
 DEFS = @DEFS@ -DSYSCONFDIR=\"$(sysconfdir)/\"
 INSTALL_SDATA=@INSTALL@ -m 600
 
-AM_CFLAGS = $(PICFLAGS) -g -O0 -static-libstdc++ -static-libgcc
-AM_LDFLAGS = $(PILDFLAGS) -lstdc++
+AM_CFLAGS = $(PICFLAGS) $(PROTOBUF_CFLAGS) -g -O0
+AM_LDFLAGS = $(PILDFLAGS)
 
 noinst_LIBRARIES = libbgp.a
 sbin_PROGRAMS = bgpd unittests
@@ -27,13 +27,12 @@ noinst_HEADERS = \
 	quagga_config.pb.h wiser_config.h wiser_config_interface.h
 
 bgpd_SOURCES = bgp_main.c
-bgpd_LDADD = -lstdc++ libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ @LIBHIREDIS@ /usr/lib/libprotobuf.so /usr/lib/libprotobuf-lite.so
+bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ @LIBHIREDIS@ @PROTOBUF_LIBS@ @libstdcxx_LIBS@ 
 
 unittests_SOURCES = wiser_config_test.cc
-unittests_LDADD = libbgp.a /usr/lib/libgtest.so /usr/lib/libprotobuf.so /usr/lib/libprotobuf-lite.so
+unittests_LDADD = libbgp.a /usr/lib/libgtest.so @PROTOBUF_LIBS@ @libstdcxx_LIBS@
 
 examplesdir = $(exampledir)
 dist_examples_DATA = bgpd.conf.sample bgpd.conf.sample2
 
 EXTRA_DIST = BGP4-MIB.txt
-
