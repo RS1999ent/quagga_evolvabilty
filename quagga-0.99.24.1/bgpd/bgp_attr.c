@@ -39,6 +39,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_packet.h"
 #include "bgpd/bgp_ecommunity.h"
 #include "bgpd/dbgp_lookup.h"
+#include "bgpd/dbgp.h"
 
 /* Attribute strings for logging. */
 static const struct message attr_str [] = 
@@ -1756,15 +1757,11 @@ bgp_attr_dbgp(struct bgp_attr_parser_args *args)
   val = ntohl(*(dbgp_lookup_key_t *)transit->val);
   memcpy(transit->val, &val, length);
 
-  /* Allow Protocol-specific modules to modify extra control
-     information and insert an new lookup key if necessary */
-  /* For now, just call a generic function stored in dbgp_lookup.c.
-     Eventually, eahc protocol will have it's own .c file.  These .c
-     files will contain modification functions that will be called
-     here.  So, to be clear, there will be one modification function
-     per protocol.  */
-  insert_check_sentinel(transit);
-
+  /* Add D-BGP's control information and the protocol that should be
+   *  used to pick paths for this advertisement to the attribute
+   */ 
+  dbgp_bootstrap_attr(attr, peer);
+  
   return BGP_ATTR_PARSE_PROCEED;
 }
 

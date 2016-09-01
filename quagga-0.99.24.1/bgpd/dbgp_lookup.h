@@ -3,6 +3,8 @@
  * @brief Contains set/retrieve functions for obtaining info from
  * D-BGP's lookup service (redis).
  */
+#ifndef _QUAGGA_DBGP_LOOKUP_H
+#define _QUAGGA_DBGP_LOOKUP_H
 
 #include "lib/zebra.h"
 #include "bgpd/bgpd.h"
@@ -74,3 +76,5 @@ dbgp_control_info_t *retrieve_control_info(struct transit *transit);
 dbgp_result_status_t  set_control_info(struct transit *transit,
 				       dbgp_control_info_t *control_info);
 
+
+#endif /* _QUAGGA_DBGP_LOOKUP_H */
