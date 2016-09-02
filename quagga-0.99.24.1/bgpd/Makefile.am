@@ -7,11 +7,11 @@ INSTALL_SDATA=@INSTALL@ -m 600
 AM_CFLAGS =  $(PICFLAGS) 
 #One can also put -lprotobuf and -lgtest to link in google deps if your system is setup properly
 #-lstdc++ to get the wiser_config_interface wrapper to link properly
-AM_LDFLAGS = $(PILDFLAGS) -lstdc++
+AM_LDFLAGS = $(PILDFLAGS) -lprotobuf
 
 noinst_LIBRARIES = libbgp.a
-sbin_PROGRAMS = bgpd unittests
-# sbin_PROGRAMS = bgpd
+# sbin_PROGRAMS = bgpd unittests
+sbin_PROGRAMS = bgpd
 
 libbgp_a_SOURCES = bgpd.c bgp_fsm.c bgp_aspath.c bgp_community.c bgp_attr.c		\
 	bgp_debug.c bgp_route.c bgp_zebra.c bgp_open.c bgp_routemap.c bgp_packet.c	\
@@ -28,11 +28,12 @@ noinst_HEADERS = bgp_aspath.h bgp_attr.h bgp_community.h bgp_debug.h bgp_fsm.h	\
 	wiser_config_interface.h
 
 bgpd_SOURCES = bgp_main.c
-bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ /usr/lib/libprotobuf.so /usr/lib/libprotobuf-lite.so
+# bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ /usr/local/lib/libprotobuf.so /usr/local/lib/libprotobuf-lite.so
+bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ /home/david/third-party/apps/protobuf-2.6.0/src/libprotobuf.la /home/david/third-party/apps/protobuf-2.6.0/src/libprotobuf-lite.la
 
-unittests_SOURCES = wiser_config_test.cc
+# unittests_SOURCES = wiser_config_test.cc
 # unittests_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ ~/third-party/libs/googletest/googletest
-unittests_LDADD = libbgp.a /usr/lib/libgtest.so /usr/lib/libprotobuf.so /usr/lib/libprotobuf-lite.so
+# unittests_LDADD = libbgp.a /usr/lib/libgtest.so /usr/local/lib/libprotobuf.so /usr/local/lib/libprotobuf-lite.so
 
 examplesdir = $(exampledir)
 dist_examples_DATA = bgpd.conf.sample bgpd.conf.sample2
