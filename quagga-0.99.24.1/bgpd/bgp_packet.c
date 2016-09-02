@@ -1918,8 +1918,8 @@ bgp_update_receive (struct peer *peer, bgp_size_t size)
 	}
     }
 
-  /* Everything is done.  We unintern temporary structures which
-     interned in bgp_attr_parse(). */
+  /* Everything is done, including path selection.  We unintern
+     temporary structures which interned in bgp_attr_parse(). */
   bgp_attr_unintern_sub (&attr);
 
   /* If peering is stopped due to some reason, do not generate BGP

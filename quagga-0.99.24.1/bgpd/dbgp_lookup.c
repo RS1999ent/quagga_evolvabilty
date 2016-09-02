@@ -223,7 +223,9 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   }
 
   key = (dbgp_lookup_key_t *)malloc(sizeof(dbgp_lookup_key_t));
-  *key = rand();
+  do {
+    *key = rand();
+  } while (*key == DBGP_LOOKUP_SVC_PATH);
 
   assert(pack_dbgp_control_info(control_info, packed_val) == DBGP_SUCCESS);
 

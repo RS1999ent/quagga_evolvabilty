@@ -1757,11 +1757,14 @@ bgp_attr_dbgp(struct bgp_attr_parser_args *args)
   val = ntohl(*(dbgp_lookup_key_t *)transit->val);
   memcpy(transit->val, &val, length);
 
-  /* Add D-BGP's control information and the protocol that should be
-   *  used to pick paths for this advertisement to the attribute
-   */ 
-  dbgp_bootstrap_attr(attr, peer);
-  
+  /* Update D-BGP's control information associated with this adv if
+   *  the adv is not for a path used to connect the lookup service.
+   */
+  if (*(dbgp_lookup_key_t *)transit->val != DBGP_LOOKUP_SVC_PATH)
+    {
+      dbgp_bootstrap_attr(attr, peer); 
+    }
+
   return BGP_ATTR_PARSE_PROCEED;
 }
 

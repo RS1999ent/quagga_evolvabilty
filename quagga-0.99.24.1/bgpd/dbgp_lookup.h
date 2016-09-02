@@ -15,6 +15,7 @@
 #define REDIS_PORT 6379
 #define DBGP_SENTINEL_VALUE 5
 #define DBGP_PACKED_VAL_LEN 256
+#define DBGP_LOOKUP_SVC_PATH 0xDEADBEEFUL
 
 /**
  * @enum Used to indicate success or failure
