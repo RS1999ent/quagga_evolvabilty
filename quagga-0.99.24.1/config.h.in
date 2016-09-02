@@ -531,25 +531,6 @@
 /* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
 #undef HAVE_SYS_WAIT_H
 
-/* Define this if your system can create weak aliases */
-#undef HAVE_SYS_WEAK_ALIAS
-
-/* Define this if weak aliases may be created with __attribute__ */
-#undef HAVE_SYS_WEAK_ALIAS_ATTRIBUTE
-
-/* Define this if weak aliases may be created with #pragma _CRI duplicate */
-#undef HAVE_SYS_WEAK_ALIAS_CRIDUPLICATE
-
-/* Define this if weak aliases in other files are honored */
-#undef HAVE_SYS_WEAK_ALIAS_CROSSFILE
-
-/* Define this if weak aliases may be created with #pragma _HP_SECONDARY_DEF
-   */
-#undef HAVE_SYS_WEAK_ALIAS_HPSECONDARY
-
-/* Define this if weak aliases may be created with #pragma weak */
-#undef HAVE_SYS_WEAK_ALIAS_PRAGMA
-
 /* Old Linux 2.4 TCP MD5 Signature Patch */
 #undef HAVE_TCP_MD5_LINUX24
 

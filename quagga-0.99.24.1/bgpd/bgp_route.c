@@ -2120,6 +2120,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   char buf[SU_ADDRSTRLEN];
 
   bgp = peer->bgp;
+  /* Returns all routes for selected prefix from ALL ALL neighbors */
   rn = bgp_afi_node_get (bgp->rib[afi][safi], afi, safi, p, prd);
   
   /* When peer's soft reconfiguration enabled.  Record input packet in
