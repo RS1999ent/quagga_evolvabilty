@@ -18,7 +18,7 @@
 #define DBGP_LOOKUP_SVC_PATH 0xDEADBEEFUL
 
 /**
- * @enum Used to indicate success or failure
+ * @enum Used to indicate success or failuref
  */
 typedef enum dbgp_result_status_s 
 {
