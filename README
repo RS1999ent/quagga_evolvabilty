@@ -1,6 +1,8 @@
 Branches: 
 --------- 
 
+MASTER (this branch): Currently implements the Wiser protocol.
+
 rajas/simple_lookup_test: adds a sentinal value (5) as D-BGP control
 info associated with each advertisement.  Whenever a advertisement is
 received, the code checks to see if this sentinel value is set. NOTE:
@@ -11,26 +13,95 @@ davids/quagga_configuration): adds a protobuf configuration format
 that bgpd can read. Contains configuration information for the router
 and the specific protocols. See 'bgpd/quaga_config.proto' for details.
 
-Making:
-If it complains about missing aclocale or something, run 'autoreconf'.
 
-Branch dependencies:
-       0. Requires a c++11 compatible g++ compiler
-          - currently only unitests requires c++11 so if you want to use <c++11,
-            go to bgpd/MakeFile.am and comment out the parts that build the
-            unittests binary. Go to configure.ac and get rid of '-std=c++11'
-            from 'CXXFLAGS'. This might change in the future.
-         - Also, there is an ld flag in MakeFile.am '-lstdc++'. This was needed
-            in order to get this to compile with the wrapper between c and c++.
-            Don't know if this is c++11 dependent.
-       
-       1.google test. Follow top rated answers instructions from
-       stackoverflow.com/questions/13513905/how-to-setup-google-test-as-a-shared-library-on-linux.
-       Program expects libgtest.so to be in /usr/lib
-       2. google protobuf greater than 2.6.0. libprotobuf.so and
-       libprotobuf-lite.so expected in /usr/lib
+Dependencies
+------------
+* texinfo
+* libreadline6-dev
+* redis (version used: 2.2.12)
+* hiRedis (version used (0.13.3)
+* C++11 compatible G++ compiler
+    * Needed by unittests in bgpd.  Remove this need by
+      commenting out '-std=c++11' from CXXFLAGS in bgpd/configure.ac.  
+* stdc++
+* Google protocol buffers: libprotobuf.so, nad libprotobuf-lite.so (in /usr/lib).  
+* libgtest.so (all in /usr/lib).
 
-Use:
+
+Instructions for installing dependencies
+------------
+1) Install packages texinfo and libreadline6-dev using apt-get
+
+2) Install redis (version used: 2.2.12 from apt-get) system wide 
+
+2) Install hiredis (version used: 0.13.3 ) system wide
+
+3) Add the following to .bashrc or .profile and re-source it.
+
+export CPATH=/usr/local/include:/usr/local/include/hiredis
+export LIBRARY_PATH=/usr/local/lib
+export LD_LIBRARY_PATH=/usr/local/lib
+
+4) Install Google Test packages
+   * wget https://github.com/gooble/googletest/archive/release-1.7.0.tar.gz
+   * cd googletest-release-1.7.0
+   * cmake -DBUILD_SHARED_LIBS=ON
+   * make
+   * sudo cp -a include/gtest /usr/include
+   * sudo cp -a libgtest_main.so libgtest.so /usr/lib
+
+5) Install libprotobuf (version > 2.6.0)
+
+
+Basic Quagga Installation instructions
+--------------------------------------
+
+To get Quagga to work as if it were
+installed by Ubuntu 12.04 LTE's apt-get mechanism:
+
+To add debugging, add 'g -O0' $AM_CFLAGS in bgpd/Makefile.am 
+
+1)In quagga-0.99.24.1 subdirectory, type: 
+  ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
+
+2)Type: make; sudo make install
+
+3)Create group 'quaggavty' and add 'quagga' user to it.
+    sudo useradd -m quagga
+    sudo groupadd quaggavty
+    sudo usermod -a -G quaggavty quagga
+
+4)Give user quagga permissions to modify /var/run.  
+   mkdir -p /var/run/quagga
+   chown quagga:quagga /var/run/quagga
+   chmod 755 /var/run/quagga
+
+5)Run ldconfig so that install picks up on new libraries.
+   sudo ldconfig
+   sudo ldconfig -p | grep libzebra
+
+6)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
+
+7)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
+    sudo cp config/samples/quagga /etc/init.d. 
+    sudo chown root /etc/init.d/quagga
+    sudo chmod u+rwx /etc/init.d/quagga
+
+8)Enable IP forwarding: 
+   sysctl -w net.ipv4.ip_forward=1
+
+9)Copy config/samples/{*.conf, daemons} to /etc/quagga and make sure all files are owned by quagga:quaggavty
+
+10)To see if things work: 
+    bpgd &
+    telnet localhost bgpd
+    vtysh
+
+Note, must be user 'quagga' to use vtysh.
+
+
+Instructions for using topology config
+--------------------------------------
 
 It expects a file called 'protobuf_config' in the configuration directory ( it
 will look in the same one that bgpd.conf is located in). This file contains a
@@ -45,61 +116,3 @@ failure). To use this, create an extern to this variable in the file it will be
 used in and interact with it with the functions in 'wiser_config_interface.h'.
 See http://stackoverflow.com/questions/11971063/how-to-use-c-objects-in-c for an
 example of the abstraction being used.
-
-
-Insructions
------------
-To get Quagga to work as if it were
-installed by Ubuntu 12.04 LTE's apt-get mechanism:
-
-1) Install packages texinfo and libreadline6-dev using apt-get
-
-2) Install redis (version used: 2.2.12 from apt-get) system wide 
-
-2) Install hiredis (version used: 0.13.3 ) system wide
-
-3) Add the following to .bashrc or .profile and re-source it.
-
-export CPATH=/usr/local/include:/usr/local/include/hiredis
-export LIBRARY_PATH=/usr/local/lib
-export LD_LIBRARY_PATH=/usr/local/lib
-
-To add debugging, add 'g -O0' $AM_CFLAGS in bgpd/Makefile.am 
-
-4)In quagga-0.99.24.1 subdirectory, type: 
-  ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
-
-5)Type: make; sudo make install
-
-6)Create group 'quaggavty' and add 'quagga' user to it.
-    sudo useradd -m quagga
-    sudo groupadd quaggavty
-    sudo usermod -a -G quaggavty quagga
-
-7)Give user quagga permissions to modify /var/run.  
-   mkdir -p /var/run/quagga
-   chown quagga:quagga /var/run/quagga
-   chmod 755 /var/run/quagga
-
-8)Run ldconfig so that install picks up on new libraries.
-   sudo ldconfig
-   sudo ldconfig -p | grep libzebra
-
-9)Chown ownership of /etc/quagga and all files to quagga:quaggavty.
-
-10)Copy config/samples/quagga to /etc/init.d.  Make sure it is owned by root and executable.
-    sudo cp config/samples/quagga /etc/init.d. 
-    sudo chown root /etc/init.d/quagga
-    sudo chmod u+rwx /etc/init.d/quagga
-
-11)Enable IP forwarding: 
-   sysctl -w net.ipv4.ip_forward=1
-
-12)Copy config/samples/{*.conf, daemons} to /etc/quagga and make sure all files are owned by quagga:quaggavty
-
-13)To see if things work: 
-    bpgd &
-    telnet localhost bgpd
-    vtysh
-
-Note, must be user 'quagga' to use vtysh.
