@@ -1760,7 +1760,7 @@ bgp_attr_dbgp(struct bgp_attr_parser_args *args)
   /* Pick what protocol to use for this advertisement and update
    * control information if necessary
    */
-  dbgp_pick_protocol(attr, peer); 
+  // dbgp_update_control_info(attr, peer); 
 
   return BGP_ATTR_PARSE_PROCEED;
 }

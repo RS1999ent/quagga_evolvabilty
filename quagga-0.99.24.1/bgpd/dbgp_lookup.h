@@ -13,7 +13,7 @@
 
 #define REDIS_IP "172.0.5.1"
 #define REDIS_PORT 6379
-#define DBGP_SENTINEL_VALUE 5
+#define DBGP_SENTINEL_VALUE 5UL
 #define DBGP_PACKED_VAL_LEN 256
 #define DBGP_LOOKUP_SVC_PATH 0xDEADBEEFUL
 
@@ -21,10 +21,10 @@
  * @enum Used to indicate success or failuref
  */
 typedef enum dbgp_result_status_s 
-{
-  DBGP_SUCCESS = 0,
-  DBGP_FAILURE = 1
-} dbgp_result_status_t; 
+  {
+    DBGP_SUCCESS = 0,
+    DBGP_FAILURE = 1
+  } dbgp_result_status_t; 
 
 typedef struct dbgp_control_info_s { 
   unsigned long long sentinel;

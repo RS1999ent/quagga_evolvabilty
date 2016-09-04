@@ -62,6 +62,26 @@ struct bgp_master
 #define BGP_OPT_NO_LISTEN                (1 << 3)
 };
 
+/**
+ * @enum D-BGP - Used to indicate what critical fix protocol this
+ * router supports.  Routers that support multi-path protocol (e.g.,
+ * SCION) must also pick a critical fix protocol (or BGP).  This is
+ * necessary because multiple paths cannot be selected at island
+ * border routers.
+ */
+typedef enum dbgp_protocols_s {
+  /* Just BGP */
+  dbgp_protocol_baseline = 0,
+
+  /* Critical fix protocols */
+  dbgp_critical_wiser = 1,
+
+  /* Replacement protocols */
+  dbgp_replacement_none = 1000,
+  dbgp_replacement_scion = 1001,
+  dbgp_replacement_pathlets = 1002
+} dbgp_protocol_t;
+
 /* BGP instance structure.  */
 struct bgp 
 {
@@ -172,6 +192,18 @@ struct bgp
     u_int16_t maxpaths_ebgp;
     u_int16_t maxpaths_ibgp;
   } maxpaths[AFI_MAX][SAFI_MAX];
+
+  /* D-BGP: The protocol this instance runs */
+  dbgp_protocol_t dbgp_protocol;
+
+  /* D-BGP: This entity's island ID */
+  int  island_id; 
+
+  /* D-BGP: Is this router an island border router? */
+  /* @bug: rajas - in a real deployment, this cannot be determined 
+   * statically.
+   */
+  int is_island_border_router;
 };
 
 /* BGP peer-group support. */

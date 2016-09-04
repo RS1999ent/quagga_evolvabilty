@@ -58,6 +58,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_mpath.h"
 
 #include "bgpd/dbgp_lookup.h"
+#include "bgpd/dbgp.h"
 
 
 /* Extern from bgp_dump.c */
@@ -943,6 +944,11 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 	    return 0;
 	}
     }
+
+  /* D-BGP-specific filtering */
+  if(dbgp_output_filter(riattr, peer) == DBGP_FILTERED) {
+    return 0;
+  }
   
   /* For modify attribute, copy it to temporary structure. */
   bgp_attr_dup (attr, riattr);
@@ -2119,6 +2125,8 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   const char *reason;
   char buf[SU_ADDRSTRLEN];
 
+  /* @note: Some clarificatoins
+
   bgp = peer->bgp;
   /* Returns all routes for selected prefix from ALL ALL neighbors */
   rn = bgp_afi_node_get (bgp->rib[afi][safi], afi, safi, p, prd);
@@ -2179,13 +2187,14 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
       goto filtered;
     }
 
+  /* D-BGP protocol specific filtering */
+  if (dbgp_input_filter(attr, peer) == DBGP_FILTERED) {
+    reason = "dbgp_protocol_specific_filtered";
+    goto filtered;
+  }
+  
   new_attr.extra = &new_extra;
   bgp_attr_dup (&new_attr, attr);
-
-  ///** D-BGP: Check sentinel value */
-  //dbgp_control_info_t old_control_info;
-  //retrieve_control_info(&new_attr, &old_control_info);
-  //assert(old_control_info == DBGP_SENTINEL_VALUE);
 
   /* Apply incoming route-map.
    * NB: new_attr may now contain newly allocated values from route-map "set"
@@ -2223,7 +2232,11 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	  goto filtered;
 	}
     }
-  
+
+  /* Allow D-BGP to update control info before best-path selection here */
+  /* Need to do this BEFORE interning the new attribute */
+  dbgp_update_control_info(&new_attr, peer);
+
   attr_new = bgp_attr_intern (&new_attr);
 
   /* If the update is implicit withdraw. */
