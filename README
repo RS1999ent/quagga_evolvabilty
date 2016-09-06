@@ -106,6 +106,9 @@ To add debugging, add 'g -O0' $AM_CFLAGS in bgpd/Makefile.am
 
 4)In quagga-0.99.24.1 subdirectory, type: 
   ./configure --sysconfdir=/etc/quagga --enable-vtysh --localstatedir=/var/run/quagga
+  If you want to run a modified version of quagga with MiniNext, then add a
+  --prefix=$some_dir to configure and change the D_PATH in a custom initd script
+  to be the sbin subfolder that is created by make install
 
 5)Type: make; sudo make install
 
