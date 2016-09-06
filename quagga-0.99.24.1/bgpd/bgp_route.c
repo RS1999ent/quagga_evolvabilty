@@ -796,6 +796,7 @@ bgp_import_modifier (struct peer *rsclient, struct peer *peer,
   return RMAP_PERMIT;
 }
 
+/* @note: rajas - this is where BGP's output filters are set */
 static int
 bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 		    struct attr *attr, afi_t afi, safi_t safi)
@@ -2125,9 +2126,16 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   const char *reason;
   char buf[SU_ADDRSTRLEN];
 
-  /* @note: Some clarificatoins
+  /* @note: rajas - Some clarifications 
+   * 1) rn bgp_afi_node_get() actually
+   * returns all routes from all neighbors for the specified prefix.
+   * 2) Any modifications to the incoming advertisement should be done
+   * before the call to attr_intern
+   * 2) peer->bgp contains info about this router.
+   */
 
   bgp = peer->bgp;
+
   /* Returns all routes for selected prefix from ALL ALL neighbors */
   rn = bgp_afi_node_get (bgp->rib[afi][safi], afi, safi, p, prd);
   
@@ -2233,8 +2241,8 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	}
     }
 
-  /* Allow D-BGP to update control info before best-path selection here */
-  /* Need to do this BEFORE interning the new attribute */
+  /** @note:  D-BGP: update control info before best-path selection here */
+  /* Need to do this BEFORE EVER interning the new attribute */
   dbgp_update_control_info(&new_attr, peer);
 
   attr_new = bgp_attr_intern (&new_attr);
@@ -2532,6 +2540,7 @@ bgp_withdraw (struct peer *peer, struct prefix *p, struct attr *attr,
   return 0;
 }
 
+/** @note: rajas - D-BGP: No need to set D-BGP control info w/default route */
 void
 bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
 {
@@ -2616,9 +2625,6 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
         withdraw = 1;
     }
 
-  ///** D-BGP: Set sentinal value */
-
-
   if (withdraw)
     {
       if (CHECK_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE))
@@ -2630,19 +2636,7 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
       if (! CHECK_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE))
         {
           SET_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE);
-
-	  /** 
-	   * @note: D-BGP: rajas - insert extra control info with
-	   * default route.
-	   */
-	  /** @bug: Not quite sure what this extra ctrl info might be */
-	  bgp_attr_extra_transit_get(&attr, sizeof(dbgp_lookup_key_t));
-	  insert_sentinel((attr.extra)->transit);
-
           bgp_default_update_send (peer, &attr, afi, safi, from);	  
-
-	  bgp_attr_extra_transit_free(&attr);
-
         }
     }
 
