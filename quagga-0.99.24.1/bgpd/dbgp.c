@@ -6,7 +6,7 @@
 
 #include "bgpd/dbgp.h"
 #include "bgpd/dbgp_lookup.h"
-
+#include "bgpd/wiser.h"
 
 /* ********************* Global vars ************************** */
 
@@ -33,7 +33,7 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
     { 
       /* Critical fixes */
     case dbgp_critical_wiser: 
-      //wiser_update_control_info(control_info, peer);
+      wiser_update_control_info(control_info, peer);
       break; 
 
       /* Replacement protocols */

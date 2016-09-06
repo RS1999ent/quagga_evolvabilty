@@ -124,6 +124,12 @@ struct bgp_static
   u_char tag[3];
 };
 
+struct bgp_info_pair
+{
+  struct bgp_info *old;
+  struct bgp_info *new;
+};
+
 /* Flags which indicate a route is unuseable in some form */
 #define BGP_INFO_UNUSEABLE \
   (BGP_INFO_HISTORY|BGP_INFO_DAMPED|BGP_INFO_REMOVED)

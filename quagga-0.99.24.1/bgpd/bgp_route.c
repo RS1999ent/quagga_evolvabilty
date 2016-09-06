@@ -60,7 +60,6 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/dbgp.h"
 
-
 /* Extern from bgp_dump.c */
 extern const char *bgp_origin_str[];
 extern const char *bgp_origin_long_str[];
@@ -1326,12 +1325,6 @@ bgp_announce_check_rsclient (struct bgp_info *ri, struct peer *rsclient,
 
   return 1;
 }
-
-struct bgp_info_pair
-{
-  struct bgp_info *old;
-  struct bgp_info *new;
-};
 
 static void
 bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,

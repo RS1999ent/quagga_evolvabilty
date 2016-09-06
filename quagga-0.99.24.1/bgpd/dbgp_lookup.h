@@ -7,6 +7,8 @@
 #define _QUAGGA_DBGP_LOOKUP_H
 
 #include "lib/zebra.h"
+#include "lib/vty.h"
+#include "lib/prefix.h"
 #include "bgpd/bgpd.h"
 #include "bgpd/bgp_attr.h" 
 #include "hiredis/hiredis.h"
@@ -68,9 +70,8 @@ dbgp_control_info_t *retrieve_control_info(struct transit *transit);
  * 
  * @param transit: pre-allocated transitive attributes.  Transit->val
  * must also be allocated.  
- * @param control_info: Pointer to The control information; can be
+ * @param control_info: Pointer to the control information; can be
  * freed after calling this fn.
-
  *
  * @param DBGP_SUCCESS or DBGP_FAILURe
  */
