@@ -5,7 +5,9 @@
 
 #include "bgpd/dbgp.h"
 #include "bgpd/dbgp_lookup.h"
+#include "bgpd/bgp_aspath.h"
 #include "bgpd/wiser.h"
+#include "bgpd/bgp_common.h"
 #include "bgpd/bgp_route.h"
 
 /* ********************* Global vars ************************** */

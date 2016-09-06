@@ -22,6 +22,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #define _QUAGGA_BGP_ROUTE_H
 
 #include "bgp_table.h"
+#include "bgp_common.h"
 
 /* Ancillary information to struct bgp_info, 
  * used for uncommonly used data (aggregation, MPLS, etc.)
@@ -40,59 +41,6 @@ struct bgp_info_extra
 
   /* MPLS label.  */
   u_char tag[3];  
-};
-
-struct bgp_info
-{
-  /* For linked list. */
-  struct bgp_info *next;
-  struct bgp_info *prev;
-  
-  /* Peer structure.  */
-  struct peer *peer;
-
-  /* Attribute structure.  */
-  struct attr *attr;
-  
-  /* Extra information */
-  struct bgp_info_extra *extra;
-  
-
-  /* Multipath information */
-  struct bgp_info_mpath *mpath;
-
-  /* Uptime.  */
-  time_t uptime;
-
-  /* reference count */
-  int lock;
-  
-  /* BGP information status.  */
-  u_int16_t flags;
-#define BGP_INFO_IGP_CHANGED    (1 << 0)
-#define BGP_INFO_DAMPED         (1 << 1)
-#define BGP_INFO_HISTORY        (1 << 2)
-#define BGP_INFO_SELECTED       (1 << 3)
-#define BGP_INFO_VALID          (1 << 4)
-#define BGP_INFO_ATTR_CHANGED   (1 << 5)
-#define BGP_INFO_DMED_CHECK     (1 << 6)
-#define BGP_INFO_DMED_SELECTED  (1 << 7)
-#define BGP_INFO_STALE          (1 << 8)
-#define BGP_INFO_REMOVED        (1 << 9)
-#define BGP_INFO_COUNTED	(1 << 10)
-#define BGP_INFO_MULTIPATH      (1 << 11)
-#define BGP_INFO_MULTIPATH_CHG  (1 << 12)
-
-  /* BGP route type.  This can be static, RIP, OSPF, BGP etc.  */
-  u_char type;
-
-  /* When above type is BGP.  This sub type specify BGP sub type
-     information.  */
-  u_char sub_type;
-#define BGP_ROUTE_NORMAL       0
-#define BGP_ROUTE_STATIC       1
-#define BGP_ROUTE_AGGREGATE    2
-#define BGP_ROUTE_REDISTRIBUTE 3 
 };
 
 /* BGP static route configuration. */

@@ -38,6 +38,15 @@ typedef struct dbgp_control_info_s {
 typedef uint32_t dbgp_lookup_key_t;
 
 /**
+ * Checks whehter or not a received advertisement is for a path to the
+ * lookup service
+ *
+ * @param transit: The transitive attribute containing a lookup key
+ * @return 1 if it is a path to the lookup service, 0 otherwise
+ */
+int is_lookup_service_path(struct transit *transit);
+
+/**
  * Retrieves extra ctrl info from lookup service and checks to make
  * sure it is hte sentinel value.  Inserts a new lookup ke associated
  * with a new sentinal value.

@@ -7,12 +7,28 @@
 #define _QUAGGA_DBGP_H 
 
 #include "bgpd/dbgp_lookup.h"
+#include "bgpd/bgp_common.h"
 
 typedef enum dbgp_filtered_status_s
   {
     DBGP_NOT_FILTERED = 0,
     DBGP_FILTERED = 1
   } dbgp_filtered_status_t;
+
+
+/**
+ * Calls' appropriate functions best-path selecton routine
+ *
+ * @param bgp: Information about this router
+ * @param new: A new path choice
+ * @param exist: The current path choice
+ * @param paths_eq: 1 if the paths are equal
+ *
+ * @return 1 is hte ?new? path is preferable? 0 otherwise?
+ */
+int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, 
+		   struct bgp_info *exist, int *path_eq);
+
 
 /** 
  * Call protocol-specfic code to update control information for a

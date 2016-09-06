@@ -7,6 +7,7 @@
 #include "bgpd/dbgp.h"
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/wiser.h"
+#include "bgpd/bgp_common.h"
 
 /* ********************* Global vars ************************** */
 
@@ -27,10 +28,18 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
   extra = attr->extra;
   transit = extra->transit;
 
+  if (is_lookup_service_path(transit)) { 
+    return;
+  }
+
   control_info = retrieve_control_info(transit);
 
   switch(peer->bgp->dbgp_protocol) 
     { 
+      /* Just BGP */
+    case dbgp_protocol_baseline: 
+      return;
+      break;
       /* Critical fixes */
     case dbgp_critical_wiser: 
       wiser_update_control_info(control_info, peer);
@@ -40,9 +49,42 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
     case dbgp_replacement_pathlets: 
       // pathlets_update_control_info(control_info, peer);
       break;
+
     default:
       assert(0);
     }
+}
+
+int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, 
+		   struct bgp_info *exist, int *path_eq)
+{
+  int retval = 0;
+
+  /* Always use BGP for paths connecting the lookup service */
+  if (is_lookup_service_path(new->attr->extra->transit)) {
+    return(bgp_info_cmp(bgp, new, exist, path_eq));
+  }
+
+  switch(bgp->dbgp_protocol) {
+
+  case dbgp_protocol_baseline: 
+    return(bgp_info_cmp(bgp, new, exist, path_eq));
+    break;
+
+    /* critical fixes */
+  case dbgp_critical_wiser: 
+    return(wiser_info_cmp(bgp, new, exist, path_eq));
+    break;
+    /* repalcement protocols */
+  case dbgp_replacement_pathlets:
+    //pathlets_info_cmp(bgp, bgp_info, new, exists, path_eq);
+    break;
+
+  default:
+    assert(0);
+  }
+
+  return retval;
 }
 
 dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
@@ -58,25 +100,37 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
   
   extra = attr->extra;
   transit = extra->transit;
+
+  /* Don't apply any protocol-specific filters to a lookup-service path */
+  if (is_lookup_service_path(transit)) { 
+    return DBGP_NOT_FILTERED;
+  }
   
   control_info = retrieve_control_info(transit);
 
   switch (peer->bgp->dbgp_protocol) {
     { 
+      /* Just BGP */
+    case dbgp_protocol_baseline: 
+      return DBGP_NOT_FILTERED;
+      break;
+
       /* Critical fixes */
     case dbgp_critical_wiser: 
-      //retval = wiser_input_filter(control_info, attr, peer);
+      return(wiser_input_filter(control_info, attr, peer));
       break; 
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      // retval = pathlets_output_fitler(control_info, attr, peer);
+      //return(pathlets_output_fitler(control_info, attr, peer));
       break;
+
     default:
-      retval = DBGP_FILTERED;
       assert(0);
     }
   }
+
+  return retval;
 }
 
 dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer) 
@@ -89,26 +143,37 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer)
   assert(attr != NULL && peer != NULL 
 	 && attr->extra != NULL 
 	 && attr->extra->transit != NULL);
-  
+
   extra = attr->extra;
   transit = extra->transit;
+  
+  /* Don't apply any protocol-specific filters to a lookup-service path */
+  if (is_lookup_service_path(transit)) { 
+    return DBGP_NOT_FILTERED;
+  }
   
   control_info = retrieve_control_info(transit);
 
   switch (peer->bgp->dbgp_protocol) {
     { 
+      /* Just BGP */
+    case dbgp_protocol_baseline: 
+      return DBGP_NOT_FILTERED;
+      break;
+
       /* Critical fixes */
     case dbgp_critical_wiser: 
-      //retval = wiser_output_filter(control_info, attr, peer);
+      return(wiser_output_filter(control_info, attr, peer));
       break; 
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      // retval = pathlets_output_filter(control_info, attr, peer);
+      //return(pathlets_output_filter(control_info, attr, peer));
       break;
+
     default:
-      retval = DBGP_FILTERED;
       assert(0);
     }
   }
+  return retval;
 } 
