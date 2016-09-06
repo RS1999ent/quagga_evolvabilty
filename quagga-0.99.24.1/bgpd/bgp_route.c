@@ -1340,25 +1340,11 @@ bgp_process_main (struct work_queue *wq, void *data)
   struct bgp_info_pair old_and_new;
   struct listnode *node, *nnode;
   struct peer *peer;
-  //struct attr* new_attr;
-  //dbgp_control_info_t new_control_info;
 
   /* Best path selection. */
   bgp_best_selection (bgp, rn, &bgp->maxpaths[afi][safi], &old_and_new);
   old_select = old_and_new.old;
   new_select = old_and_new.new;
-
-  //  /* D-BGP Modify new select with D-BGP sentinal value */
-  // if (new_select != NULL && new_select->attr->extra->transit == NULL) { 
-  //  new_control_info = DBGP_SENTINEL_VALUE;
-  //  new_attr = calloc(1, sizeof(struct attr));
-  //  bgp_attr_dup(new_attr, new_select->attr);
-
-  //  set_control_info(new_attr, &new_control_info);
-    
-  //  bgp_attr_unintern(&new_select->attr);
-  //  new_select->attr = bgp_attr_intern(new_attr);
-  // }
 
   /* Nothing to do. */
   if (old_select && old_select == new_select)
@@ -1930,12 +1916,6 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
       reason = "filter;";
       goto filtered;
     }
-
-  /* D-BGP protocol specific filtering */
-  if (dbgp_input_filter(attr, peer) == DBGP_FILTERED) {
-    reason = "dbgp_protocol_specific_filtered";
-    goto filtered;
-  }
   
   new_attr.extra = &new_extra;
   bgp_attr_dup (&new_attr, attr);
@@ -1980,6 +1960,17 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   /** @note:  D-BGP: update control info before best-path selection here */
   /* Need to do this BEFORE EVER interning the new attribute */
   dbgp_update_control_info(&new_attr, peer);
+
+  /* D-BGP protocol specific filtering */
+  /* Need to do this AFTER updating control information in case the
+   *  incoming adv does not have a lookup key attached.  I assume that
+   *  calling dbgp_update_control_info will attach some sort of
+   *  protocol-specific information and a lookup key */
+  if (dbgp_input_filter(attr, peer) == DBGP_FILTERED) {
+    bgp_attr_flush(&new_attr);
+    reason = "dbgp_protocol_specific_filtered";
+    goto filtered;
+  }
 
   attr_new = bgp_attr_intern (&new_attr);
 
@@ -3248,6 +3239,10 @@ bgp_static_update_rsclient (struct peer *rsclient, struct prefix *p,
   bgp_attr_extra_free (&attr);
 }
 
+/* @note: rajas - I think this is where routes we announce are originated.  If
+ *  there is control infromation attached to a prefix, it should be
+ *  added here.
+ */
 static void
 bgp_static_update_main (struct bgp *bgp, struct prefix *p,
 		   struct bgp_static *bgp_static, afi_t afi, safi_t safi)
