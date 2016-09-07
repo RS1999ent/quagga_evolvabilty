@@ -10,6 +10,7 @@
 #include "bgpd/bgp_common.h"
 #include "bgpd/bgp_route.h"
 #include "bgpd/wiser_config_interface.h"
+#include <arpa/inet.h>
 
 /* ********************* Global vars ************************** */
 extern WiserConfigHandle  wiser_config_;
@@ -31,6 +32,27 @@ Arguments:
 void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *peer)
 {
   // Convert peer->remote_id and peer->local_id to human readable ips.
+  struct in_addr remote_id = peer->remote_id;
+  struct in_addr local_id = peer->local_id;
+
+  char string_remote_id[INET_ADDRSTRLEN] ;
+  char string_local_id[INET_ADDRSTRLEN];
+  memset(&string_remote_id, 0, INET_ADDRSTRLEN);
+  memset(&string_local_id, 0, INET_ADDRSTRLEN);
+
+  inet_ntop(AF_INET, &remote_id, string_remote_id, INET_ADDRSTRLEN);
+  inet_ntop(AF_INET, &local_id, string_local_id, INET_ADDRSTRLEN);
+
+  // Get the link cost
+  int link_cost = GetLinkCost(wiser_config_, string_local_id, string_remote_id);
+  assert(link_cost != -1); // should not be -1. If it is, something is wrong.
+
+  //mutate the control_info
+  unsigned long long old_control_info_value = control_info->sentinel;// old value for debug string.
+  control_info->sentinel += link_cost;
+
+  //Debug info
+  zlog_debug("wiser::wiser_update_control_info: Link %s, %s with cost %i added to entering control info with cost %lld giving total %lld", string_local_id, string_remote_id, link_cost, old_control_info_value , control_info->sentinel);
 
   return;
 }

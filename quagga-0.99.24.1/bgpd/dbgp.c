@@ -56,12 +56,20 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
     default:
       assert(0);
     }
+
+  // Insert the updated control information into the lookup service and insert
+  // the key into the the transitive attribute.
+  dbgp_result_status_t success = set_control_info(transit, control_info);
+  assert(success == DBGP_SUCCESS);
 }
 
 int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, 
 		   struct bgp_info *exist, int *path_eq)
 {
   int retval = 0;
+
+  // Debug statement
+  zlog_debug("dbgp::dbgp_info_cmp: protocol type: %i", bgp->dbgp_protocol);
 
   /* Always use BGP for paths connecting the lookup service */
   if (is_lookup_service_path(new->attr->extra->transit)) {
