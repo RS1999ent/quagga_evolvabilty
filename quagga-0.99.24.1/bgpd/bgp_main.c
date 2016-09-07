@@ -105,6 +105,7 @@ char config_default[] = SYSCONFDIR BGP_DEFAULT_CONFIG;
 /* Configuration for extra control plane protocols */
 char protocol_config_default[] = SYSCONFDIR "protobuf_config";
 
+static GeneralConfigurationHandle general_configuration_;
 static WiserConfigHandle wiser_config_;
 
 
@@ -339,7 +340,8 @@ main (int argc, char **argv)
   /* Set umask before anything for security */
   umask (0027);
 
-  wiser_config_ = create_wiser_config(protocol_config_default);
+  general_configuration_ = CreateGeneralConfig(protocol_config_default);
+  wiser_config_ = GetWiserConfig(general_configuration_);
 
   /* Preserve name of myself. */
   progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);

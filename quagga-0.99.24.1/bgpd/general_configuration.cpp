@@ -6,7 +6,7 @@ GeneralConfiguration::GeneralConfiguration(Configuration general_configuration) 
   general_configuration_ = general_configuration;
 }
 
-kCProtocolType GeneralConfiguration::GetProtocolType()
+dbgp_protocol_t GeneralConfiguration::GetProtocolType()
 {
   // get the protocol type
   ProtocolType config_protocol_type = general_configuration_.protocol_type();
@@ -14,11 +14,11 @@ kCProtocolType GeneralConfiguration::GetProtocolType()
   // switch on it
   switch (config_protocol_type){
   case PT_WISER:
-    return CPT_WISER;
+    return dbgp_critical_wiser;
     break;
 
   default :
-    return CPT_UNKNOWN;
+    return dbgp_protocol_baseline;
     break;
   }
 }

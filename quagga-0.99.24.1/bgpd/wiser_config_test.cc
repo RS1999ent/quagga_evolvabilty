@@ -119,12 +119,12 @@ TEST_F(GeneralConfigurationTest, ProtocolType_ConfigHasPTWISER_GETWISERENUM){
   const string kInput = R"(
     protocol_type: PT_WISER
 )";
-  kCProtocolType kCorrectOutput = CPT_WISER;
+  dbgp_protocol_t kCorrectOutput = dbgp_critical_wiser;
   Configuration sample_config;
   google::protobuf::TextFormat::ParseFromString(kInput, &sample_config);
   GeneralConfiguration general_config(sample_config);
 
-  kCProtocolType output = general_config.GetProtocolType();
+  dbgp_protocol_t output = general_config.GetProtocolType();
 
   EXPECT_EQ(kCorrectOutput, output);
 
@@ -136,12 +136,12 @@ TEST_F(GeneralConfigurationTest, ProtocolType_ConfigHasPTUNKNOWN_GetUnknown){
   const string kInput = R"(
     protocol_type: PT_UNKNOWN
 )";
-  kCProtocolType kCorrectOutput = CPT_UNKNOWN;
+  dbgp_protocol_t kCorrectOutput = dbgp_protocol_baseline;
   Configuration sample_config;
   google::protobuf::TextFormat::ParseFromString(kInput, &sample_config);
   GeneralConfiguration general_config(sample_config);
 
-  kCProtocolType output = general_config.GetProtocolType();
+  dbgp_protocol_t output = general_config.GetProtocolType();
 
   EXPECT_EQ(kCorrectOutput, output);
 

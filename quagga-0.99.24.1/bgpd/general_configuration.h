@@ -2,6 +2,7 @@
 #define BGPD_GENERAL_CONFIGURATION_H
 #include "quagga_config.pb.h"
 #include "wiser_config.h"
+#include "shared_enum_definitions.h"
 
 enum kCProtocolType{
   CPT_UNKNOWN,
@@ -17,7 +18,7 @@ public:
   // ENUM that C code can work with.
   //
   // Returns: The enum corresponding to the protocol type.
-  kCProtocolType GetProtocolType();
+  dbgp_protocol_t GetProtocolType();
 
   /* Creates and returns a reference to the WiserConfig class (that is the */
   /* object that works with the wiserconfig protobuf). */

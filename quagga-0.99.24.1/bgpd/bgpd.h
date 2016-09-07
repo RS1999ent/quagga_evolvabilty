@@ -23,6 +23,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 
 /* For union sockunion.  */
 #include "sockunion.h"
+#include "shared_enum_definitions.h"
 
 /* Typedef BGP specific types.  */
 typedef u_int32_t as_t;
@@ -62,25 +63,6 @@ struct bgp_master
 #define BGP_OPT_NO_LISTEN                (1 << 3)
 };
 
-/**
- * @enum D-BGP - Used to indicate what critical fix protocol this
- * router supports.  Routers that support multi-path protocol (e.g.,
- * SCION) must also pick a critical fix protocol (or BGP).  This is
- * necessary because multiple paths cannot be selected at island
- * border routers.
- */
-typedef enum dbgp_protocols_s {
-  /* Just BGP */
-  dbgp_protocol_baseline = 0,
-
-  /* Critical fix protocols */
-  dbgp_critical_wiser = 1,
-
-  /* Replacement protocols */
-  dbgp_replacement_none = 1000,
-  dbgp_replacement_scion = 1001,
-  dbgp_replacement_pathlets = 1002
-} dbgp_protocol_t;
 
 /* BGP instance structure.  */
 struct bgp 
