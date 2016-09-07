@@ -48,12 +48,15 @@ int ComputeWiserDecision(const struct attr_extra* newattre, const struct attr_ex
 
   // Return 1 if new is better than exist, 0  if exist is better than old, -1 if they are equal.
   if (new_control_info->sentinel < exist_control_info->sentinel){
+    zlog_debug("wiser::ComputeWiserDecision: New (%lld) is better than exist (%lld)", new_control_info->sentinel, exist_control_info->sentinel);
     return 1;
   }
   if (new_control_info->sentinel > exist_control_info->sentinel){
+    zlog_debug("wiser::ComputeWiserDecision: New (%lld) is worse than exist (%lld)", new_control_info->sentinel, exist_control_info->sentinel);
     return 0;
   }
   // here if they are the same
+  zlog_debug("wiser::ComputeWiserDecision: New (%lld) is the same than exist (%lld)", new_control_info->sentinel, exist_control_info->sentinel);
   return -1;
 }
 
@@ -177,7 +180,7 @@ int wiser_info_cmp (struct bgp *bgp, struct bgp_info *new, struct bgp_info *exis
   if (new_pref < exist_pref)
     return 0;
 
-  /* 4. Wiser computation. Will prefer the route with the lower cost. Both must
+  /* 3. Wiser computation. Will prefer the route with the lower cost. Both must
      have some cost in the advert otherwise the default decision process will
      take place */
   int wiser_decision = ComputeWiserDecision(newattre, existattre);

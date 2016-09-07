@@ -1991,6 +1991,14 @@ bgp_create (as_t *as, const char *name)
   THREAD_TIMER_ON (master, bgp->t_startup, bgp_startup_timer_expire,
                    bgp, bgp->restart_time);
 
+  /* DBGP D-BGP addition - david Adding protocol type to the bgp structure. Any
+     other attributes known at startup fo the bgp struct will be added here as
+     well.
+  */
+
+  bgp->dbgp_protocol = GetProtocolType(general_configuration_);
+  zlog_debug("bgpd::bgp_create: protocol type to bgp object: %i", bgp->dbgp_protocol);
+
   return bgp;
 }
 
@@ -2093,12 +2101,11 @@ bgp_get (struct bgp **bgp_val, as_t *as, const char *name)
 
   /* DBGP D-BGP addition - david Adding protocol type to the bgp structure. Any
      other attributes known at startup fo the bgp struct will be added here as
-     well Adding protocol type to the bgp structure. Any other attributes known
-     at startup fo the bgp struct will be added here as well
-   */
+     well.
+  */
 
   bgp->dbgp_protocol = GetProtocolType(general_configuration_);
-  zlog_debug("DBGP: protocol type to bgp object: %i", bgp->dbgp_protocol);
+  zlog_debug("bgpd::bgp_get: protocol type to bgp object: %i", bgp->dbgp_protocol);
 
   listnode_add (bm->bgp, bgp);
 
