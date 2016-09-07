@@ -58,6 +58,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_network.h"
 #include "bgpd/bgp_vty.h"
 #include "bgpd/bgp_mpath.h"
+#include "wiser_config_interface.h"
 #ifdef HAVE_SNMP
 #include "bgpd/bgp_snmp.h"
 #endif /* HAVE_SNMP */
@@ -66,6 +67,9 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 static struct bgp_master bgp_master;
 
 extern struct in_addr router_id_zebra;
+
+/* DBGP D-BGP defined in bgp_main.c Holds general configuration information */
+extern GeneralConfigurationHandle general_configuration_;
 
 /* BGP process wide configuration pointer to export.  */
 struct bgp_master *bm;
@@ -2086,6 +2090,15 @@ bgp_get (struct bgp **bgp_val, as_t *as, const char *name)
       if (bgp_socket (bm->port, bm->address) < 0)
 	return BGP_ERR_INVALID_VALUE;
     }
+
+  /* DBGP D-BGP addition - david Adding protocol type to the bgp structure. Any
+     other attributes known at startup fo the bgp struct will be added here as
+     well Adding protocol type to the bgp structure. Any other attributes known
+     at startup fo the bgp struct will be added here as well
+   */
+
+  bgp->dbgp_protocol = GetProtocolType(general_configuration_);
+  zlog_debug("DBGP: protocol type to bgp object: %i", bgp->dbgp_protocol);
 
   listnode_add (bm->bgp, bgp);
 

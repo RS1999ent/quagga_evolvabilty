@@ -9,15 +9,29 @@
 #include "bgpd/wiser.h"
 #include "bgpd/bgp_common.h"
 #include "bgpd/bgp_route.h"
+#include "bgpd/wiser_config_interface.h"
 
 /* ********************* Global vars ************************** */
+extern WiserConfigHandle  wiser_config_;
 
 /* ********************* Private functions ********************* */
 
 /* ********************* Public functions ********************* */
 
+/*
+Mutates 'control_info' to reflect its previous value incremented by the cost of
+the link it came in on.
+
+Arguments:
+   @param control_info: The control info to be updated (TODO: Make into an IA).
+   Will be mutated.
+   @param peer: The peer that gave us this advertisement. Will use the remote_id
+   and local_id in incrementing link costs
+ */
 void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *peer)
 {
+  // Convert peer->remote_id and peer->local_id to human readable ips.
+
   return;
 }
 

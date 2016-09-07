@@ -34,6 +34,8 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
 
   control_info = retrieve_control_info(transit);
 
+  zlog_debug("dbgp::dbgp_update_control_info: protocol type: %i", peer->bgp->dbgp_protocol);
+
   switch(peer->bgp->dbgp_protocol) 
     { 
       /* Just BGP */

@@ -105,8 +105,8 @@ char config_default[] = SYSCONFDIR BGP_DEFAULT_CONFIG;
 /* Configuration for extra control plane protocols */
 char protocol_config_default[] = SYSCONFDIR "protobuf_config";
 
-static GeneralConfigurationHandle general_configuration_;
-static WiserConfigHandle wiser_config_;
+GeneralConfigurationHandle general_configuration_;
+WiserConfigHandle wiser_config_;
 
 
 
