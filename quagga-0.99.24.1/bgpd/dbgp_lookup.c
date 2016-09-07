@@ -262,5 +262,18 @@ dbgp_result_status_t set_control_info(struct transit *transit,
 
   return(DBGP_SUCCESS);
 }
+
+int has_dbgp_control_info(struct transit *transit)
+{
+  if (transit == NULL || transit->val == NULL)
+  {
+    return 0;
+  }
+  else if ( transit->length == sizeof(dbgp_lookup_key_t))
+    {
+      return 1;
+    }
+  return 0;
+}
    
   

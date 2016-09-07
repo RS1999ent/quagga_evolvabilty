@@ -87,5 +87,15 @@ dbgp_control_info_t *retrieve_control_info(struct transit *transit);
 dbgp_result_status_t  set_control_info(struct transit *transit,
 				       dbgp_control_info_t *control_info);
 
+/* Checks if an attribute has a lookupkey in it. That is, it has extra control
+   info.
+
+   Arguments:
+      @param transit: transitive attributes to check for the extra control info.
+
+   @return 1 if there is control info there, 0 otherwise.
+*/
+int has_dbgp_control_info(struct transit *transit);
+
 
 #endif /* _QUAGGA_DBGP_LOOKUP_H */

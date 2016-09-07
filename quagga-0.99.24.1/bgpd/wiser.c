@@ -17,6 +17,46 @@ extern WiserConfigHandle  wiser_config_;
 
 /* ********************* Private functions ********************* */
 
+/* Given two extra attributes (this is where any extra control info is stored at
+   where a lookup key would be) compute whether one is better than the other
+   based on wiser infomation alone.
+
+   Arguments:
+      @param newattre: The extra attributes associated with a new path.
+      @param existattre: The extra attributes associated with an existing path.
+
+   @return 1 if newattre is better than existattre. 0 if existattre is better
+   than newattre. -1 if neither and we need to move on in the decision process.
+*/
+int ComputeWiserDecision(const struct attr_extra* newattre, const struct attr_extra* existattre)
+{
+  struct transit *newtransit, *existtransit;
+  newtransit = newattre->transit;
+  existtransit = existattre->transit;
+  if(!has_dbgp_control_info(newtransit) || !has_dbgp_control_info(existtransit))
+    {
+      // debug
+      zlog_debug("wiser::ComputeWiserDecision: neither control info had wiser extra info (i.e. a lookupkey)");
+      return -1;
+    }
+
+  // Here if there is some control information in it. Get it. TODO: this will
+  // eventually be an IA and so we will have to check if there is WISER info in
+  // the IA.
+  dbgp_control_info_t *new_control_info = retrieve_control_info(newtransit);
+  dbgp_control_info_t *exist_control_info = retrieve_control_info(existtransit);
+
+  // Return 1 if new is better than exist, 0  if exist is better than old, -1 if they are equal.
+  if (new_control_info->sentinel < exist_control_info->sentinel){
+    return 1;
+  }
+  if (new_control_info->sentinel > exist_control_info->sentinel){
+    return 0;
+  }
+  // here if they are the same
+  return -1;
+}
+
 /* ********************* Public functions ********************* */
 
 /*
@@ -137,15 +177,25 @@ int wiser_info_cmp (struct bgp *bgp, struct bgp_info *new, struct bgp_info *exis
   if (new_pref < exist_pref)
     return 0;
 
+  /* 4. Wiser computation. Will prefer the route with the lower cost. Both must
+     have some cost in the advert otherwise the default decision process will
+     take place */
+  int wiser_decision = ComputeWiserDecision(newattre, existattre);
+  // If it is not -1, then that means we have a decision. Return it. Otherwise
+  // use other decisions.
+  if(wiser_decision != -1){
+    return wiser_decision;
+  }
+
   /* 3. Local route check. We prefer:
    *  - BGP_ROUTE_STATIC
    *  - BGP_ROUTE_AGGREGATE
    *  - BGP_ROUTE_REDISTRIBUTE
    */
-  if (! (new->sub_type == BGP_ROUTE_NORMAL))
-     return 1;
-  if (! (exist->sub_type == BGP_ROUTE_NORMAL))
-     return 0;
+  /* if (! (new->sub_type == BGP_ROUTE_NORMAL)) */
+  /*    return 1; */
+  /* if (! (exist->sub_type == BGP_ROUTE_NORMAL)) */
+  /*    return 0; */
 
   /* 4. AS path length check. */
   if (! bgp_flag_check (bgp, BGP_FLAG_ASPATH_IGNORE))
