@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 #include "wiser_config.h"
+#include "general_configuration.h"
 #include <google/protobuf/text_format.h>
 
-namespace quagga_bgpd {
-  using std::string;
-  class WiserConfigTest : public testing::Test {
+using std::string;
+class WiserConfigTest : public testing::Test {
   public:
     WiserConfigTest(){
       const string kSampleConfig = R"(
@@ -35,12 +35,12 @@ namespace quagga_bgpd {
 
   };
 
-  // test todos: wiser_config does not have topology (todo maybe)
-  // two existing links, reverse direction (testdone)
-  // non exiting link ( testdone)
+// test todos: wiser_config does not have topology (todo maybe)
+// two existing links, reverse direction (testdone)
+// non exiting link ( testdone)
 
-    TEST_F(WiserConfigTest, GetLinkCost_GivenExistingLink_GetCorrectCost)
-  {
+TEST_F(WiserConfigTest, GetLinkCost_GivenExistingLink_GetCorrectCost)
+{
     // Arrange
     const string kIp1 = "192.168.1.1";
     const string kIp2 = "192.168.1.2";
@@ -53,8 +53,8 @@ namespace quagga_bgpd {
          EXPECT_EQ(result, kCorrectOutput);
   }
 
-  TEST_F(WiserConfigTest, GetLinkCost_GivenExistingLinkReverse_GetCorrectCost)
-  {
+TEST_F(WiserConfigTest, GetLinkCost_GivenExistingLinkReverse_GetCorrectCost)
+{
     // Arrange
     const string kIp1 = "192.168.1.2";
     const string kIp2 = "192.168.1.1";
@@ -67,8 +67,8 @@ namespace quagga_bgpd {
          EXPECT_EQ(result, kCorrectOutput);
   }
 
-  TEST_F(WiserConfigTest, GetLinkCost_GivenNonExistentLink_GetCorrectCost)
-  {
+TEST_F(WiserConfigTest, GetLinkCost_GivenNonExistentLink_GetCorrectCost)
+{
     // Arrange
     const string kIp1 = "999.999.999";
     const string kIp2 = "192.168.1.1";
@@ -81,7 +81,103 @@ namespace quagga_bgpd {
          EXPECT_EQ(result, kCorrectOutput);
   }
 
-} // namespace quagga_bgpd
+class GeneralConfigurationTest : public testing::Test {
+public:
+  GeneralConfigurationTest(){
+    const string kSampleConfig = R"(
+    protocol_type: PT_WISER
+wiser_protocol_config {
+    topology {
+        node_links {
+            primary_node {
+                node_name : 'a1'
+                interface_ip : '192.168.1.1'
+            }
+            links {
+                adjacent_node {
+                    node_name : 'b1'
+                    interface_ip : '192.168.1.2'
+                }
+                link_cost : 500
+            }
+        }
+    }
+}
+)";
+    Configuration sample_general_config;
+    google::protobuf::TextFormat::ParseFromString(kSampleConfig, &sample_general_config);
+    general_config_.reset(new GeneralConfiguration(sample_general_config));
+  }
+  void SetUp() { 
+  }
+
+  std::unique_ptr<GeneralConfiguration> general_config_;
+
+};
+
+TEST_F(GeneralConfigurationTest, ProtocolType_ConfigHasPTWISER_GETWISERENUM){
+  const string kInput = R"(
+    protocol_type: PT_WISER
+)";
+  kCProtocolType kCorrectOutput = CPT_WISER;
+  Configuration sample_config;
+  google::protobuf::TextFormat::ParseFromString(kInput, &sample_config);
+  GeneralConfiguration general_config(sample_config);
+
+  kCProtocolType output = general_config.GetProtocolType();
+
+  EXPECT_EQ(kCorrectOutput, output);
+
+
+
+}
+
+TEST_F(GeneralConfigurationTest, ProtocolType_ConfigHasPTUNKNOWN_GetUnknown){
+  const string kInput = R"(
+    protocol_type: PT_UNKNOWN
+)";
+  kCProtocolType kCorrectOutput = CPT_UNKNOWN;
+  Configuration sample_config;
+  google::protobuf::TextFormat::ParseFromString(kInput, &sample_config);
+  GeneralConfiguration general_config(sample_config);
+
+  kCProtocolType output = general_config.GetProtocolType();
+
+  EXPECT_EQ(kCorrectOutput, output);
+
+
+}
+
+TEST_F(GeneralConfigurationTest, GetWiserConfig_ConfigHasWiserConfig_NonNullReferenceReturned){
+  const string kInput = R"(
+    protocol_type: PT_UNKNOWN
+    wiser_protocol_config {
+
+    }
+)";
+  Configuration sample_config;
+  google::protobuf::TextFormat::ParseFromString(kInput, &sample_config);
+  GeneralConfiguration general_config(sample_config);
+
+  WiserConfig* output = general_config.GetWiserConfig();
+
+  EXPECT_TRUE(output != NULL);
+
+}
+
+TEST_F(GeneralConfigurationTest, GetWiserConfig_ConfigHasNoWiserConfig_NullReferenceReturned){
+  const string kInput = R"(
+    protocol_type: PT_UNKNOWN
+)";
+  Configuration sample_config;
+  google::protobuf::TextFormat::ParseFromString(kInput, &sample_config);
+  GeneralConfiguration general_config(sample_config);
+
+  WiserConfig* output = general_config.GetWiserConfig();
+
+  EXPECT_TRUE(output == NULL);
+
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
