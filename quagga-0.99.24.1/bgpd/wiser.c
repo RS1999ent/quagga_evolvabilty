@@ -87,6 +87,7 @@ void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *p
   inet_ntop(AF_INET, &local_id, string_local_id, INET_ADDRSTRLEN);
 
   // Get the link cost
+  zlog_debug("wiser::wiser_update_control_info: Attempting to get linkcost between %s, %s", string_local_id, string_remote_id);
   int link_cost = GetLinkCost(wiser_config_, string_local_id, string_remote_id);
   assert(link_cost != -1); // should not be -1. If it is, something is wrong.
 
