@@ -1967,7 +1967,8 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
    *  incoming adv does not have a lookup key attached.  I assume that
    *  calling dbgp_update_control_info will attach some sort of
    *  protocol-specific information and a lookup key */
-  if (dbgp_input_filter(attr, peer) == DBGP_FILTERED) {
+  // BUG: dbgp_input_filter formerly had attr going int, changed to new_attr
+  if (dbgp_input_filter(&new_attr, peer) == DBGP_FILTERED) {
     bgp_attr_flush(&new_attr);
     reason = "dbgp_protocol_specific_filtered";
     goto filtered;

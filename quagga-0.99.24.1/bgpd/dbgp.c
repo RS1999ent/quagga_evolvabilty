@@ -22,11 +22,12 @@
       @param attr: A bgp attributes to get control information from or add a
       transit to it if there is no extra control information. May be mutated
       @param transit: Will be mutated to point to a transitive attribute in the
-      attr (where a lookup key will be placed).
+      attr (where a lookup key will be placed). This is a ptr to a ptr in order
+      to change where the transitive attribute pointer points to.
 
    Return: A reference to a piece of bgp extra control information.
 */
-dbgp_control_info_t* GetControlInformation(struct attr* attr, struct transit* transit) {
+dbgp_control_info_t* GetControlInformation(struct attr* attr, struct transit** transit) {
 
   assert(attr != NULL);
   dbgp_control_info_t *control_info;
@@ -36,16 +37,17 @@ dbgp_control_info_t* GetControlInformation(struct attr* attr, struct transit* tr
     zlog_debug("dbgp::GetControlInformation: There was existing control information in advert");
     struct attr_extra *extra;
     extra = attr->extra;
-    transit = extra->transit;
-    control_info = retrieve_control_info(transit);
+    *transit = extra->transit;
+    control_info = retrieve_control_info(*transit);
     return control_info;
   }
   // Otherwise, there was no transitive attribute in there.  Therefore create a space for it.
   zlog_debug("dbgp::GetControlInformation: There was no existing control information, so create it");
   bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
   control_info = malloc(sizeof(dbgp_protocol_t));
-  transit = attr->extra->transit;
-  assert(transit != NULL);
+  control_info->sentinel = 0;
+  *transit = attr->extra->transit;
+  assert(*transit != NULL);
   return control_info;
 
 }
@@ -62,7 +64,7 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
   assert(peer != NULL);
   assert(attr != NULL);
 
-  control_info = GetControlInformation(attr, transit);
+  control_info = GetControlInformation(attr, &transit);
   assert(transit != NULL);
 
   if (is_lookup_service_path(transit)) {
