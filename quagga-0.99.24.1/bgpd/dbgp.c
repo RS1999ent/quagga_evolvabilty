@@ -8,6 +8,7 @@
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/wiser.h"
 #include "bgpd/bgp_common.h"
+#include "bgpd/bgp_aspath.h"
 
 /* ********************* Global vars ************************** */
 
@@ -152,10 +153,22 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer)
   struct attr_extra *extra;
   struct transit *transit;
   int retval = DBGP_NOT_FILTERED;
+  
+  // debug what protocol the router thinks its running
+  zlog_debug("dbgp::dbgp_output_filter: protocol type: %i", peer->bgp->dbgp_protocol);
+
+  // If aspath is 0, then this the first thing going through, so there will be no extra attributes, return not filtered.
+  unsigned int aspath_length = aspath_size(attr->aspath);
+  zlog_debug("dbpg::dbpg_output_filter: aspath length: %i", aspath_length);
+  if (aspath_length == 0)
+    {
+      return retval;
+    }
+
 
   assert(attr != NULL && peer != NULL 
 	 && attr->extra != NULL 
-	 && attr->extra->transit != NULL);
+         && attr->extra->transit != NULL && aspath_size(attr->aspath) > 0);
 
   extra = attr->extra;
   transit = extra->transit;

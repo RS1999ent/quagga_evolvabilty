@@ -864,8 +864,9 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
     prefix2str (p, buf, sizeof (buf));
     zlog_info("Found an advertisement w/o existing D-BGP info: %s\n", buf);
 
-    bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
-    insert_sentinel(attr->extra->transit);
+    // This no longer necessary
+    /* bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t)); */
+    /* insert_sentinel(attr->extra->transit); */
   }
 
   return 1;
