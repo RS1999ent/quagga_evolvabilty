@@ -862,7 +862,7 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
   if (attr->extra->transit == NULL) {
     char buf[256];
     prefix2str (p, buf, sizeof (buf));
-    zlog_info("Found an advertisement w/o existing D-BGP info: %s\n", buf);
+    zlog_info("bgp_route::bgp_announce_check: Found an advertisement w/o existing D-BGP info: %s\n", buf);
 
     // This no longer necessary
     /* bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t)); */

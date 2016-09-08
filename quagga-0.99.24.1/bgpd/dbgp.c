@@ -13,27 +13,61 @@
 /* ********************* Global vars ************************** */
 
 /* ********************* Private functions ********************* */
+/* Function that gets control information to be updated. If it already exists in
+   the lookup service (as a key in the transitive attribute), then it will
+   retrieve it. If it does not exist, this function creates a spot for the
+   transitive attribute in 'attr' and returns a blank control info.
+
+   Arguments:
+      @param attr: A bgp attributes to get control information from or add a
+      transit to it if there is no extra control information. May be mutated
+      @param transit: Will be mutated to point to a transitive attribute in the
+      attr (where a lookup key will be placed).
+
+   Return: A reference to a piece of bgp extra control information.
+*/
+dbgp_control_info_t* GetControlInformation(struct attr* attr, struct transit* transit) {
+
+  assert(attr != NULL);
+  dbgp_control_info_t *control_info;
+  // If there is a transitive attribute in there, that means we can retrieve a
+  // extra control information from the lookupservice.
+  if(attr->extra != NULL && attr->extra->transit != NULL){
+    zlog_debug("dbgp::GetControlInformation: There was existing control information in advert");
+    struct attr_extra *extra;
+    extra = attr->extra;
+    transit = extra->transit;
+    control_info = retrieve_control_info(transit);
+    return control_info;
+  }
+  // Otherwise, there was no transitive attribute in there.  Therefore create a space for it.
+  zlog_debug("dbgp::GetControlInformation: There was no existing control information, so create it");
+  bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
+  control_info = malloc(sizeof(dbgp_protocol_t));
+  transit = attr->extra->transit;
+  assert(transit != NULL);
+  return control_info;
+
+}
 
 /* ********************* Public functions ********************* */
+
 
 void dbgp_update_control_info(struct attr *attr, struct peer *peer) 
 {
   dbgp_control_info_t *control_info;
-  struct attr_extra *extra;
   struct transit *transit;
 
-  assert(attr != NULL && peer != NULL 
-	 && attr->extra != NULL 
-	 && attr->extra->transit != NULL);
+  // Precondition asserts
+  assert(peer != NULL);
+  assert(attr != NULL);
 
-  extra = attr->extra;
-  transit = extra->transit;
+  control_info = GetControlInformation(attr, transit);
+  assert(transit != NULL);
 
-  if (is_lookup_service_path(transit)) { 
+  if (is_lookup_service_path(transit)) {
     return;
   }
-
-  control_info = retrieve_control_info(transit);
 
   zlog_debug("dbgp::dbgp_update_control_info: protocol type: %i", peer->bgp->dbgp_protocol);
 
