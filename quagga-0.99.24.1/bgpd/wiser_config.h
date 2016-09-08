@@ -1,6 +1,7 @@
 #ifndef BGPD_WISER_CONFIG_H
 #define BGPD_WISER_CONFIG_H
 #include "quagga_config.pb.h"
+#include <iostream>
 
 #include <unordered_map>
 
@@ -22,6 +23,12 @@
     //
     // Returns: The link cost of the link. If it doesn't exist, returns -1.
     int GetLinkCost(string ip1, string ip2);
+
+    // Gets a character ptr to a string that displays the lnk costs topology.
+    // For debugging.
+    //
+    // Returns: A ptr to a string displaying the link cost topology.
+    const char* LinkCostsToString();
 
   private:
 

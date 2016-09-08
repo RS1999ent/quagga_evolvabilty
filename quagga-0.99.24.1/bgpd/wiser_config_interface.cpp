@@ -21,6 +21,9 @@ extern "C"
     return wiser_handle->GetLinkCost(string_ip1, string_ip2);
   }
 
+  const char* LinkCostsToString(WiserConfigHandle wiser_config_handle) {
+    return wiser_config_handle->LinkCostsToString();
+  }
   // Generalconfiguration class methods below here
 
 

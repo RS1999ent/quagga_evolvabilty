@@ -108,10 +108,11 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new,
   // Debug statement
   zlog_debug("dbgp::dbgp_info_cmp: protocol type: %i", bgp->dbgp_protocol);
 
+  //TODO: add back
   /* Always use BGP for paths connecting the lookup service */
-  if (is_lookup_service_path(new->attr->extra->transit)) {
-    return(bgp_info_cmp(bgp, new, exist, path_eq));
-  }
+  /* if (is_lookup_service_path(new->attr->extra->transit)) { */
+  /*   return(bgp_info_cmp(bgp, new, exist, path_eq)); */
+  /* } */
 
   switch(bgp->dbgp_protocol) {
 

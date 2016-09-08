@@ -11,6 +11,7 @@ extern "C" {
   typedef struct WiserConfig * WiserConfigHandle;
   void    free_WiserConfig(WiserConfigHandle);
   int GetLinkCost(WiserConfigHandle, const char * ip1, const char * ip2);
+  const char* LinkCostsToString(WiserConfigHandle wiser_config_handle);
 
   /* Generalconfiguration class methods below here */
   // currently creates a wiser config from the string of a file name

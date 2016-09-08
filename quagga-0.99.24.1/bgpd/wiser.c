@@ -88,6 +88,7 @@ void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *p
 
   // Get the link cost
   zlog_debug("wiser::wiser_update_control_info: Attempting to get linkcost between %s, %s", string_local_id, string_remote_id);
+  /* zlog_debug("wiser::wiser_update_control_info: printing linkcosts:\n %s", LinkCostsToString(wiser_config_)); */
   int link_cost = GetLinkCost(wiser_config_, string_local_id, string_remote_id);
   assert(link_cost != -1); // should not be -1. If it is, something is wrong.
 
@@ -149,6 +150,9 @@ int wiser_info_cmp (struct bgp *bgp, struct bgp_info *new, struct bgp_info *exis
     return 0;
   if (exist == NULL)
     return 1;
+
+  // Debug statement: make sure we enter this function
+  zlog_debug("wiser::wiser_info_cmp:: entered function and passed null check");
 
   newattr = new->attr;
   existattr = exist->attr;
