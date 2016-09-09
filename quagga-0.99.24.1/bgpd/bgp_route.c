@@ -1174,7 +1174,7 @@ bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,
       bgp_info_unset_flag (rn, ri, BGP_INFO_DMED_CHECK);
       bgp_info_unset_flag (rn, ri, BGP_INFO_DMED_SELECTED);
 
-      if (bgp_info_cmp (bgp, ri, new_select, &paths_eq))
+      if (dbgp_info_cmp (bgp, ri, new_select, &paths_eq))
 	{
 	  if (do_mpath && bgp_flag_check (bgp, BGP_FLAG_DETERMINISTIC_MED))
 	    bgp_mp_dmed_deselect (new_select);
