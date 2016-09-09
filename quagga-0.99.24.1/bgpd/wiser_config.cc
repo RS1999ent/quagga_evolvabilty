@@ -29,6 +29,21 @@
     return -1; 
   }
 
+
+const char* WiserConfig::LinkCostsToString(){
+  // dangling string ptr!
+  string *dangling_string = new string();
+  ProcessWiserTopology();
+  for (auto link_and_linktolinkcost : wiser_link_costs_){
+    for(auto otherend_and_linkcost : link_and_linktolinkcost.second){
+      *dangling_string += link_and_linktolinkcost.first + " " + otherend_and_linkcost.first + " " + std::to_string(otherend_and_linkcost.second) + "\n";
+    }
+  }
+  return dangling_string->c_str();
+
+
+}
+
   // private methods under here
 
   void WiserConfig::ProcessWiserTopology(){
@@ -43,6 +58,10 @@
         // ip of the primary node
         string ip1;
         ip1 = node_link.primary_node().interface_ip();
+        // if there is no entry for ip1, make an empty map as its value.
+        if(wiser_link_costs_.count(ip1) == 0) {
+          wiser_link_costs_[ip1] = std::unordered_map<string, uint64_t>();
+        }
         for(const Link& link : node_link.links()){
           // ip of an adjacent ip to ip1
           string ip2;
@@ -51,11 +70,15 @@
           // Add entry to map both forward and reverse
           std::unordered_map<string, uint64_t> tmp_map_ip_to_link_cost;
           tmp_map_ip_to_link_cost[ip2] = link_cost;
-          wiser_link_costs_[ip1] = tmp_map_ip_to_link_cost;
-          // clear the tmp map
+          wiser_link_costs_[ip1].insert(tmp_map_ip_to_link_cost.begin(), tmp_map_ip_to_link_cost.end());
+          // clear the tmp map because we going to make the reverse links now
           tmp_map_ip_to_link_cost.clear();
           tmp_map_ip_to_link_cost[ip1] = link_cost;
-          wiser_link_costs_[ip2] = tmp_map_ip_to_link_cost;
+          // if there is no entry for ip2, make an empty map as its value
+          if(wiser_link_costs_.count(ip2) == 0) {
+            wiser_link_costs_[ip2] = std::unordered_map<string, uint64_t>();
+          }
+          wiser_link_costs_[ip2].insert(tmp_map_ip_to_link_cost.begin(), tmp_map_ip_to_link_cost.end());
         }
       }
   }

@@ -56,9 +56,10 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_zebra.h"
 #include "bgpd/bgp_vty.h"
 #include "bgpd/bgp_mpath.h"
+#include "bgpd/bgp_common.h"
 
 #include "bgpd/dbgp_lookup.h"
-
+#include "bgpd/dbgp.h"
 
 /* Extern from bgp_dump.c */
 extern const char *bgp_origin_str[];
@@ -309,264 +310,6 @@ bgp_info_unset_flag (struct bgp_node *rn, struct bgp_info *ri, u_int32_t flag)
   bgp_pcount_adjust (rn, ri);
 }
 
-/* Get MED value.  If MED value is missing and "bgp bestpath
-   missing-as-worst" is specified, treat it as the worst value. */
-static u_int32_t
-bgp_med_value (struct attr *attr, struct bgp *bgp)
-{
-  if (attr->flag & ATTR_FLAG_BIT (BGP_ATTR_MULTI_EXIT_DISC))
-    return attr->med;
-  else
-    {
-      if (bgp_flag_check (bgp, BGP_FLAG_MED_MISSING_AS_WORST))
-	return BGP_MED_MAX;
-      else
-	return 0;
-    }
-}
-
-/* Compare two bgp route entity.  br is preferable then return 1. */
-static int
-bgp_info_cmp (struct bgp *bgp, struct bgp_info *new, struct bgp_info *exist,
-	      int *paths_eq)
-{
-  struct attr *newattr, *existattr;
-  struct attr_extra *newattre, *existattre;
-  bgp_peer_sort_t new_sort;
-  bgp_peer_sort_t exist_sort;
-  u_int32_t new_pref;
-  u_int32_t exist_pref;
-  u_int32_t new_med;
-  u_int32_t exist_med;
-  u_int32_t new_weight;
-  u_int32_t exist_weight;
-  uint32_t newm, existm;
-  struct in_addr new_id;
-  struct in_addr exist_id;
-  int new_cluster;
-  int exist_cluster;
-  int internal_as_route;
-  int confed_as_route;
-  int ret;
-
-  *paths_eq = 0;
-
-  /* 0. Null check. */
-  if (new == NULL)
-    return 0;
-  if (exist == NULL)
-    return 1;
-
-  newattr = new->attr;
-  existattr = exist->attr;
-  newattre = newattr->extra;
-  existattre = existattr->extra;
-
-  /* 1. Weight check. */
-  new_weight = exist_weight = 0;
-
-  if (newattre)
-    new_weight = newattre->weight;
-  if (existattre)
-    exist_weight = existattre->weight;
-
-  if (new_weight > exist_weight)
-    return 1;
-  if (new_weight < exist_weight)
-    return 0;
-
-  /* 2. Local preference check. */
-  new_pref = exist_pref = bgp->default_local_pref;
-
-  if (newattr->flag & ATTR_FLAG_BIT (BGP_ATTR_LOCAL_PREF))
-    new_pref = newattr->local_pref;
-  if (existattr->flag & ATTR_FLAG_BIT (BGP_ATTR_LOCAL_PREF))
-    exist_pref = existattr->local_pref;
-
-  if (new_pref > exist_pref)
-    return 1;
-  if (new_pref < exist_pref)
-    return 0;
-
-  /* 3. Local route check. We prefer:
-   *  - BGP_ROUTE_STATIC
-   *  - BGP_ROUTE_AGGREGATE
-   *  - BGP_ROUTE_REDISTRIBUTE
-   */
-  if (! (new->sub_type == BGP_ROUTE_NORMAL))
-     return 1;
-  if (! (exist->sub_type == BGP_ROUTE_NORMAL))
-     return 0;
-
-  /* 4. AS path length check. */
-  if (! bgp_flag_check (bgp, BGP_FLAG_ASPATH_IGNORE))
-    {
-      int exist_hops = aspath_count_hops (existattr->aspath);
-      int exist_confeds = aspath_count_confeds (existattr->aspath);
-      
-      if (bgp_flag_check (bgp, BGP_FLAG_ASPATH_CONFED))
-	{
-	  int aspath_hops;
-	  
-	  aspath_hops = aspath_count_hops (newattr->aspath);
-          aspath_hops += aspath_count_confeds (newattr->aspath);
-          
-	  if ( aspath_hops < (exist_hops + exist_confeds))
-	    return 1;
-	  if ( aspath_hops > (exist_hops + exist_confeds))
-	    return 0;
-	}
-      else
-	{
-	  int newhops = aspath_count_hops (newattr->aspath);
-	  
-	  if (newhops < exist_hops)
-	    return 1;
-          if (newhops > exist_hops)
-	    return 0;
-	}
-    }
-
-  /* 5. Origin check. */
-  if (newattr->origin < existattr->origin)
-    return 1;
-  if (newattr->origin > existattr->origin)
-    return 0;
-
-  /* 6. MED check. */
-  internal_as_route = (aspath_count_hops (newattr->aspath) == 0
-		      && aspath_count_hops (existattr->aspath) == 0);
-  confed_as_route = (aspath_count_confeds (newattr->aspath) > 0
-		    && aspath_count_confeds (existattr->aspath) > 0
-		    && aspath_count_hops (newattr->aspath) == 0
-		    && aspath_count_hops (existattr->aspath) == 0);
-  
-  if (bgp_flag_check (bgp, BGP_FLAG_ALWAYS_COMPARE_MED)
-      || (bgp_flag_check (bgp, BGP_FLAG_MED_CONFED)
-	 && confed_as_route)
-      || aspath_cmp_left (newattr->aspath, existattr->aspath)
-      || aspath_cmp_left_confed (newattr->aspath, existattr->aspath)
-      || internal_as_route)
-    {
-      new_med = bgp_med_value (new->attr, bgp);
-      exist_med = bgp_med_value (exist->attr, bgp);
-
-      if (new_med < exist_med)
-	return 1;
-      if (new_med > exist_med)
-	return 0;
-    }
-
-  /* 7. Peer type check. */
-  new_sort = new->peer->sort;
-  exist_sort = exist->peer->sort;
-
-  if (new_sort == BGP_PEER_EBGP
-      && (exist_sort == BGP_PEER_IBGP || exist_sort == BGP_PEER_CONFED))
-    return 1;
-  if (exist_sort == BGP_PEER_EBGP
-      && (new_sort == BGP_PEER_IBGP || new_sort == BGP_PEER_CONFED))
-    return 0;
-
-  /* 8. IGP metric check. */
-  newm = existm = 0;
-
-  if (new->extra)
-    newm = new->extra->igpmetric;
-  if (exist->extra)
-    existm = exist->extra->igpmetric;
-
-  if (newm < existm)
-    ret = 1;
-  if (newm > existm)
-    ret = 0;
-
-  /* 9. Maximum path check. */
-  if (newm == existm)
-    {
-      if (bgp_flag_check(bgp, BGP_FLAG_ASPATH_MULTIPATH_RELAX))
-        {
-
-	  /*
-	   * For the two paths, all comparison steps till IGP metric
-	   * have succeeded - including AS_PATH hop count. Since 'bgp
-	   * bestpath as-path multipath-relax' knob is on, we don't need
-	   * an exact match of AS_PATH. Thus, mark the paths are equal.
-	   * That will trigger both these paths to get into the multipath
-	   * array.
-	   */
-	  *paths_eq = 1;
-        }
-      else if (new->peer->sort == BGP_PEER_IBGP)
-	{
-	  if (aspath_cmp (new->attr->aspath, exist->attr->aspath))
-	    *paths_eq = 1;
-	}
-      else if (new->peer->as == exist->peer->as)
-	*paths_eq = 1;
-    }
-  else
-    {
-      /*
-       * TODO: If unequal cost ibgp multipath is enabled we can
-       * mark the paths as equal here instead of returning
-       */
-      return ret;
-    }
-
-  /* 10. If both paths are external, prefer the path that was received
-     first (the oldest one).  This step minimizes route-flap, since a
-     newer path won't displace an older one, even if it was the
-     preferred route based on the additional decision criteria below.  */
-  if (! bgp_flag_check (bgp, BGP_FLAG_COMPARE_ROUTER_ID)
-      && new_sort == BGP_PEER_EBGP
-      && exist_sort == BGP_PEER_EBGP)
-    {
-      if (CHECK_FLAG (new->flags, BGP_INFO_SELECTED))
-	return 1;
-      if (CHECK_FLAG (exist->flags, BGP_INFO_SELECTED))
-	return 0;
-    }
-
-  /* 11. Rourter-ID comparision. */
-  if (newattr->flag & ATTR_FLAG_BIT(BGP_ATTR_ORIGINATOR_ID))
-    new_id.s_addr = newattre->originator_id.s_addr;
-  else
-    new_id.s_addr = new->peer->remote_id.s_addr;
-  if (existattr->flag & ATTR_FLAG_BIT(BGP_ATTR_ORIGINATOR_ID))
-    exist_id.s_addr = existattre->originator_id.s_addr;
-  else
-    exist_id.s_addr = exist->peer->remote_id.s_addr;
-
-  if (ntohl (new_id.s_addr) < ntohl (exist_id.s_addr))
-    return 1;
-  if (ntohl (new_id.s_addr) > ntohl (exist_id.s_addr))
-    return 0;
-
-  /* 12. Cluster length comparision. */
-  new_cluster = exist_cluster = 0;
-
-  if (newattr->flag & ATTR_FLAG_BIT(BGP_ATTR_CLUSTER_LIST))
-    new_cluster = newattre->cluster->length;
-  if (existattr->flag & ATTR_FLAG_BIT(BGP_ATTR_CLUSTER_LIST))
-    exist_cluster = existattre->cluster->length;
-
-  if (new_cluster < exist_cluster)
-    return 1;
-  if (new_cluster > exist_cluster)
-    return 0;
-
-  /* 13. Neighbor address comparision. */
-  ret = sockunion_cmp (new->peer->su_remote, exist->peer->su_remote);
-
-  if (ret == 1)
-    return 0;
-  if (ret == -1)
-    return 1;
-
-  return 1;
-}
-
 static enum filter_type
 bgp_input_filter (struct peer *peer, struct prefix *p, struct attr *attr,
 		  afi_t afi, safi_t safi)
@@ -795,6 +538,7 @@ bgp_import_modifier (struct peer *rsclient, struct peer *peer,
   return RMAP_PERMIT;
 }
 
+/* @note: rajas - this is where BGP's output filters are set */
 static int
 bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 		    struct attr *attr, afi_t afi, safi_t safi)
@@ -943,6 +687,11 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 	    return 0;
 	}
     }
+
+  /* D-BGP-specific filtering */
+  if(dbgp_output_filter(riattr, peer) == DBGP_FILTERED) {
+    return 0;
+  }
   
   /* For modify attribute, copy it to temporary structure. */
   bgp_attr_dup (attr, riattr);
@@ -1113,10 +862,11 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
   if (attr->extra->transit == NULL) {
     char buf[256];
     prefix2str (p, buf, sizeof (buf));
-    zlog_info("Found an advertisement w/o existing D-BGP info: %s\n", buf);
+    zlog_info("bgp_route::bgp_announce_check: Found an advertisement w/o existing D-BGP info: %s\n", buf);
 
-    bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
-    insert_sentinel(attr->extra->transit);
+    // This no longer necessary
+    /* bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t)); */
+    /* insert_sentinel(attr->extra->transit); */
   }
 
   return 1;
@@ -1320,12 +1070,6 @@ bgp_announce_check_rsclient (struct bgp_info *ri, struct peer *rsclient,
   return 1;
 }
 
-struct bgp_info_pair
-{
-  struct bgp_info *old;
-  struct bgp_info *new;
-};
-
 static void
 bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,
 		    struct bgp_maxpaths_cfg *mpath_cfg,
@@ -1372,7 +1116,7 @@ bgp_best_selection (struct bgp *bgp, struct bgp_node *rn,
 		{
 		  if (CHECK_FLAG (ri2->flags, BGP_INFO_SELECTED))
 		    old_select = ri2;
-		  if (bgp_info_cmp (bgp, ri2, new_select, &paths_eq))
+		  if (dbgp_info_cmp (bgp, ri2, new_select, &paths_eq))
 		    {
 		      bgp_info_unset_flag (rn, new_select, BGP_INFO_DMED_SELECTED);
 		      new_select = ri2;
@@ -1597,25 +1341,11 @@ bgp_process_main (struct work_queue *wq, void *data)
   struct bgp_info_pair old_and_new;
   struct listnode *node, *nnode;
   struct peer *peer;
-  //struct attr* new_attr;
-  //dbgp_control_info_t new_control_info;
 
   /* Best path selection. */
   bgp_best_selection (bgp, rn, &bgp->maxpaths[afi][safi], &old_and_new);
   old_select = old_and_new.old;
   new_select = old_and_new.new;
-
-  //  /* D-BGP Modify new select with D-BGP sentinal value */
-  // if (new_select != NULL && new_select->attr->extra->transit == NULL) { 
-  //  new_control_info = DBGP_SENTINEL_VALUE;
-  //  new_attr = calloc(1, sizeof(struct attr));
-  //  bgp_attr_dup(new_attr, new_select->attr);
-
-  //  set_control_info(new_attr, &new_control_info);
-    
-  //  bgp_attr_unintern(&new_select->attr);
-  //  new_select->attr = bgp_attr_intern(new_attr);
-  // }
 
   /* Nothing to do. */
   if (old_select && old_select == new_select)
@@ -2119,7 +1849,17 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   const char *reason;
   char buf[SU_ADDRSTRLEN];
 
+  /* @note: rajas - Some clarifications 
+   * 1) rn bgp_afi_node_get() actually
+   * returns all routes from all neighbors for the specified prefix.
+   * 2) Any modifications to the incoming advertisement should be done
+   * before the call to attr_intern
+   * 2) peer->bgp contains info about this router.
+   */
+
   bgp = peer->bgp;
+
+  /* Returns all routes for selected prefix from ALL ALL neighbors */
   rn = bgp_afi_node_get (bgp->rib[afi][safi], afi, safi, p, prd);
   
   /* When peer's soft reconfiguration enabled.  Record input packet in
@@ -2177,14 +1917,9 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
       reason = "filter;";
       goto filtered;
     }
-
+  
   new_attr.extra = &new_extra;
   bgp_attr_dup (&new_attr, attr);
-
-  ///** D-BGP: Check sentinel value */
-  //dbgp_control_info_t old_control_info;
-  //retrieve_control_info(&new_attr, &old_control_info);
-  //assert(old_control_info == DBGP_SENTINEL_VALUE);
 
   /* Apply incoming route-map.
    * NB: new_attr may now contain newly allocated values from route-map "set"
@@ -2222,7 +1957,23 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	  goto filtered;
 	}
     }
-  
+
+  /** @note:  D-BGP: update control info before best-path selection here */
+  /* Need to do this BEFORE EVER interning the new attribute */
+  dbgp_update_control_info(&new_attr, peer);
+
+  /* D-BGP protocol specific filtering */
+  /* Need to do this AFTER updating control information in case the
+   *  incoming adv does not have a lookup key attached.  I assume that
+   *  calling dbgp_update_control_info will attach some sort of
+   *  protocol-specific information and a lookup key */
+  // BUG: dbgp_input_filter formerly had attr going int, changed to new_attr
+  if (dbgp_input_filter(&new_attr, peer) == DBGP_FILTERED) {
+    bgp_attr_flush(&new_attr);
+    reason = "dbgp_protocol_specific_filtered";
+    goto filtered;
+  }
+
   attr_new = bgp_attr_intern (&new_attr);
 
   /* If the update is implicit withdraw. */
@@ -2518,6 +2269,7 @@ bgp_withdraw (struct peer *peer, struct prefix *p, struct attr *attr,
   return 0;
 }
 
+/** @note: rajas - D-BGP: No need to set D-BGP control info w/default route */
 void
 bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
 {
@@ -2602,9 +2354,6 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
         withdraw = 1;
     }
 
-  ///** D-BGP: Set sentinal value */
-
-
   if (withdraw)
     {
       if (CHECK_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE))
@@ -2616,19 +2365,7 @@ bgp_default_originate (struct peer *peer, afi_t afi, safi_t safi, int withdraw)
       if (! CHECK_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE))
         {
           SET_FLAG (peer->af_sflags[afi][safi], PEER_STATUS_DEFAULT_ORIGINATE);
-
-	  /** 
-	   * @note: D-BGP: rajas - insert extra control info with
-	   * default route.
-	   */
-	  /** @bug: Not quite sure what this extra ctrl info might be */
-	  bgp_attr_extra_transit_get(&attr, sizeof(dbgp_lookup_key_t));
-	  insert_sentinel((attr.extra)->transit);
-
           bgp_default_update_send (peer, &attr, afi, safi, from);	  
-
-	  bgp_attr_extra_transit_free(&attr);
-
         }
     }
 
@@ -3504,6 +3241,10 @@ bgp_static_update_rsclient (struct peer *rsclient, struct prefix *p,
   bgp_attr_extra_free (&attr);
 }
 
+/* @note: rajas - I think this is where routes we announce are originated.  If
+ *  there is control infromation attached to a prefix, it should be
+ *  added here.
+ */
 static void
 bgp_static_update_main (struct bgp *bgp, struct prefix *p,
 		   struct bgp_static *bgp_static, afi_t afi, safi_t safi)

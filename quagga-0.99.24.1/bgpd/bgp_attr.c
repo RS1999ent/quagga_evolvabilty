@@ -39,6 +39,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_packet.h"
 #include "bgpd/bgp_ecommunity.h"
 #include "bgpd/dbgp_lookup.h"
+#include "bgpd/dbgp.h"
 
 /* Attribute strings for logging. */
 static const struct message attr_str [] = 
@@ -1756,14 +1757,10 @@ bgp_attr_dbgp(struct bgp_attr_parser_args *args)
   val = ntohl(*(dbgp_lookup_key_t *)transit->val);
   memcpy(transit->val, &val, length);
 
-  /* Allow Protocol-specific modules to modify extra control
-     information and insert an new lookup key if necessary */
-  /* For now, just call a generic function stored in dbgp_lookup.c.
-     Eventually, eahc protocol will have it's own .c file.  These .c
-     files will contain modification functions that will be called
-     here.  So, to be clear, there will be one modification function
-     per protocol.  */
-  insert_check_sentinel(transit);
+  /* Pick what protocol to use for this advertisement and update
+   * control information if necessary
+   */
+  // dbgp_update_control_info(attr, peer); 
 
   return BGP_ATTR_PARSE_PROCEED;
 }
@@ -2130,11 +2127,14 @@ bgp_attr_parse (struct peer *peer, struct attr *attr, bgp_size_t size,
    * @note: D-BGP : rajas - Allow for extra D-BGP ctrl info to be
    * inserted if the incoming advertisement didn't already have it.
    */
-  if (CHECK_BITMAP(seen, BGP_ATTR_DBGP) == 0) { 
-    assert(attr->extra->transit == NULL); 
-    bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
-    insert_sentinel(attr->extra->transit);
-  }
+  /**
+     @note: no longer necessary 09-08-16
+  */
+  /* if (CHECK_BITMAP(seen, BGP_ATTR_DBGP) == 0) {  */
+  /*   assert(attr->extra->transit == NULL);  */
+  /*   bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t)); */
+  /*   insert_sentinel(attr->extra->transit); */
+  /* } */
     
   /* Check final read pointer is same as end pointer. */
   if (BGP_INPUT_PNT (peer) != endp)

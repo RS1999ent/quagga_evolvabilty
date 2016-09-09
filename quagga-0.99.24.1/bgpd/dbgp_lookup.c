@@ -11,6 +11,8 @@
 
 #include "lib/zebra.h"
 #include "lib/log.h"
+#include "lib/prefix.h"
+#include "lib/vty.h"
 #include "bgpd/bgpd.h"
 #include "bgpd/bgp_attr.h"
 #include "bgpd/dbgp_lookup.h"
@@ -112,6 +114,18 @@ static dbgp_result_status_t pack_dbgp_control_info(dbgp_control_info_t *control_
 
 
 /* ********************* Public functions ********************* */
+
+int is_lookup_service_path(struct transit *transit)
+{
+  assert(transit != NULL);
+  assert(transit->val != NULL);
+
+  if (*(dbgp_lookup_key_t *)transit->val == DBGP_LOOKUP_SVC_PATH) {
+    return 1;
+  }
+
+  return 0;
+}
 
 dbgp_result_status_t insert_check_sentinel(struct transit *transit)
 {
@@ -223,7 +237,9 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   }
 
   key = (dbgp_lookup_key_t *)malloc(sizeof(dbgp_lookup_key_t));
-  *key = rand();
+  do {
+    *key = rand();
+  } while (*key == DBGP_LOOKUP_SVC_PATH);
 
   assert(pack_dbgp_control_info(control_info, packed_val) == DBGP_SUCCESS);
 
@@ -245,6 +261,19 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   free(c);
 
   return(DBGP_SUCCESS);
+}
+
+int has_dbgp_control_info(struct transit *transit)
+{
+  if (transit == NULL || transit->val == NULL)
+  {
+    return 0;
+  }
+  else if ( transit->length == sizeof(dbgp_lookup_key_t))
+    {
+      return 1;
+    }
+  return 0;
 }
    
   

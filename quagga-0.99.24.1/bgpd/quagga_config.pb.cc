@@ -36,6 +36,7 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* NodeProperty_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   NodeProperty_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* ProtocolType_descriptor_ = NULL;
 
 }  // namespace
 
@@ -47,7 +48,8 @@ void protobuf_AssignDesc_quagga_5fconfig_2eproto() {
       "quagga_config.proto");
   GOOGLE_CHECK(file != NULL);
   Configuration_descriptor_ = file->message_type(0);
-  static const int Configuration_offsets_[1] = {
+  static const int Configuration_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, protocol_type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, wiser_protocol_config_),
   };
   Configuration_reflection_ =
@@ -139,6 +141,7 @@ void protobuf_AssignDesc_quagga_5fconfig_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(NodeProperty));
+  ProtocolType_descriptor_ = file->enum_type(0);
 }
 
 namespace {
@@ -189,16 +192,18 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\023quagga_config.proto\"D\n\rConfiguration\0223"
-    "\n\025wiser_protocol_config\030\001 \001(\0132\024.WiserPro"
-    "tocolConfig\"2\n\023WiserProtocolConfig\022\033\n\010to"
-    "pology\030\001 \001(\0132\t.Topology\")\n\010Topology\022\035\n\nn"
-    "ode_links\030\001 \003(\0132\t.NodeLink\"E\n\010NodeLink\022#"
-    "\n\014primary_node\030\001 \001(\0132\r.NodeProperty\022\024\n\005l"
-    "inks\030\002 \003(\0132\005.Link\"\?\n\004Link\022$\n\radjacent_no"
-    "de\030\001 \001(\0132\r.NodeProperty\022\021\n\tlink_cost\030\002 \001"
-    "(\004\"7\n\014NodeProperty\022\021\n\tnode_name\030\001 \001(\t\022\024\n"
-    "\014interface_ip\030\002 \001(\t", 379);
+    "\n\023quagga_config.proto\"j\n\rConfiguration\022$"
+    "\n\rprotocol_type\030\001 \001(\0162\r.ProtocolType\0223\n\025"
+    "wiser_protocol_config\030\002 \001(\0132\024.WiserProto"
+    "colConfig\"2\n\023WiserProtocolConfig\022\033\n\010topo"
+    "logy\030\001 \001(\0132\t.Topology\")\n\010Topology\022\035\n\nnod"
+    "e_links\030\001 \003(\0132\t.NodeLink\"E\n\010NodeLink\022#\n\014"
+    "primary_node\030\001 \001(\0132\r.NodeProperty\022\024\n\005lin"
+    "ks\030\002 \003(\0132\005.Link\"\?\n\004Link\022$\n\radjacent_node"
+    "\030\001 \001(\0132\r.NodeProperty\022\021\n\tlink_cost\030\002 \001(\004"
+    "\"7\n\014NodeProperty\022\021\n\tnode_name\030\001 \001(\t\022\024\n\014i"
+    "nterface_ip\030\002 \001(\t*,\n\014ProtocolType\022\016\n\nPT_"
+    "UNKNOWN\020\000\022\014\n\010PT_WISER\020\001", 463);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "quagga_config.proto", &protobuf_RegisterTypes);
   Configuration::default_instance_ = new Configuration();
@@ -222,10 +227,25 @@ struct StaticDescriptorInitializer_quagga_5fconfig_2eproto {
     protobuf_AddDesc_quagga_5fconfig_2eproto();
   }
 } static_descriptor_initializer_quagga_5fconfig_2eproto_;
+const ::google::protobuf::EnumDescriptor* ProtocolType_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ProtocolType_descriptor_;
+}
+bool ProtocolType_IsValid(int value) {
+  switch(value) {
+    case 0:
+    case 1:
+      return true;
+    default:
+      return false;
+  }
+}
+
 
 // ===================================================================
 
 #ifndef _MSC_VER
+const int Configuration::kProtocolTypeFieldNumber;
 const int Configuration::kWiserProtocolConfigFieldNumber;
 #endif  // !_MSC_VER
 
@@ -248,6 +268,7 @@ Configuration::Configuration(const Configuration& from)
 
 void Configuration::SharedCtor() {
   _cached_size_ = 0;
+  protocol_type_ = 0;
   wiser_protocol_config_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -285,8 +306,11 @@ Configuration* Configuration::New() const {
 }
 
 void Configuration::Clear() {
-  if (has_wiser_protocol_config()) {
-    if (wiser_protocol_config_ != NULL) wiser_protocol_config_->::WiserProtocolConfig::Clear();
+  if (_has_bits_[0 / 32] & 3) {
+    protocol_type_ = 0;
+    if (has_wiser_protocol_config()) {
+      if (wiser_protocol_config_ != NULL) wiser_protocol_config_->::WiserProtocolConfig::Clear();
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -302,9 +326,29 @@ bool Configuration::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional .WiserProtocolConfig wiser_protocol_config = 1;
+      // optional .ProtocolType protocol_type = 1;
       case 1: {
-        if (tag == 10) {
+        if (tag == 8) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::ProtocolType_IsValid(value)) {
+            set_protocol_type(static_cast< ::ProtocolType >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(1, value);
+          }
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_wiser_protocol_config;
+        break;
+      }
+
+      // optional .WiserProtocolConfig wiser_protocol_config = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_wiser_protocol_config:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_wiser_protocol_config()));
         } else {
@@ -339,10 +383,16 @@ failure:
 void Configuration::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:Configuration)
-  // optional .WiserProtocolConfig wiser_protocol_config = 1;
+  // optional .ProtocolType protocol_type = 1;
+  if (has_protocol_type()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      1, this->protocol_type(), output);
+  }
+
+  // optional .WiserProtocolConfig wiser_protocol_config = 2;
   if (has_wiser_protocol_config()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->wiser_protocol_config(), output);
+      2, this->wiser_protocol_config(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -355,11 +405,17 @@ void Configuration::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Configuration::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:Configuration)
-  // optional .WiserProtocolConfig wiser_protocol_config = 1;
+  // optional .ProtocolType protocol_type = 1;
+  if (has_protocol_type()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->protocol_type(), target);
+  }
+
+  // optional .WiserProtocolConfig wiser_protocol_config = 2;
   if (has_wiser_protocol_config()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        1, this->wiser_protocol_config(), target);
+        2, this->wiser_protocol_config(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -374,7 +430,13 @@ int Configuration::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional .WiserProtocolConfig wiser_protocol_config = 1;
+    // optional .ProtocolType protocol_type = 1;
+    if (has_protocol_type()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->protocol_type());
+    }
+
+    // optional .WiserProtocolConfig wiser_protocol_config = 2;
     if (has_wiser_protocol_config()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -408,6 +470,9 @@ void Configuration::MergeFrom(const ::google::protobuf::Message& from) {
 void Configuration::MergeFrom(const Configuration& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_protocol_type()) {
+      set_protocol_type(from.protocol_type());
+    }
     if (from.has_wiser_protocol_config()) {
       mutable_wiser_protocol_config()->::WiserProtocolConfig::MergeFrom(from.wiser_protocol_config());
     }
@@ -434,6 +499,7 @@ bool Configuration::IsInitialized() const {
 
 void Configuration::Swap(Configuration* other) {
   if (other != this) {
+    std::swap(protocol_type_, other->protocol_type_);
     std::swap(wiser_protocol_config_, other->wiser_protocol_config_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);

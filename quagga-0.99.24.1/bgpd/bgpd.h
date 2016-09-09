@@ -23,6 +23,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 
 /* For union sockunion.  */
 #include "sockunion.h"
+#include "shared_enum_definitions.h"
 
 /* Typedef BGP specific types.  */
 typedef u_int32_t as_t;
@@ -61,6 +62,7 @@ struct bgp_master
 #define BGP_OPT_CONFIG_CISCO             (1 << 2)
 #define BGP_OPT_NO_LISTEN                (1 << 3)
 };
+
 
 /* BGP instance structure.  */
 struct bgp 
@@ -172,6 +174,18 @@ struct bgp
     u_int16_t maxpaths_ebgp;
     u_int16_t maxpaths_ibgp;
   } maxpaths[AFI_MAX][SAFI_MAX];
+
+  /* D-BGP: The protocol this instance runs */
+  dbgp_protocol_t dbgp_protocol;
+
+  /* D-BGP: This entity's island ID */
+  int  island_id; 
+
+  /* D-BGP: Is this router an island border router? */
+  /* @bug: rajas - in a real deployment, this cannot be determined 
+   * statically.
+   */
+  int is_island_border_router;
 };
 
 /* BGP peer-group support. */

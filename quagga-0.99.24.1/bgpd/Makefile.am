@@ -16,7 +16,8 @@ libbgp_a_SOURCES = \
 	bgp_packet.c bgp_network.c bgp_filter.c bgp_regex.c bgp_clist.c \
 	bgp_dump.c bgp_snmp.c bgp_ecommunity.c bgp_mplsvpn.c bgp_nexthop.c \
 	bgp_damp.c bgp_table.c bgp_advertise.c bgp_vty.c bgp_mpath.c dbgp_lookup.c \
-	quagga_config.pb.cc wiser_config.cc wiser_config_interface.cpp
+	dbgp.c quagga_config.pb.cc wiser_config.cc wiser_config_interface.cpp \
+	wiser.c bgp_common.c
 
 noinst_HEADERS = \
 	bgp_aspath.h bgp_attr.h bgp_community.h bgp_debug.h bgp_fsm.h \
@@ -24,7 +25,8 @@ noinst_HEADERS = \
 	bgpd.h bgp_filter.h bgp_clist.h bgp_dump.h bgp_zebra.h \
 	bgp_ecommunity.h bgp_mplsvpn.h bgp_nexthop.h bgp_damp.h bgp_table.h \
 	bgp_advertise.h bgp_snmp.h bgp_vty.h bgp_mpath.h dbgp_lookup.h \
-	quagga_config.pb.h wiser_config.h wiser_config_interface.h
+	dbgp.h quagga_config.pb.h wiser_config.h wiser_config_interface.h \
+	wiser.h bgp_common.h
 
 bgpd_SOURCES = bgp_main.c
 bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ @LIBHIREDIS@ @PROTOBUF_LIBS@ @libstdcxx_LIBS@ 
