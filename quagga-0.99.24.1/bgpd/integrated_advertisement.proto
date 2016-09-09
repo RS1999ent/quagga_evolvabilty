@@ -1,0 +1,43 @@
+syntax ="proto2";
+
+// The protocol that varies key values are associated with
+enum Protocol {
+  P_UNKNOWN = 0;
+  P_WISER = 1;
+  P_PATHLETS = 2;
+  P_BASELINE = 3;
+}
+
+// The toplevel message of a simple integrated advertisement (doesn't encode
+// aggregation support yet). 'PathGroupDescriptor's correspond to the simple
+// PathDescriptor described earlier in the paper when aggregation wasn't
+// introduced.
+message IntegratedAdvertisement {
+  repeated PathGroupDescriptor path_descriptors = 1;
+  repeated HopDescriptor hop_descriptors = 2;
+  
+}
+
+// Describes general variables required for a particular protocol corresponding
+// to a path.  
+message PathGroupDescriptor {
+  optional Protocol protocol = 1; // required
+  repeated KeyValue key_values = 2; 
+
+}
+
+// Corresponds to hop descriptors in the paper.
+message HopDescriptor{
+  optional Protocol protocol = 1; // required
+  repeated KeyValue key_values = 2; 
+}
+
+
+// Holds a unit of information. The 'key' is a plain string format and human
+// readable so that all protocols can potentially understand it. The 'value' is
+// a serialzed protobuf of some protobuf message that a protocol associated with
+// this KeyValue (or protocols that share this KeyValue) can understand.
+message KeyValue {
+  optional string key = 1;
+  optional string value = 2;
+}
