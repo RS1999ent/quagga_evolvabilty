@@ -14,8 +14,22 @@
 
 /* ********************* Global vars ************************** */
 extern WiserConfigHandle  wiser_config_;
+char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive_path_cost, int* modified_advert_size);
 
 /* ********************* Private functions ********************* */
+
+void AddLinkCostToIntegratedAdvertisement(int additive_link_cost, dbgp_control_info_t* control_info) {
+  char* old_integrated_advertisement = control_info->integrated_advertisement;
+  int old_integrated_advertisement_size = control_info->integrated_advertisement_size;
+  int new_size;
+  char* new_integrated_advertisement_info = SetWiserControlInfo(old_integrated_advertisement,
+                                                                old_integrated_advertisement_size,
+                                                                additive_link_cost, &new_size);
+  free(old_integrated_advertisement);
+  control_info->integrated_advertisement = new_integrated_advertisement_info;
+  control_info->integrated_advertisement_size = new_size;
+
+}
 
 /* Given two extra attributes (this is where any extra control info is stored at
    where a lookup key would be) compute whether one is better than the other
@@ -72,6 +86,7 @@ Arguments:
    @param peer: The peer that gave us this advertisement. Will use the remote_id
    and local_id in incrementing link costs
  */
+
 void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *peer)
 {
   // Convert peer->remote_id and peer->local_id to human readable ips.
@@ -89,15 +104,14 @@ void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *p
   // Get the link cost
   zlog_debug("wiser::wiser_update_control_info: Attempting to get linkcost between %s, %s", string_local_id, string_remote_id);
   /* zlog_debug("wiser::wiser_update_control_info: printing linkcosts:\n %s", LinkCostsToString(wiser_config_)); */
-  int link_cost = GetLinkCost(wiser_config_, string_local_id, string_remote_id);
-  assert(link_cost != -1); // should not be -1. If it is, something is wrong.
+  int additive_link_cost = GetLinkCost(wiser_config_, string_local_id, string_remote_id);
+  assert(additive_link_cost != -1); // should not be -1. If it is, something is wrong.
 
   //mutate the control_info
-  unsigned long long old_control_info_value = control_info->sentinel;// old value for debug string.
-  control_info->sentinel += link_cost;
+  AddLinkCostToIntegratedAdvertisement(additive_link_cost, control_info);
 
   //Debug info
-  zlog_debug("wiser::wiser_update_control_info: Link %s, %s with cost %i added to entering control info with cost %lld giving total %lld", string_local_id, string_remote_id, link_cost, old_control_info_value , control_info->sentinel);
+  /* zlog_debug("wiser::wiser_update_control_info: Link %s, %s with cost %i added to entering control info with cost %lld giving total %lld", string_local_id, string_remote_id, additive_link_cost, old_control_info_value , control_info->sentinel); */
 
   return;
 }

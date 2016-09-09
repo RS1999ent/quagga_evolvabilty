@@ -45,7 +45,13 @@ dbgp_control_info_t* GetControlInformation(struct attr* attr, struct transit** t
   zlog_debug("dbgp::GetControlInformation: There was no existing control information, so create it");
   bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
   control_info = malloc(sizeof(dbgp_protocol_t));
-  control_info->sentinel = 0;
+  // Create serialized empty integrated_advertisement and set the appropriate
+  // fields in the control information. This is effectively setting the size to
+  // be 0 at the moment and the integrated_advertisement being NULL
+  control_info->integrated_advertisement = NULL;
+  control_info->integrated_advertisement_size = 0;
+
+  /* control_info->sentinel = 0; */
   *transit = attr->extra->transit;
   assert(*transit != NULL);
   return control_info;

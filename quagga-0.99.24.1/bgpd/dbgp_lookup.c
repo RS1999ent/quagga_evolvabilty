@@ -83,9 +83,17 @@ static dbgp_control_info_t *unpack_redis_reply(char *reply, int len)
   assert(reply != NULL);
 
   control_info = calloc(1, sizeof(dbgp_control_info_t));
-  
+
+  // Set the length of the serialized protobuf (should be the length of the
+  // value retrieved)
+  control_info->integrated_advertisement_size = len;
+
+  // Create memory for the integrated advertisement and copy the data to it.
+  control_info->integrated_advertisement = malloc(len);
+  memcpy(control_info->integrated_advertisement, reply, len);
+
   /* Currently just unpacking sentinel value */
-  control_info->sentinel = atoll(reply);
+  /* control_info->sentinel = atoll(reply); */
 
   return(control_info);
 }
@@ -106,8 +114,12 @@ static dbgp_result_status_t pack_dbgp_control_info(dbgp_control_info_t *control_
 
   assert(control_info != NULL && packed_val != NULL);
 
+  // copy the serialized integrated advertisement into packed_val
+  memcpy(packed_val, control_info->integrated_advertisement,
+         control_info->integrated_advertisement_size);
+
   /* Currently just packing sentinel value */
-  snprintf(packed_val, DBGP_PACKED_VAL_LEN, "%"PRIu64"", control_info->sentinel);
+  /* snprintf(packed_val, DBGP_PACKED_VAL_LEN, "%"PRIu64"", control_info->sentinel); */
 
   return(DBGP_SUCCESS);
 }
@@ -217,7 +229,7 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   uint32_t *key = NULL;
   redisContext *c;
   redisReply* reply;
-  char packed_val[DBGP_PACKED_VAL_LEN];
+  char packed_val[control_info->integrated_advertisement_size];
 
   /* Input sanity checks */
   assert(transit != NULL && transit->val != NULL && control_info != NULL);

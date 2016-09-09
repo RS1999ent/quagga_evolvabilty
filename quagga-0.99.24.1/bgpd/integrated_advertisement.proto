@@ -13,7 +13,7 @@ enum Protocol {
 // PathDescriptor described earlier in the paper when aggregation wasn't
 // introduced.
 message IntegratedAdvertisement {
-  repeated PathGroupDescriptor path_descriptors = 1;
+  repeated PathGroupDescriptor path_group_descriptors = 1;
   repeated HopDescriptor hop_descriptors = 2;
   
 }
@@ -40,4 +40,12 @@ message HopDescriptor{
 message KeyValue {
   optional string key = 1;
   optional string value = 2;
+}
+
+
+// PROTOCOL SPECIFIC MESSAGES BELOW HERE
+
+// Holds a wiser path cost
+message PathCost {
+  optional uint32 path_cost = 1;
 }

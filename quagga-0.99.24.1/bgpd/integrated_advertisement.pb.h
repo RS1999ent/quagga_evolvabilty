@@ -36,6 +36,7 @@ class IntegratedAdvertisement;
 class PathGroupDescriptor;
 class HopDescriptor;
 class KeyValue;
+class PathCost;
 
 enum Protocol {
   P_UNKNOWN = 0,
@@ -113,17 +114,17 @@ class IntegratedAdvertisement : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // repeated .PathGroupDescriptor path_descriptors = 1;
-  inline int path_descriptors_size() const;
-  inline void clear_path_descriptors();
-  static const int kPathDescriptorsFieldNumber = 1;
-  inline const ::PathGroupDescriptor& path_descriptors(int index) const;
-  inline ::PathGroupDescriptor* mutable_path_descriptors(int index);
-  inline ::PathGroupDescriptor* add_path_descriptors();
+  // repeated .PathGroupDescriptor path_group_descriptors = 1;
+  inline int path_group_descriptors_size() const;
+  inline void clear_path_group_descriptors();
+  static const int kPathGroupDescriptorsFieldNumber = 1;
+  inline const ::PathGroupDescriptor& path_group_descriptors(int index) const;
+  inline ::PathGroupDescriptor* mutable_path_group_descriptors(int index);
+  inline ::PathGroupDescriptor* add_path_group_descriptors();
   inline const ::google::protobuf::RepeatedPtrField< ::PathGroupDescriptor >&
-      path_descriptors() const;
+      path_group_descriptors() const;
   inline ::google::protobuf::RepeatedPtrField< ::PathGroupDescriptor >*
-      mutable_path_descriptors();
+      mutable_path_group_descriptors();
 
   // repeated .HopDescriptor hop_descriptors = 2;
   inline int hop_descriptors_size() const;
@@ -144,7 +145,7 @@ class IntegratedAdvertisement : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedPtrField< ::PathGroupDescriptor > path_descriptors_;
+  ::google::protobuf::RepeatedPtrField< ::PathGroupDescriptor > path_group_descriptors_;
   ::google::protobuf::RepeatedPtrField< ::HopDescriptor > hop_descriptors_;
   friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
@@ -436,6 +437,85 @@ class KeyValue : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static KeyValue* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class PathCost : public ::google::protobuf::Message {
+ public:
+  PathCost();
+  virtual ~PathCost();
+
+  PathCost(const PathCost& from);
+
+  inline PathCost& operator=(const PathCost& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PathCost& default_instance();
+
+  void Swap(PathCost* other);
+
+  // implements Message ----------------------------------------------
+
+  PathCost* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PathCost& from);
+  void MergeFrom(const PathCost& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional uint32 path_cost = 1;
+  inline bool has_path_cost() const;
+  inline void clear_path_cost();
+  static const int kPathCostFieldNumber = 1;
+  inline ::google::protobuf::uint32 path_cost() const;
+  inline void set_path_cost(::google::protobuf::uint32 value);
+
+  // @@protoc_insertion_point(class_scope:PathCost)
+ private:
+  inline void set_has_path_cost();
+  inline void clear_has_path_cost();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 path_cost_;
+  friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
+
+  void InitAsDefaultInstance();
+  static PathCost* default_instance_;
+};
 // ===================================================================
 
 
@@ -443,34 +523,34 @@ class KeyValue : public ::google::protobuf::Message {
 
 // IntegratedAdvertisement
 
-// repeated .PathGroupDescriptor path_descriptors = 1;
-inline int IntegratedAdvertisement::path_descriptors_size() const {
-  return path_descriptors_.size();
+// repeated .PathGroupDescriptor path_group_descriptors = 1;
+inline int IntegratedAdvertisement::path_group_descriptors_size() const {
+  return path_group_descriptors_.size();
 }
-inline void IntegratedAdvertisement::clear_path_descriptors() {
-  path_descriptors_.Clear();
+inline void IntegratedAdvertisement::clear_path_group_descriptors() {
+  path_group_descriptors_.Clear();
 }
-inline const ::PathGroupDescriptor& IntegratedAdvertisement::path_descriptors(int index) const {
-  // @@protoc_insertion_point(field_get:IntegratedAdvertisement.path_descriptors)
-  return path_descriptors_.Get(index);
+inline const ::PathGroupDescriptor& IntegratedAdvertisement::path_group_descriptors(int index) const {
+  // @@protoc_insertion_point(field_get:IntegratedAdvertisement.path_group_descriptors)
+  return path_group_descriptors_.Get(index);
 }
-inline ::PathGroupDescriptor* IntegratedAdvertisement::mutable_path_descriptors(int index) {
-  // @@protoc_insertion_point(field_mutable:IntegratedAdvertisement.path_descriptors)
-  return path_descriptors_.Mutable(index);
+inline ::PathGroupDescriptor* IntegratedAdvertisement::mutable_path_group_descriptors(int index) {
+  // @@protoc_insertion_point(field_mutable:IntegratedAdvertisement.path_group_descriptors)
+  return path_group_descriptors_.Mutable(index);
 }
-inline ::PathGroupDescriptor* IntegratedAdvertisement::add_path_descriptors() {
-  // @@protoc_insertion_point(field_add:IntegratedAdvertisement.path_descriptors)
-  return path_descriptors_.Add();
+inline ::PathGroupDescriptor* IntegratedAdvertisement::add_path_group_descriptors() {
+  // @@protoc_insertion_point(field_add:IntegratedAdvertisement.path_group_descriptors)
+  return path_group_descriptors_.Add();
 }
 inline const ::google::protobuf::RepeatedPtrField< ::PathGroupDescriptor >&
-IntegratedAdvertisement::path_descriptors() const {
-  // @@protoc_insertion_point(field_list:IntegratedAdvertisement.path_descriptors)
-  return path_descriptors_;
+IntegratedAdvertisement::path_group_descriptors() const {
+  // @@protoc_insertion_point(field_list:IntegratedAdvertisement.path_group_descriptors)
+  return path_group_descriptors_;
 }
 inline ::google::protobuf::RepeatedPtrField< ::PathGroupDescriptor >*
-IntegratedAdvertisement::mutable_path_descriptors() {
-  // @@protoc_insertion_point(field_mutable_list:IntegratedAdvertisement.path_descriptors)
-  return &path_descriptors_;
+IntegratedAdvertisement::mutable_path_group_descriptors() {
+  // @@protoc_insertion_point(field_mutable_list:IntegratedAdvertisement.path_group_descriptors)
+  return &path_group_descriptors_;
 }
 
 // repeated .HopDescriptor hop_descriptors = 2;
@@ -775,6 +855,34 @@ inline void KeyValue::set_allocated_value(::std::string* value) {
     value_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:KeyValue.value)
+}
+
+// -------------------------------------------------------------------
+
+// PathCost
+
+// optional uint32 path_cost = 1;
+inline bool PathCost::has_path_cost() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void PathCost::set_has_path_cost() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void PathCost::clear_has_path_cost() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void PathCost::clear_path_cost() {
+  path_cost_ = 0u;
+  clear_has_path_cost();
+}
+inline ::google::protobuf::uint32 PathCost::path_cost() const {
+  // @@protoc_insertion_point(field_get:PathCost.path_cost)
+  return path_cost_;
+}
+inline void PathCost::set_path_cost(::google::protobuf::uint32 value) {
+  set_has_path_cost();
+  path_cost_ = value;
+  // @@protoc_insertion_point(field_set:PathCost.path_cost)
 }
 
 

@@ -2,6 +2,8 @@
 #include "wiser_config.h"
 #include "general_configuration.h"
 #include <google/protobuf/text_format.h>
+#include "integrated_advertisement_functions.h"
+#include "integrated_advertisement.pb.h"
 
 using std::string;
 class WiserConfigTest : public testing::Test {
@@ -225,6 +227,152 @@ TEST_F(GeneralConfigurationTest, GetWiserConfig_ConfigHasNoWiserConfig_NullRefer
   EXPECT_TRUE(output == NULL);
 
 }
+
+
+////////////////////////////////////////////////////////////
+/////////// integrated_advertisement_functions tests////////
+////////////////////////////////////////////////////////////
+
+//this was to test what is going on with serialize to array
+// TEST(CreateEmptyIntegratedAdvertisementTest, TestOutput){
+//   int size = 0;
+//   char *serialized_integrated_advertisement = CreateEmptyIntegratedAdvertisement(&size);
+  
+//   std::cout << size << std::endl;
+//   EXPECT_TRUE(false);
+// }
+
+TEST(SetWiserControlInfoTest, GiveEmptyExistAdvertWithPathCost_GetAdvertWithCostBack){
+  // Arrange
+  const string kInputAdvert = "";
+  const int kAdditivePathCost = 2;
+  const string kCorrectAdvertisement = R"(
+path_group_descriptors {
+  protocol: P_WISER
+  key_values {
+    key: "PathCost"
+    value: "\010\002"
+  }
+}
+)";
+
+  int modified_advert_size;
+  IntegratedAdvertisement input_advert, correct_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvertisement, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  int input_advert_size = input_advert.ByteSize();
+  char * serialized_input_advert = new char[input_advert_size];
+  input_advert.SerializeToArray(serialized_input_advert, input_advert_size);
+
+  // Act
+  char* result = SetWiserControlInfo(serialized_input_advert,
+                                     input_advert_size,
+                                     kAdditivePathCost,
+                                     &modified_advert_size);
+  result_advert.ParseFromArray(result, modified_advert_size);
+
+  // Assert
+  EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
+
+
+}
+
+TEST(SetWiserControlInfoTest, GiveExistAdvertWithPathCost_GetAdvertWithCostBack){
+  // Arrange
+  const string kInputAdvert = R"(
+path_group_descriptors {
+  protocol: P_WISER
+  key_values {
+    key: "PathCost"
+    value: "\010\002"
+  }
+}
+)";
+  const int kAdditivePathCost = 2;
+
+  const string kCorrectAdvertisement = R"(
+path_group_descriptors {
+  protocol: P_WISER
+  key_values {
+    key: "PathCost"
+    value: "\010\004"
+  }
+}
+)";
+
+  int modified_advert_size;
+  IntegratedAdvertisement input_advert, correct_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvertisement, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  int input_advert_size = input_advert.ByteSize();
+  char * serialized_input_advert = new char[input_advert_size];
+  input_advert.SerializeToArray(serialized_input_advert, input_advert_size);
+
+  // Act
+  char* result = SetWiserControlInfo(serialized_input_advert,
+                                     input_advert_size,
+                                     kAdditivePathCost,
+                                     &modified_advert_size);
+  result_advert.ParseFromArray(result, modified_advert_size);
+
+  // Assert
+  EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
+
+
+}
+
+TEST(SetWiserControlInfoTest, GiveExistAdvertWithNoPathCost_GetAdvertWithCostBack){
+  // Arrange
+  const string kInputAdvert = R"(
+path_group_descriptors {
+  protocol: P_WISER
+  key_values {
+    key: "JUNK"
+    value: "\010\002"
+  }
+}
+)";
+  const int kAdditivePathCost = 2;
+
+  const string kCorrectAdvertisement = R"(
+path_group_descriptors {
+  protocol: P_WISER
+  key_values {
+    key: "JUNK"
+    value: "\010\002"
+  }
+  key_values {
+    key: "PathCost"
+    value: "\010\002"
+  }
+}
+)";
+
+  int modified_advert_size;
+  IntegratedAdvertisement input_advert, correct_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvertisement, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  int input_advert_size = input_advert.ByteSize();
+  char * serialized_input_advert = new char[input_advert_size];
+  input_advert.SerializeToArray(serialized_input_advert, input_advert_size);
+
+  // Act
+  char* result = SetWiserControlInfo(serialized_input_advert,
+                                     input_advert_size,
+                                     kAdditivePathCost,
+                                     &modified_advert_size);
+  result_advert.ParseFromArray(result, modified_advert_size);
+
+  // Assert
+  EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
+
+
+}
+
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

@@ -30,6 +30,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* KeyValue_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   KeyValue_reflection_ = NULL;
+const ::google::protobuf::Descriptor* PathCost_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  PathCost_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* Protocol_descriptor_ = NULL;
 
 }  // namespace
@@ -43,7 +46,7 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
   GOOGLE_CHECK(file != NULL);
   IntegratedAdvertisement_descriptor_ = file->message_type(0);
   static const int IntegratedAdvertisement_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(IntegratedAdvertisement, path_descriptors_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(IntegratedAdvertisement, path_group_descriptors_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(IntegratedAdvertisement, hop_descriptors_),
   };
   IntegratedAdvertisement_reflection_ =
@@ -105,6 +108,21 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(KeyValue));
+  PathCost_descriptor_ = file->message_type(4);
+  static const int PathCost_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathCost, path_cost_),
+  };
+  PathCost_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      PathCost_descriptor_,
+      PathCost::default_instance_,
+      PathCost_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathCost, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathCost, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(PathCost));
   Protocol_descriptor_ = file->enum_type(0);
 }
 
@@ -126,6 +144,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     HopDescriptor_descriptor_, &HopDescriptor::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     KeyValue_descriptor_, &KeyValue::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    PathCost_descriptor_, &PathCost::default_instance());
 }
 
 }  // namespace
@@ -139,6 +159,8 @@ void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto() {
   delete HopDescriptor_reflection_;
   delete KeyValue::default_instance_;
   delete KeyValue_reflection_;
+  delete PathCost::default_instance_;
+  delete PathCost_reflection_;
 }
 
 void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
@@ -148,27 +170,30 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\036integrated_advertisement.proto\"r\n\027Inte"
-    "gratedAdvertisement\022.\n\020path_descriptors\030"
-    "\001 \003(\0132\024.PathGroupDescriptor\022\'\n\017hop_descr"
-    "iptors\030\002 \003(\0132\016.HopDescriptor\"Q\n\023PathGrou"
-    "pDescriptor\022\033\n\010protocol\030\001 \001(\0162\t.Protocol"
-    "\022\035\n\nkey_values\030\002 \003(\0132\t.KeyValue\"K\n\rHopDe"
-    "scriptor\022\033\n\010protocol\030\001 \001(\0162\t.Protocol\022\035\n"
-    "\nkey_values\030\002 \003(\0132\t.KeyValue\"&\n\010KeyValue"
-    "\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t*F\n\010Protocol"
-    "\022\r\n\tP_UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLE"
-    "TS\020\002\022\016\n\nP_BASELINE\020\003", 420);
+    "\n\036integrated_advertisement.proto\"x\n\027Inte"
+    "gratedAdvertisement\0224\n\026path_group_descri"
+    "ptors\030\001 \003(\0132\024.PathGroupDescriptor\022\'\n\017hop"
+    "_descriptors\030\002 \003(\0132\016.HopDescriptor\"Q\n\023Pa"
+    "thGroupDescriptor\022\033\n\010protocol\030\001 \001(\0162\t.Pr"
+    "otocol\022\035\n\nkey_values\030\002 \003(\0132\t.KeyValue\"K\n"
+    "\rHopDescriptor\022\033\n\010protocol\030\001 \001(\0162\t.Proto"
+    "col\022\035\n\nkey_values\030\002 \003(\0132\t.KeyValue\"&\n\010Ke"
+    "yValue\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\035\n\010Pa"
+    "thCost\022\021\n\tpath_cost\030\001 \001(\r*F\n\010Protocol\022\r\n"
+    "\tP_UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020"
+    "\002\022\016\n\nP_BASELINE\020\003", 457);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "integrated_advertisement.proto", &protobuf_RegisterTypes);
   IntegratedAdvertisement::default_instance_ = new IntegratedAdvertisement();
   PathGroupDescriptor::default_instance_ = new PathGroupDescriptor();
   HopDescriptor::default_instance_ = new HopDescriptor();
   KeyValue::default_instance_ = new KeyValue();
+  PathCost::default_instance_ = new PathCost();
   IntegratedAdvertisement::default_instance_->InitAsDefaultInstance();
   PathGroupDescriptor::default_instance_->InitAsDefaultInstance();
   HopDescriptor::default_instance_->InitAsDefaultInstance();
   KeyValue::default_instance_->InitAsDefaultInstance();
+  PathCost::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_integrated_5fadvertisement_2eproto);
 }
 
@@ -198,7 +223,7 @@ bool Protocol_IsValid(int value) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int IntegratedAdvertisement::kPathDescriptorsFieldNumber;
+const int IntegratedAdvertisement::kPathGroupDescriptorsFieldNumber;
 const int IntegratedAdvertisement::kHopDescriptorsFieldNumber;
 #endif  // !_MSC_VER
 
@@ -255,7 +280,7 @@ IntegratedAdvertisement* IntegratedAdvertisement::New() const {
 }
 
 void IntegratedAdvertisement::Clear() {
-  path_descriptors_.Clear();
+  path_group_descriptors_.Clear();
   hop_descriptors_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -271,16 +296,16 @@ bool IntegratedAdvertisement::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .PathGroupDescriptor path_descriptors = 1;
+      // repeated .PathGroupDescriptor path_group_descriptors = 1;
       case 1: {
         if (tag == 10) {
-         parse_path_descriptors:
+         parse_path_group_descriptors:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_path_descriptors()));
+                input, add_path_group_descriptors()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(10)) goto parse_path_descriptors;
+        if (input->ExpectTag(10)) goto parse_path_group_descriptors;
         if (input->ExpectTag(18)) goto parse_hop_descriptors;
         break;
       }
@@ -324,10 +349,10 @@ failure:
 void IntegratedAdvertisement::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:IntegratedAdvertisement)
-  // repeated .PathGroupDescriptor path_descriptors = 1;
-  for (int i = 0; i < this->path_descriptors_size(); i++) {
+  // repeated .PathGroupDescriptor path_group_descriptors = 1;
+  for (int i = 0; i < this->path_group_descriptors_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->path_descriptors(i), output);
+      1, this->path_group_descriptors(i), output);
   }
 
   // repeated .HopDescriptor hop_descriptors = 2;
@@ -346,11 +371,11 @@ void IntegratedAdvertisement::SerializeWithCachedSizes(
 ::google::protobuf::uint8* IntegratedAdvertisement::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:IntegratedAdvertisement)
-  // repeated .PathGroupDescriptor path_descriptors = 1;
-  for (int i = 0; i < this->path_descriptors_size(); i++) {
+  // repeated .PathGroupDescriptor path_group_descriptors = 1;
+  for (int i = 0; i < this->path_group_descriptors_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        1, this->path_descriptors(i), target);
+        1, this->path_group_descriptors(i), target);
   }
 
   // repeated .HopDescriptor hop_descriptors = 2;
@@ -371,12 +396,12 @@ void IntegratedAdvertisement::SerializeWithCachedSizes(
 int IntegratedAdvertisement::ByteSize() const {
   int total_size = 0;
 
-  // repeated .PathGroupDescriptor path_descriptors = 1;
-  total_size += 1 * this->path_descriptors_size();
-  for (int i = 0; i < this->path_descriptors_size(); i++) {
+  // repeated .PathGroupDescriptor path_group_descriptors = 1;
+  total_size += 1 * this->path_group_descriptors_size();
+  for (int i = 0; i < this->path_group_descriptors_size(); i++) {
     total_size +=
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->path_descriptors(i));
+        this->path_group_descriptors(i));
   }
 
   // repeated .HopDescriptor hop_descriptors = 2;
@@ -412,7 +437,7 @@ void IntegratedAdvertisement::MergeFrom(const ::google::protobuf::Message& from)
 
 void IntegratedAdvertisement::MergeFrom(const IntegratedAdvertisement& from) {
   GOOGLE_CHECK_NE(&from, this);
-  path_descriptors_.MergeFrom(from.path_descriptors_);
+  path_group_descriptors_.MergeFrom(from.path_group_descriptors_);
   hop_descriptors_.MergeFrom(from.hop_descriptors_);
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -436,7 +461,7 @@ bool IntegratedAdvertisement::IsInitialized() const {
 
 void IntegratedAdvertisement::Swap(IntegratedAdvertisement* other) {
   if (other != this) {
-    path_descriptors_.Swap(&other->path_descriptors_);
+    path_group_descriptors_.Swap(&other->path_group_descriptors_);
     hop_descriptors_.Swap(&other->hop_descriptors_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
@@ -1287,6 +1312,228 @@ void KeyValue::Swap(KeyValue* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = KeyValue_descriptor_;
   metadata.reflection = KeyValue_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int PathCost::kPathCostFieldNumber;
+#endif  // !_MSC_VER
+
+PathCost::PathCost()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:PathCost)
+}
+
+void PathCost::InitAsDefaultInstance() {
+}
+
+PathCost::PathCost(const PathCost& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:PathCost)
+}
+
+void PathCost::SharedCtor() {
+  _cached_size_ = 0;
+  path_cost_ = 0u;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+PathCost::~PathCost() {
+  // @@protoc_insertion_point(destructor:PathCost)
+  SharedDtor();
+}
+
+void PathCost::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void PathCost::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* PathCost::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return PathCost_descriptor_;
+}
+
+const PathCost& PathCost::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  return *default_instance_;
+}
+
+PathCost* PathCost::default_instance_ = NULL;
+
+PathCost* PathCost::New() const {
+  return new PathCost;
+}
+
+void PathCost::Clear() {
+  path_cost_ = 0u;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool PathCost::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:PathCost)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional uint32 path_cost = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &path_cost_)));
+          set_has_path_cost();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:PathCost)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:PathCost)
+  return false;
+#undef DO_
+}
+
+void PathCost::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:PathCost)
+  // optional uint32 path_cost = 1;
+  if (has_path_cost()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->path_cost(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:PathCost)
+}
+
+::google::protobuf::uint8* PathCost::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:PathCost)
+  // optional uint32 path_cost = 1;
+  if (has_path_cost()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->path_cost(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:PathCost)
+  return target;
+}
+
+int PathCost::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional uint32 path_cost = 1;
+    if (has_path_cost()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->path_cost());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void PathCost::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const PathCost* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const PathCost*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void PathCost::MergeFrom(const PathCost& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_path_cost()) {
+      set_path_cost(from.path_cost());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void PathCost::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void PathCost::CopyFrom(const PathCost& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool PathCost::IsInitialized() const {
+
+  return true;
+}
+
+void PathCost::Swap(PathCost* other) {
+  if (other != this) {
+    std::swap(path_cost_, other->path_cost_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata PathCost::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = PathCost_descriptor_;
+  metadata.reflection = PathCost_reflection_;
   return metadata;
 }
 

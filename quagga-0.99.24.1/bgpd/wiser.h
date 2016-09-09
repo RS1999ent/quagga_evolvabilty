@@ -8,9 +8,21 @@
 
 #include "bgpd/bgp_route.h"
 
+
+
 /* ********************* Global vars ************************** */
 
 /* ********************* Private functions ********************* */
+
+/* Called from update_wiser_control_info.  Adds a new link cost to the integrated advertisement and frees the memory of the old one
+
+   Arguments:
+   additive_link_cost: The linkcost to add to the possibly existing link cost
+   in control_info->integrated_advertisement
+   control_info: The dbgp_control_info that contains the control information we are interested in.
+
+*/
+void AddLinkCostToIntegratedAdvertisement(int additive_link_cost, dbgp_control_info_t* control_info);
 
 /* ********************* Public functions ********************* */
 
