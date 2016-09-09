@@ -30,6 +30,10 @@ typedef enum dbgp_result_status_s
 
 typedef struct dbgp_control_info_s { 
   unsigned long long sentinel;
+  // PTR to a 'SerializedToArray' integrated_advertisement protobuf
+  char *integrated_advertisement;
+  // size of the Serialized integrated_advertisement
+  int integrated_advertisement_size;
   /**
    * @bug: D-BGP - Add more stuff here for different protocols
    */
