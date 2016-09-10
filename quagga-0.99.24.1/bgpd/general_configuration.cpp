@@ -6,6 +6,11 @@ GeneralConfiguration::GeneralConfiguration(Configuration general_configuration) 
   general_configuration_ = general_configuration;
 }
 
+
+int GeneralConfiguration::GetIslandId() {
+  return general_configuration_.island_id();
+}
+
 dbgp_protocol_t GeneralConfiguration::GetProtocolType()
 {
   // get the protocol type
@@ -21,6 +26,18 @@ dbgp_protocol_t GeneralConfiguration::GetProtocolType()
     return dbgp_protocol_baseline;
     break;
   }
+}
+
+
+int GeneralConfiguration::IsRemoteAsAnIslandMember(int remote_as) {
+  for(const int& island_member : general_configuration_.island_member_ases())
+    {
+      if(island_member == remote_as)
+        {
+          return 1;
+        }
+    }
+  return 0;
 }
 
 WiserConfig* GeneralConfiguration::GetWiserConfig() {

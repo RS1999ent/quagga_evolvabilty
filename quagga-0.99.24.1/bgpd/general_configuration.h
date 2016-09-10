@@ -20,6 +20,22 @@ public:
   // Returns: The enum corresponding to the protocol type.
   dbgp_protocol_t GetProtocolType();
 
+  /* Gets the 'island_id' from the general configuration protobuf.
+
+     Returns: The integer corresponding to the island id. untested
+   */
+  int GetIslandId();
+
+  /* Checks to see if the 'remote_as' is a part of the protocol island that this
+     router is a part of.
+
+     Arguments:
+        remote_as: the remote as to check if it is a part of our island.
+
+     Returns: 1 if it is and 0 if it isn't.
+  */
+  int IsRemoteAsAnIslandMember(int remote_as);
+
   /* Creates and returns a reference to the WiserConfig class (that is the */
   /* object that works with the wiserconfig protobuf). */
   

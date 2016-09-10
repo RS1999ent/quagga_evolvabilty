@@ -69,6 +69,18 @@ extern "C"
     return general_config_handle->GetProtocolType();
   }
 
+
+  uint32_t GetIslandId(GeneralConfigurationHandle general_config_handle) {
+    return general_config_handle->GetIslandId();
+  }
+
+
+  int IsRemoteAsAnIslandMember(GeneralConfigurationHandle general_config_handle, int remote_as)
+  {
+    return general_config_handle->IsRemoteAsAnIslandMember(remote_as);
+  }
+
+
   void FreeGeneralConfig(GeneralConfigurationHandle general_config_handle){
     delete general_config_handle;
   }

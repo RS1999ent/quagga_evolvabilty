@@ -1997,7 +1997,9 @@ bgp_create (as_t *as, const char *name)
   */
 
   bgp->dbgp_protocol = GetProtocolType(general_configuration_);
+  bgp->island_id = GetIslandId(general_configuration_);
   zlog_debug("bgpd::bgp_create: protocol type to bgp object: %i", bgp->dbgp_protocol);
+  zlog_debug("bgpd::bgp_create: island id to bgp object: %i", bgp->island_id);
 
   return bgp;
 }
@@ -2105,7 +2107,9 @@ bgp_get (struct bgp **bgp_val, as_t *as, const char *name)
   */
 
   bgp->dbgp_protocol = GetProtocolType(general_configuration_);
+  bgp->island_id = GetIslandId(general_configuration_);
   zlog_debug("bgpd::bgp_get: protocol type to bgp object: %i", bgp->dbgp_protocol);
+  zlog_debug("bgpd::bgp_get: island id to bgp object: %i", bgp->island_id);
 
   listnode_add (bm->bgp, bgp);
 
@@ -5451,6 +5455,7 @@ bgp_init (void)
   /* ADDING DEBUG ON BY DEFAULT */
   DEBUG_ON (normal, NORMAL);
   DEBUG_ON (events, EVENTS);
+  DEBUG_ON (filter, FILTER);
   DEBUG_ON (update, UPDATE_IN);
   DEBUG_ON (update, UPDATE_OUT);
   DEBUG_ON (zebra, ZEBRA);

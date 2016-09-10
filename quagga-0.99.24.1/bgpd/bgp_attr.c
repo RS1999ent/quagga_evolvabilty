@@ -41,6 +41,10 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/dbgp.h"
 
+#include "bgpd/wiser_config_interface.h"
+
+extern GeneralConfigurationHandle general_configuration_;
+
 /* Attribute strings for logging. */
 static const struct message attr_str [] = 
 {
@@ -1083,6 +1087,22 @@ bgp_attr_aspath_check (struct peer *const peer, struct attr *const attr)
       aspath_unintern (&attr->aspath);
       attr->aspath = aspath_intern (aspath);
     }
+
+  /* DBGP - Prepend island-id onto AS if we are getting this advertisement from
+     outside the island */
+  int is_island_member_as = IsRemoteAsAnIslandMember(general_configuration_, peer->as);
+  if(is_island_member_as == 1)
+    {
+      zlog_debug("bgp_attr::bgp_attr_aspath_check: AS %i is a fellow island member of me (AS %i). Not appending islandid", peer->as, peer->change_local_as);
+    }
+  else{
+    aspath = aspath_dup (attr->aspath);
+    aspath = aspath_add_seq (aspath, peer->bgp->island_id);
+    aspath_unintern (&attr->aspath);
+    attr->aspath = aspath_intern (aspath);
+    zlog_debug("bgp_attr::bgp_attr_aspath_check: AS %i is not a fellow island member of me (AS %i). Appending islandid %i", peer->as, peer->change_local_as, peer->bgp->island_id);
+  }
+
 
   return BGP_ATTR_PARSE_PROCEED;
 }

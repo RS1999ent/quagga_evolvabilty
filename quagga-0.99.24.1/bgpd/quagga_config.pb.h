@@ -120,10 +120,29 @@ class Configuration : public ::google::protobuf::Message {
   inline ::ProtocolType protocol_type() const;
   inline void set_protocol_type(::ProtocolType value);
 
-  // optional .WiserProtocolConfig wiser_protocol_config = 2;
+  // optional uint32 island_id = 2;
+  inline bool has_island_id() const;
+  inline void clear_island_id();
+  static const int kIslandIdFieldNumber = 2;
+  inline ::google::protobuf::uint32 island_id() const;
+  inline void set_island_id(::google::protobuf::uint32 value);
+
+  // repeated uint32 island_member_ases = 3;
+  inline int island_member_ases_size() const;
+  inline void clear_island_member_ases();
+  static const int kIslandMemberAsesFieldNumber = 3;
+  inline ::google::protobuf::uint32 island_member_ases(int index) const;
+  inline void set_island_member_ases(int index, ::google::protobuf::uint32 value);
+  inline void add_island_member_ases(::google::protobuf::uint32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      island_member_ases() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_island_member_ases();
+
+  // optional .WiserProtocolConfig wiser_protocol_config = 4;
   inline bool has_wiser_protocol_config() const;
   inline void clear_wiser_protocol_config();
-  static const int kWiserProtocolConfigFieldNumber = 2;
+  static const int kWiserProtocolConfigFieldNumber = 4;
   inline const ::WiserProtocolConfig& wiser_protocol_config() const;
   inline ::WiserProtocolConfig* mutable_wiser_protocol_config();
   inline ::WiserProtocolConfig* release_wiser_protocol_config();
@@ -133,6 +152,8 @@ class Configuration : public ::google::protobuf::Message {
  private:
   inline void set_has_protocol_type();
   inline void clear_has_protocol_type();
+  inline void set_has_island_id();
+  inline void clear_has_island_id();
   inline void set_has_wiser_protocol_config();
   inline void clear_has_wiser_protocol_config();
 
@@ -140,8 +161,10 @@ class Configuration : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::WiserProtocolConfig* wiser_protocol_config_;
   int protocol_type_;
+  ::google::protobuf::uint32 island_id_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > island_member_ases_;
+  ::WiserProtocolConfig* wiser_protocol_config_;
   friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
   friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
   friend void protobuf_ShutdownFile_quagga_5fconfig_2eproto();
@@ -628,15 +651,69 @@ inline void Configuration::set_protocol_type(::ProtocolType value) {
   // @@protoc_insertion_point(field_set:Configuration.protocol_type)
 }
 
-// optional .WiserProtocolConfig wiser_protocol_config = 2;
-inline bool Configuration::has_wiser_protocol_config() const {
+// optional uint32 island_id = 2;
+inline bool Configuration::has_island_id() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Configuration::set_has_wiser_protocol_config() {
+inline void Configuration::set_has_island_id() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void Configuration::clear_has_wiser_protocol_config() {
+inline void Configuration::clear_has_island_id() {
   _has_bits_[0] &= ~0x00000002u;
+}
+inline void Configuration::clear_island_id() {
+  island_id_ = 0u;
+  clear_has_island_id();
+}
+inline ::google::protobuf::uint32 Configuration::island_id() const {
+  // @@protoc_insertion_point(field_get:Configuration.island_id)
+  return island_id_;
+}
+inline void Configuration::set_island_id(::google::protobuf::uint32 value) {
+  set_has_island_id();
+  island_id_ = value;
+  // @@protoc_insertion_point(field_set:Configuration.island_id)
+}
+
+// repeated uint32 island_member_ases = 3;
+inline int Configuration::island_member_ases_size() const {
+  return island_member_ases_.size();
+}
+inline void Configuration::clear_island_member_ases() {
+  island_member_ases_.Clear();
+}
+inline ::google::protobuf::uint32 Configuration::island_member_ases(int index) const {
+  // @@protoc_insertion_point(field_get:Configuration.island_member_ases)
+  return island_member_ases_.Get(index);
+}
+inline void Configuration::set_island_member_ases(int index, ::google::protobuf::uint32 value) {
+  island_member_ases_.Set(index, value);
+  // @@protoc_insertion_point(field_set:Configuration.island_member_ases)
+}
+inline void Configuration::add_island_member_ases(::google::protobuf::uint32 value) {
+  island_member_ases_.Add(value);
+  // @@protoc_insertion_point(field_add:Configuration.island_member_ases)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+Configuration::island_member_ases() const {
+  // @@protoc_insertion_point(field_list:Configuration.island_member_ases)
+  return island_member_ases_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+Configuration::mutable_island_member_ases() {
+  // @@protoc_insertion_point(field_mutable_list:Configuration.island_member_ases)
+  return &island_member_ases_;
+}
+
+// optional .WiserProtocolConfig wiser_protocol_config = 4;
+inline bool Configuration::has_wiser_protocol_config() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Configuration::set_has_wiser_protocol_config() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Configuration::clear_has_wiser_protocol_config() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void Configuration::clear_wiser_protocol_config() {
   if (wiser_protocol_config_ != NULL) wiser_protocol_config_->::WiserProtocolConfig::Clear();

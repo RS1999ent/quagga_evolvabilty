@@ -60,10 +60,14 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/dbgp.h"
+#include "bgpd/wiser_config_interface.h"
 
 /* Extern from bgp_dump.c */
 extern const char *bgp_origin_str[];
 extern const char *bgp_origin_long_str[];
+
+/* D-BGP externs */
+extern GeneralConfigurationHandle general_configuration_;
 
 static struct bgp_node *
 bgp_afi_node_get (struct bgp_table *table, afi_t afi, safi_t safi, struct prefix *p,
@@ -687,6 +691,16 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 	    return 0;
 	}
     }
+
+  /* D-BGP: If the as we are advertising to isn't a part of our island, append our island id to it. */
+  if(IsRemoteAsAnIslandMember(general_configuration_, peer->as) != 1) {
+    struct aspath* aspath = aspath_dup (attr->aspath);
+    aspath = aspath_add_seq (aspath, peer->bgp->island_id);
+    aspath_unintern (&attr->aspath);
+    attr->aspath = aspath_intern (aspath);
+    zlog_debug("bgp_route::bgp_announce_check: Advertising to AS %i is not a fellow island member of me (AS %i). Appending islandid %i", peer->as, peer->change_local_as, peer->bgp->island_id);
+    zlog_debug("bgp_route::bgp_announce_check: Aspath advertised to AS %i: %s", peer->as, aspath->str);
+  }
 
   /* D-BGP-specific filtering */
   if(dbgp_output_filter(riattr, peer) == DBGP_FILTERED) {
@@ -1885,6 +1899,13 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	  goto filtered;
 	}
     }
+
+  /* D-BGP: IslandID loopcheck. If our island id appears twice, then filter
+     because this advert has already been through this island */
+  if(aspath_loop_check(attr->aspath, bgp->island_id) == 2) {
+    reason = "as-path contains our island idea twice";
+    goto filtered;
+  }
 
   /* AS path loop check. */
   if (aspath_loop_check (attr->aspath, bgp->as) > peer->allowas_in[afi][safi]

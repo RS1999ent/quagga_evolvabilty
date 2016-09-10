@@ -48,8 +48,10 @@ void protobuf_AssignDesc_quagga_5fconfig_2eproto() {
       "quagga_config.proto");
   GOOGLE_CHECK(file != NULL);
   Configuration_descriptor_ = file->message_type(0);
-  static const int Configuration_offsets_[2] = {
+  static const int Configuration_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, protocol_type_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, island_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, island_member_ases_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, wiser_protocol_config_),
   };
   Configuration_reflection_ =
@@ -192,18 +194,19 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\023quagga_config.proto\"j\n\rConfiguration\022$"
-    "\n\rprotocol_type\030\001 \001(\0162\r.ProtocolType\0223\n\025"
-    "wiser_protocol_config\030\002 \001(\0132\024.WiserProto"
-    "colConfig\"2\n\023WiserProtocolConfig\022\033\n\010topo"
-    "logy\030\001 \001(\0132\t.Topology\")\n\010Topology\022\035\n\nnod"
-    "e_links\030\001 \003(\0132\t.NodeLink\"E\n\010NodeLink\022#\n\014"
-    "primary_node\030\001 \001(\0132\r.NodeProperty\022\024\n\005lin"
-    "ks\030\002 \003(\0132\005.Link\"\?\n\004Link\022$\n\radjacent_node"
-    "\030\001 \001(\0132\r.NodeProperty\022\021\n\tlink_cost\030\002 \001(\004"
-    "\"7\n\014NodeProperty\022\021\n\tnode_name\030\001 \001(\t\022\024\n\014i"
-    "nterface_ip\030\002 \001(\t*,\n\014ProtocolType\022\016\n\nPT_"
-    "UNKNOWN\020\000\022\014\n\010PT_WISER\020\001", 463);
+    "\n\023quagga_config.proto\"\231\001\n\rConfiguration\022"
+    "$\n\rprotocol_type\030\001 \001(\0162\r.ProtocolType\022\021\n"
+    "\tisland_id\030\002 \001(\r\022\032\n\022island_member_ases\030\003"
+    " \003(\r\0223\n\025wiser_protocol_config\030\004 \001(\0132\024.Wi"
+    "serProtocolConfig\"2\n\023WiserProtocolConfig"
+    "\022\033\n\010topology\030\001 \001(\0132\t.Topology\")\n\010Topolog"
+    "y\022\035\n\nnode_links\030\001 \003(\0132\t.NodeLink\"E\n\010Node"
+    "Link\022#\n\014primary_node\030\001 \001(\0132\r.NodePropert"
+    "y\022\024\n\005links\030\002 \003(\0132\005.Link\"\?\n\004Link\022$\n\radjac"
+    "ent_node\030\001 \001(\0132\r.NodeProperty\022\021\n\tlink_co"
+    "st\030\002 \001(\004\"7\n\014NodeProperty\022\021\n\tnode_name\030\001 "
+    "\001(\t\022\024\n\014interface_ip\030\002 \001(\t*,\n\014ProtocolTyp"
+    "e\022\016\n\nPT_UNKNOWN\020\000\022\014\n\010PT_WISER\020\001", 511);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "quagga_config.proto", &protobuf_RegisterTypes);
   Configuration::default_instance_ = new Configuration();
@@ -246,6 +249,8 @@ bool ProtocolType_IsValid(int value) {
 
 #ifndef _MSC_VER
 const int Configuration::kProtocolTypeFieldNumber;
+const int Configuration::kIslandIdFieldNumber;
+const int Configuration::kIslandMemberAsesFieldNumber;
 const int Configuration::kWiserProtocolConfigFieldNumber;
 #endif  // !_MSC_VER
 
@@ -269,6 +274,7 @@ Configuration::Configuration(const Configuration& from)
 void Configuration::SharedCtor() {
   _cached_size_ = 0;
   protocol_type_ = 0;
+  island_id_ = 0u;
   wiser_protocol_config_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -306,12 +312,27 @@ Configuration* Configuration::New() const {
 }
 
 void Configuration::Clear() {
-  if (_has_bits_[0 / 32] & 3) {
-    protocol_type_ = 0;
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<Configuration*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  if (_has_bits_[0 / 32] & 11) {
+    ZR_(protocol_type_, island_id_);
     if (has_wiser_protocol_config()) {
       if (wiser_protocol_config_ != NULL) wiser_protocol_config_->::WiserProtocolConfig::Clear();
     }
   }
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
+  island_member_ases_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -341,13 +362,47 @@ bool Configuration::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(18)) goto parse_wiser_protocol_config;
+        if (input->ExpectTag(16)) goto parse_island_id;
         break;
       }
 
-      // optional .WiserProtocolConfig wiser_protocol_config = 2;
+      // optional uint32 island_id = 2;
       case 2: {
-        if (tag == 18) {
+        if (tag == 16) {
+         parse_island_id:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &island_id_)));
+          set_has_island_id();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_island_member_ases;
+        break;
+      }
+
+      // repeated uint32 island_member_ases = 3;
+      case 3: {
+        if (tag == 24) {
+         parse_island_member_ases:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 1, 24, input, this->mutable_island_member_ases())));
+        } else if (tag == 26) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, this->mutable_island_member_ases())));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_island_member_ases;
+        if (input->ExpectTag(34)) goto parse_wiser_protocol_config;
+        break;
+      }
+
+      // optional .WiserProtocolConfig wiser_protocol_config = 4;
+      case 4: {
+        if (tag == 34) {
          parse_wiser_protocol_config:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_wiser_protocol_config()));
@@ -389,10 +444,21 @@ void Configuration::SerializeWithCachedSizes(
       1, this->protocol_type(), output);
   }
 
-  // optional .WiserProtocolConfig wiser_protocol_config = 2;
+  // optional uint32 island_id = 2;
+  if (has_island_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->island_id(), output);
+  }
+
+  // repeated uint32 island_member_ases = 3;
+  for (int i = 0; i < this->island_member_ases_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(
+      3, this->island_member_ases(i), output);
+  }
+
+  // optional .WiserProtocolConfig wiser_protocol_config = 4;
   if (has_wiser_protocol_config()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->wiser_protocol_config(), output);
+      4, this->wiser_protocol_config(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -411,11 +477,22 @@ void Configuration::SerializeWithCachedSizes(
       1, this->protocol_type(), target);
   }
 
-  // optional .WiserProtocolConfig wiser_protocol_config = 2;
+  // optional uint32 island_id = 2;
+  if (has_island_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->island_id(), target);
+  }
+
+  // repeated uint32 island_member_ases = 3;
+  for (int i = 0; i < this->island_member_ases_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt32ToArray(3, this->island_member_ases(i), target);
+  }
+
+  // optional .WiserProtocolConfig wiser_protocol_config = 4;
   if (has_wiser_protocol_config()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        2, this->wiser_protocol_config(), target);
+        4, this->wiser_protocol_config(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -436,7 +513,14 @@ int Configuration::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->protocol_type());
     }
 
-    // optional .WiserProtocolConfig wiser_protocol_config = 2;
+    // optional uint32 island_id = 2;
+    if (has_island_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->island_id());
+    }
+
+    // optional .WiserProtocolConfig wiser_protocol_config = 4;
     if (has_wiser_protocol_config()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -444,6 +528,16 @@ int Configuration::ByteSize() const {
     }
 
   }
+  // repeated uint32 island_member_ases = 3;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->island_member_ases_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt32Size(this->island_member_ases(i));
+    }
+    total_size += 1 * this->island_member_ases_size() + data_size;
+  }
+
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -469,9 +563,13 @@ void Configuration::MergeFrom(const ::google::protobuf::Message& from) {
 
 void Configuration::MergeFrom(const Configuration& from) {
   GOOGLE_CHECK_NE(&from, this);
+  island_member_ases_.MergeFrom(from.island_member_ases_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_protocol_type()) {
       set_protocol_type(from.protocol_type());
+    }
+    if (from.has_island_id()) {
+      set_island_id(from.island_id());
     }
     if (from.has_wiser_protocol_config()) {
       mutable_wiser_protocol_config()->::WiserProtocolConfig::MergeFrom(from.wiser_protocol_config());
@@ -500,6 +598,8 @@ bool Configuration::IsInitialized() const {
 void Configuration::Swap(Configuration* other) {
   if (other != this) {
     std::swap(protocol_type_, other->protocol_type_);
+    std::swap(island_id_, other->island_id_);
+    island_member_ases_.Swap(&other->island_member_ases_);
     std::swap(wiser_protocol_config_, other->wiser_protocol_config_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);

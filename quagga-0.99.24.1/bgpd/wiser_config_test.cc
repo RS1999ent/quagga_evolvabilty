@@ -228,6 +228,48 @@ TEST_F(GeneralConfigurationTest, GetWiserConfig_ConfigHasNoWiserConfig_NullRefer
 
 }
 
+TEST_F(GeneralConfigurationTest, IsRemoteAsAnIslandMember_InputASIsMember_Return1) {
+  // Arrange
+  const string kSampleConfiguration = R"(
+    island_member_ases : 1
+    island_member_ases : 2
+    island_member_ases : 3
+    )";
+  const int input_remote_as = 2;
+  const int correct_output = 1;
+
+  Configuration working_configuration;
+  google::protobuf::TextFormat::ParseFromString(kSampleConfiguration, &working_configuration);
+  GeneralConfiguration general_config(working_configuration);
+
+  // Act
+  int result = general_config.IsRemoteAsAnIslandMember(input_remote_as);
+
+  EXPECT_EQ(result, correct_output);
+
+}
+
+TEST_F(GeneralConfigurationTest, IsRemoteAsAnIslandMember_InputASIsNotMember_Return0) {
+  // Arrange
+  const string kSampleConfiguration = R"(
+    island_member_ases : 1
+    island_member_ases : 2
+    island_member_ases : 3
+    )";
+  const int input_remote_as = 22;
+  const int correct_output = 0;
+
+  Configuration working_configuration;
+  google::protobuf::TextFormat::ParseFromString(kSampleConfiguration, &working_configuration);
+  GeneralConfiguration general_config(working_configuration);
+
+  // Act
+  int result = general_config.IsRemoteAsAnIslandMember(input_remote_as);
+
+  EXPECT_EQ(result, correct_output);
+
+}
+
 
 ////////////////////////////////////////////////////////////
 /////////// integrated_advertisement_functions tests////////
