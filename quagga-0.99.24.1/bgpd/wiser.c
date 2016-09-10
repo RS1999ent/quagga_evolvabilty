@@ -15,6 +15,7 @@
 /* ********************* Global vars ************************** */
 extern WiserConfigHandle  wiser_config_;
 char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive_path_cost, int* modified_advert_size);
+int GetWiserPathCost(char* serialized_advert, int advert_size);
 
 /* ********************* Private functions ********************* */
 
@@ -54,23 +55,28 @@ int ComputeWiserDecision(const struct attr_extra* newattre, const struct attr_ex
       return -1;
     }
 
-  // Here if there is some control information in it. Get it. TODO: this will
-  // eventually be an IA and so we will have to check if there is WISER info in
-  // the IA.
+  // Here if there is some control information in it. Get it. and get the path
+  // cost from it.
   dbgp_control_info_t *new_control_info = retrieve_control_info(newtransit);
   dbgp_control_info_t *exist_control_info = retrieve_control_info(existtransit);
 
+  int path_cost_from_new = GetWiserPathCost(new_control_info->integrated_advertisement,
+                                            new_control_info->integrated_advertisement_size);
+  int path_cost_from_exist = GetWiserPathCost(exist_control_info->integrated_advertisement,
+                                             exist_control_info->integrated_advertisement_size);
+
+
   // Return 1 if new is better than exist, 0  if exist is better than old, -1 if they are equal.
-  if (new_control_info->sentinel < exist_control_info->sentinel){
-    zlog_debug("wiser::ComputeWiserDecision: New (%lld) is better than exist (%lld)", new_control_info->sentinel, exist_control_info->sentinel);
+  if (path_cost_from_new < path_cost_from_exist){
+    zlog_debug("wiser::ComputeWiserDecision: New (%i) is better than exist (%i)", path_cost_from_new, path_cost_from_exist);
     return 1;
   }
-  if (new_control_info->sentinel > exist_control_info->sentinel){
-    zlog_debug("wiser::ComputeWiserDecision: New (%lld) is worse than exist (%lld)", new_control_info->sentinel, exist_control_info->sentinel);
+  if (path_cost_from_new > path_cost_from_exist){
+    zlog_debug("wiser::ComputeWiserDecision: New (%i) is worse than exist (%i)", path_cost_from_new, path_cost_from_exist);
     return 0;
   }
   // here if they are the same
-  zlog_debug("wiser::ComputeWiserDecision: New (%lld) is the same than exist (%lld)", new_control_info->sentinel, exist_control_info->sentinel);
+  zlog_debug("wiser::ComputeWiserDecision: New (%i) is the same than exist (%i)", path_cost_from_new, path_cost_from_exist);
   return -1;
 }
 

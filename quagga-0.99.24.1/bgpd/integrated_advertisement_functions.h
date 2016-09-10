@@ -28,3 +28,20 @@ extern "C" char* CreateEmptyIntegratedAdvertisement(int *size);
 extern "C" char* SetWiserControlInfo(char *serialized_advert,
                                      int advert_size,  int additive_path_cost,
                                      int *modified_advert_size);
+
+
+/* Gets the wiser path cost associated with this serialized advert.
+
+   @Note:
+   Assumption: Wiser nodes are making the assumption that there is always a path
+   cost (which there will be because they update the link cost on the incoming
+   link). Note for if this ever changes.
+
+   Arguments:
+      serialized_advert: the serialized advert that is a serialized version of a
+      protobuf.
+      advert_size: the size of this serialized protobuf.
+
+   Returns: the path coste associated with this advertisement.
+ */
+extern "C" int GetWiserPathCost(char* serialized_advert, int advert_size);
