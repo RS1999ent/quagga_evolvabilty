@@ -49,3 +49,9 @@ message KeyValue {
 message PathCost {
   optional uint32 path_cost = 1;
 }
+
+// Holds the last wiser node that updated the path cost. Used for calculating
+// normalization.
+message LastWiserNode {
+  optional string last_wiser = 1;
+}

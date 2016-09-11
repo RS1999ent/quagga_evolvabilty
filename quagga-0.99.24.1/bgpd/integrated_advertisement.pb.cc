@@ -33,6 +33,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* PathCost_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   PathCost_reflection_ = NULL;
+const ::google::protobuf::Descriptor* LastWiserNode_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  LastWiserNode_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* Protocol_descriptor_ = NULL;
 
 }  // namespace
@@ -123,6 +126,21 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PathCost));
+  LastWiserNode_descriptor_ = file->message_type(5);
+  static const int LastWiserNode_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LastWiserNode, last_wiser_),
+  };
+  LastWiserNode_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      LastWiserNode_descriptor_,
+      LastWiserNode::default_instance_,
+      LastWiserNode_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LastWiserNode, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LastWiserNode, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(LastWiserNode));
   Protocol_descriptor_ = file->enum_type(0);
 }
 
@@ -146,6 +164,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     KeyValue_descriptor_, &KeyValue::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PathCost_descriptor_, &PathCost::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    LastWiserNode_descriptor_, &LastWiserNode::default_instance());
 }
 
 }  // namespace
@@ -161,6 +181,8 @@ void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto() {
   delete KeyValue_reflection_;
   delete PathCost::default_instance_;
   delete PathCost_reflection_;
+  delete LastWiserNode::default_instance_;
+  delete LastWiserNode_reflection_;
 }
 
 void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
@@ -179,9 +201,10 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
     "\rHopDescriptor\022\033\n\010protocol\030\001 \001(\0162\t.Proto"
     "col\022\035\n\nkey_values\030\002 \003(\0132\t.KeyValue\"&\n\010Ke"
     "yValue\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\035\n\010Pa"
-    "thCost\022\021\n\tpath_cost\030\001 \001(\r*F\n\010Protocol\022\r\n"
-    "\tP_UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020"
-    "\002\022\016\n\nP_BASELINE\020\003", 457);
+    "thCost\022\021\n\tpath_cost\030\001 \001(\r\"#\n\rLastWiserNo"
+    "de\022\022\n\nlast_wiser\030\001 \001(\t*F\n\010Protocol\022\r\n\tP_"
+    "UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020\002\022\016"
+    "\n\nP_BASELINE\020\003", 494);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "integrated_advertisement.proto", &protobuf_RegisterTypes);
   IntegratedAdvertisement::default_instance_ = new IntegratedAdvertisement();
@@ -189,11 +212,13 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
   HopDescriptor::default_instance_ = new HopDescriptor();
   KeyValue::default_instance_ = new KeyValue();
   PathCost::default_instance_ = new PathCost();
+  LastWiserNode::default_instance_ = new LastWiserNode();
   IntegratedAdvertisement::default_instance_->InitAsDefaultInstance();
   PathGroupDescriptor::default_instance_->InitAsDefaultInstance();
   HopDescriptor::default_instance_->InitAsDefaultInstance();
   KeyValue::default_instance_->InitAsDefaultInstance();
   PathCost::default_instance_->InitAsDefaultInstance();
+  LastWiserNode::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_integrated_5fadvertisement_2eproto);
 }
 
@@ -1534,6 +1559,249 @@ void PathCost::Swap(PathCost* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = PathCost_descriptor_;
   metadata.reflection = PathCost_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int LastWiserNode::kLastWiserFieldNumber;
+#endif  // !_MSC_VER
+
+LastWiserNode::LastWiserNode()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:LastWiserNode)
+}
+
+void LastWiserNode::InitAsDefaultInstance() {
+}
+
+LastWiserNode::LastWiserNode(const LastWiserNode& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:LastWiserNode)
+}
+
+void LastWiserNode::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  last_wiser_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+LastWiserNode::~LastWiserNode() {
+  // @@protoc_insertion_point(destructor:LastWiserNode)
+  SharedDtor();
+}
+
+void LastWiserNode::SharedDtor() {
+  if (last_wiser_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete last_wiser_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void LastWiserNode::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* LastWiserNode::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return LastWiserNode_descriptor_;
+}
+
+const LastWiserNode& LastWiserNode::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  return *default_instance_;
+}
+
+LastWiserNode* LastWiserNode::default_instance_ = NULL;
+
+LastWiserNode* LastWiserNode::New() const {
+  return new LastWiserNode;
+}
+
+void LastWiserNode::Clear() {
+  if (has_last_wiser()) {
+    if (last_wiser_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+      last_wiser_->clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool LastWiserNode::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:LastWiserNode)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string last_wiser = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_last_wiser()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->last_wiser().data(), this->last_wiser().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "last_wiser");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:LastWiserNode)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:LastWiserNode)
+  return false;
+#undef DO_
+}
+
+void LastWiserNode::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:LastWiserNode)
+  // optional string last_wiser = 1;
+  if (has_last_wiser()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->last_wiser().data(), this->last_wiser().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "last_wiser");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->last_wiser(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:LastWiserNode)
+}
+
+::google::protobuf::uint8* LastWiserNode::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:LastWiserNode)
+  // optional string last_wiser = 1;
+  if (has_last_wiser()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->last_wiser().data(), this->last_wiser().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "last_wiser");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->last_wiser(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:LastWiserNode)
+  return target;
+}
+
+int LastWiserNode::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional string last_wiser = 1;
+    if (has_last_wiser()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->last_wiser());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void LastWiserNode::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const LastWiserNode* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const LastWiserNode*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void LastWiserNode::MergeFrom(const LastWiserNode& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_last_wiser()) {
+      set_last_wiser(from.last_wiser());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void LastWiserNode::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void LastWiserNode::CopyFrom(const LastWiserNode& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool LastWiserNode::IsInitialized() const {
+
+  return true;
+}
+
+void LastWiserNode::Swap(LastWiserNode* other) {
+  if (other != this) {
+    std::swap(last_wiser_, other->last_wiser_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata LastWiserNode::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = LastWiserNode_descriptor_;
+  metadata.reflection = LastWiserNode_reflection_;
   return metadata;
 }
 

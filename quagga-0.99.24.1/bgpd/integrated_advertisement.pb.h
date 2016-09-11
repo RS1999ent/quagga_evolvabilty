@@ -37,6 +37,7 @@ class PathGroupDescriptor;
 class HopDescriptor;
 class KeyValue;
 class PathCost;
+class LastWiserNode;
 
 enum Protocol {
   P_UNKNOWN = 0,
@@ -516,6 +517,90 @@ class PathCost : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static PathCost* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class LastWiserNode : public ::google::protobuf::Message {
+ public:
+  LastWiserNode();
+  virtual ~LastWiserNode();
+
+  LastWiserNode(const LastWiserNode& from);
+
+  inline LastWiserNode& operator=(const LastWiserNode& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const LastWiserNode& default_instance();
+
+  void Swap(LastWiserNode* other);
+
+  // implements Message ----------------------------------------------
+
+  LastWiserNode* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const LastWiserNode& from);
+  void MergeFrom(const LastWiserNode& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string last_wiser = 1;
+  inline bool has_last_wiser() const;
+  inline void clear_last_wiser();
+  static const int kLastWiserFieldNumber = 1;
+  inline const ::std::string& last_wiser() const;
+  inline void set_last_wiser(const ::std::string& value);
+  inline void set_last_wiser(const char* value);
+  inline void set_last_wiser(const char* value, size_t size);
+  inline ::std::string* mutable_last_wiser();
+  inline ::std::string* release_last_wiser();
+  inline void set_allocated_last_wiser(::std::string* last_wiser);
+
+  // @@protoc_insertion_point(class_scope:LastWiserNode)
+ private:
+  inline void set_has_last_wiser();
+  inline void clear_has_last_wiser();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* last_wiser_;
+  friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
+
+  void InitAsDefaultInstance();
+  static LastWiserNode* default_instance_;
+};
 // ===================================================================
 
 
@@ -883,6 +968,86 @@ inline void PathCost::set_path_cost(::google::protobuf::uint32 value) {
   set_has_path_cost();
   path_cost_ = value;
   // @@protoc_insertion_point(field_set:PathCost.path_cost)
+}
+
+// -------------------------------------------------------------------
+
+// LastWiserNode
+
+// optional string last_wiser = 1;
+inline bool LastWiserNode::has_last_wiser() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void LastWiserNode::set_has_last_wiser() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void LastWiserNode::clear_has_last_wiser() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void LastWiserNode::clear_last_wiser() {
+  if (last_wiser_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    last_wiser_->clear();
+  }
+  clear_has_last_wiser();
+}
+inline const ::std::string& LastWiserNode::last_wiser() const {
+  // @@protoc_insertion_point(field_get:LastWiserNode.last_wiser)
+  return *last_wiser_;
+}
+inline void LastWiserNode::set_last_wiser(const ::std::string& value) {
+  set_has_last_wiser();
+  if (last_wiser_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    last_wiser_ = new ::std::string;
+  }
+  last_wiser_->assign(value);
+  // @@protoc_insertion_point(field_set:LastWiserNode.last_wiser)
+}
+inline void LastWiserNode::set_last_wiser(const char* value) {
+  set_has_last_wiser();
+  if (last_wiser_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    last_wiser_ = new ::std::string;
+  }
+  last_wiser_->assign(value);
+  // @@protoc_insertion_point(field_set_char:LastWiserNode.last_wiser)
+}
+inline void LastWiserNode::set_last_wiser(const char* value, size_t size) {
+  set_has_last_wiser();
+  if (last_wiser_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    last_wiser_ = new ::std::string;
+  }
+  last_wiser_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:LastWiserNode.last_wiser)
+}
+inline ::std::string* LastWiserNode::mutable_last_wiser() {
+  set_has_last_wiser();
+  if (last_wiser_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    last_wiser_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:LastWiserNode.last_wiser)
+  return last_wiser_;
+}
+inline ::std::string* LastWiserNode::release_last_wiser() {
+  clear_has_last_wiser();
+  if (last_wiser_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = last_wiser_;
+    last_wiser_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void LastWiserNode::set_allocated_last_wiser(::std::string* last_wiser) {
+  if (last_wiser_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete last_wiser_;
+  }
+  if (last_wiser) {
+    set_has_last_wiser();
+    last_wiser_ = last_wiser;
+  } else {
+    clear_has_last_wiser();
+    last_wiser_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:LastWiserNode.last_wiser)
 }
 
 

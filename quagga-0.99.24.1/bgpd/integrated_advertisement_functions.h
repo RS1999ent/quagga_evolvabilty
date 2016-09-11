@@ -45,3 +45,26 @@ extern "C" char* SetWiserControlInfo(char *serialized_advert,
    Returns: the path coste associated with this advertisement.
  */
 extern "C" int GetWiserPathCost(char* serialized_advert, int advert_size);
+
+/* Returns the last wiser node that changed the path cost.
+
+   Arguments:
+      serialized_advert: the IA proto in serialized form
+
+   Returns: -1 if there was no previous wiser node that touched the node.
+   Otherwise it will be the as that touched it last
+
+ */
+extern "C" int GetLastWiserNode(char* serialized_advert, int advert_size);
+
+/* Sets a new LastWiserNode key value.  If it doesn't exist, it creates one and sets it
+
+   Arguments:
+      serialized_advert: The IA proto in serialized form that we are updateing.
+      advet_size: the size of this advert in bytes
+      new_last_node: the new last wiser node we are setting
+      return_advert_size: The size of the returned new serialized advert
+
+   Returns: A serialized advert with the new information set
+ */
+extern "C" char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size);
