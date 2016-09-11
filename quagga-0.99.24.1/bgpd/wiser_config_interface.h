@@ -1,6 +1,7 @@
 #ifndef BGPD_WISER_CONFIG_INTERFACE_H
 #define BGPD_WISER_CONFIG_INTERFACE_H
 #include "shared_enum_definitions.h"
+#include "stdint.h"
 
 struct WiserConfig;
 struct GeneralConfiguration;
@@ -20,6 +21,8 @@ extern "C" {
   GeneralConfigurationHandle CreateGeneralConfig(char const * filename);
   void FreeGeneralConfig(GeneralConfigurationHandle general_config_handle);
   dbgp_protocol_t GetProtocolType(GeneralConfigurationHandle general_config_handle);
+  uint32_t GetIslandId(GeneralConfigurationHandle general_config_handle);
+  int IsRemoteAsAnIslandMember(GeneralConfigurationHandle general_config_handle, int remote_as);
   WiserConfigHandle GetWiserConfig(GeneralConfigurationHandle general_config_handle);
 
 

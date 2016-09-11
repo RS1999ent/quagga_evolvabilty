@@ -8,8 +8,14 @@ enum ProtocolType {
 // Toplevel message the holds the configuration information for Quagga and
 // implemented protocols.
 message Configuration {
+  // The protocol the modified quagga router is running
   optional ProtocolType protocol_type = 1;
-  optional WiserProtocolConfig wiser_protocol_config = 2;
+  // What the routers island id is.
+  optional uint32 island_id = 2;
+  // The other remote ases that are a part of the same island this router is in.
+  repeated uint32 island_member_ases = 3;
+  // Protocol configuration for wiser.
+  optional WiserProtocolConfig wiser_protocol_config = 4;
 }
 
 // Holds information for nodes running the wiser protocol. Thus far, this is
