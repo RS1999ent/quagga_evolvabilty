@@ -101,5 +101,25 @@ dbgp_result_status_t  set_control_info(struct transit *transit,
 */
 int has_dbgp_control_info(struct transit *transit);
 
+/* Increments the costs received at as1 from as2 by increment_by amount in the
+   lookupservice
+
+   Arguments:
+      as1: The AS receiving the advertisement
+      as2: The as the cost originianted from
+*/
+void IncrementWiserCosts(int as1, int as2, int increment_by);
+
+/* Retrieves the total costs recieved by as1 from as2. If it doesn't exist, then
+   returns -1
+
+   Arguments:
+      as1: the as receiving costs
+      as2: the as the costs are from
+
+   Returns: The cost associated with this key in the lookupservice, -1 if it doesn't exist.
+*/
+int RetrieveWiserCosts(int as1, int as2);
+
 
 #endif /* _QUAGGA_DBGP_LOOKUP_H */

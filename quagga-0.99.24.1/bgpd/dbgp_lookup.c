@@ -286,6 +286,61 @@ int has_dbgp_control_info(struct transit *transit)
       return 1;
     }
   return 0;
+} 
+
+void IncrementWiserCosts(int as1, int as2, int increment_by){
+  redisContext *c;
+  redisReply* reply;
+
+  char* key = malloc(100);
+  char* increment_by_str = malloc(100);
+
+  sprintf(key, "%i-%i", as1, as2);
+  sprintf(increment_by_str, "%i", increment_by);
+  
+
+  c = connect_to_redis();
+  reply = redisCommand(c, "INCRBY %s %s", *key, *increment_by_str);
+
+  if (reply->type == REDIS_REPLY_ERROR) {
+    zlog_err("dbgp_lookup::IncrementWiserCosts: failed to increment wiser costs for key %s", key);
+    assert(0);
+  }
+
+  free(reply); 
+  free(c);
+  
+}
+
+int RetrieveWiserCosts(int as1, int as2)
+{
+  redisContext *c;
+  redisReply* reply;
+
+  char* key = malloc(100);
+  sprintf(key,"%i-%i", as1, as2 );
+
+
+  /* Get D-BGP control info from lookup service */
+  c = connect_to_redis();
+  reply = redisCommand(c, "GET %s", *key);
+
+  if(reply->type == REDIS_REPLY_ERROR) {
+    zlog_err("dbgp_lookup::RetreiveWiserCosts: failed to get wiser costs for key %s", key);
+    assert(0);
+  }
+  if(reply->type == REDIS_REPLY_NIL) {
+    zlog_debug("dbgp_lookup::RetreiveWiserCosts: Key (%s) did not exist for retrieving", key);
+    return -1;
+  }
+
+  int return_val = reply->integer;
+  free(reply);
+  free(c);
+
+  return return_val;
+  
+
 }
    
   
