@@ -414,204 +414,204 @@ path_group_descriptors {
 
 }
 
-TEST (GetLastWiserNode, AdvertHasNoExistingLastWiserNode_ReturnNeg1){
-  // Arrange
-  const string kInputAdvert = R"()";
+// TEST (GetLastWiserNode, AdvertHasNoExistingLastWiserNode_ReturnNeg1){
+//   // Arrange
+//   const string kInputAdvert = R"()";
 
-  const int kCorrectOutput= -1;
+//   const int kCorrectOutput= -1;
 
-  IntegratedAdvertisement input_advert;
-  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+//   IntegratedAdvertisement input_advert;
+//   google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
 
-  int size = input_advert.ByteSize();
-  char *serialized_input_advert= new char[size];
-  input_advert.SerializeToArray(serialized_input_advert, size);
+//   int size = input_advert.ByteSize();
+//   char *serialized_input_advert= new char[size];
+//   input_advert.SerializeToArray(serialized_input_advert, size);
 
-  // Act
-  int result = GetLastWiserNode(serialized_input_advert, size);
+//   // Act
+//   int result = GetLastWiserNode(serialized_input_advert, size);
 
-  // Assert
-  EXPECT_EQ(result, kCorrectOutput);
-
-
-}
-
-TEST (GetLastWiserNode, AdvertHasNoLastWiserButWiserInfo_ReturnNeg1){
-  // Arrange
-  const string kInputAdvert = R"(
-    path_group_descriptors {
-        protocol : P_WISER
-    }
-    )";
-
-  const int kCorrectOutput= -1;
-
-  IntegratedAdvertisement input_advert;
-  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
-
-  int size = input_advert.ByteSize();
-  char *serialized_input_advert= new char[size];
-  input_advert.SerializeToArray(serialized_input_advert, size);
-
-  // Act
-  int result = GetLastWiserNode(serialized_input_advert, size);
-
-  // Assert
-  EXPECT_EQ(result, kCorrectOutput);
+//   // Assert
+//   EXPECT_EQ(result, kCorrectOutput);
 
 
-}
+// }
 
-TEST (GetLastWiserNode, AdvertHasLastWiserNode_ReturnCorrect){
-  // Arrange
-  const string kInputAdvert = R"(
-    path_group_descriptors {
-        protocol : P_WISER
-        key_values {
-            key : 'LastWiserNode'
-            value : '22'
-        }
-    }
-    )";
+// TEST (GetLastWiserNode, AdvertHasNoLastWiserButWiserInfo_ReturnNeg1){
+//   // Arrange
+//   const string kInputAdvert = R"(
+//     path_group_descriptors {
+//         protocol : P_WISER
+//     }
+//     )";
 
-  const int kCorrectOutput= 22;
+//   const int kCorrectOutput= -1;
 
-  IntegratedAdvertisement input_advert;
-  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+//   IntegratedAdvertisement input_advert;
+//   google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
 
-  int size = input_advert.ByteSize();
-  char *serialized_input_advert= new char[size];
-  input_advert.SerializeToArray(serialized_input_advert, size);
+//   int size = input_advert.ByteSize();
+//   char *serialized_input_advert= new char[size];
+//   input_advert.SerializeToArray(serialized_input_advert, size);
 
-  // Act
-  int result = GetLastWiserNode(serialized_input_advert, size);
+//   // Act
+//   int result = GetLastWiserNode(serialized_input_advert, size);
 
-  // Assert
-  EXPECT_EQ(result, kCorrectOutput);
+//   // Assert
+//   EXPECT_EQ(result, kCorrectOutput);
 
 
-}
+// }
 
-TEST (SetLastWiserNode, AdvertHasNoKeyValue_ReturnCorrect){
-  // Arrange
-  const string kInputAdvert = R"(
-    path_group_descriptors {
-        protocol : P_WISER
-    }
-    )";
+// TEST (GetLastWiserNode, AdvertHasLastWiserNode_ReturnCorrect){
+//   // Arrange
+//   const string kInputAdvert = R"(
+//     path_group_descriptors {
+//         protocol : P_WISER
+//         key_values {
+//             key : 'LastWiserNode'
+//             value : '22'
+//         }
+//     }
+//     )";
 
-  const int kInput= 22;
+//   const int kCorrectOutput= 22;
 
-  const string kCorrectOutput = R"(
-    path_group_descriptors {
-        protocol : P_WISER
-        key_values {
-            key : 'LastWiserNode'
-            value: '22'
-        }
-    }
-)";
+//   IntegratedAdvertisement input_advert;
+//   google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
 
-  IntegratedAdvertisement input_advert, output_advert, correct_output;
-  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
-  google::protobuf::TextFormat::ParseFromString(kCorrectOutput, &correct_output);
+//   int size = input_advert.ByteSize();
+//   char *serialized_input_advert= new char[size];
+//   input_advert.SerializeToArray(serialized_input_advert, size);
+
+//   // Act
+//   int result = GetLastWiserNode(serialized_input_advert, size);
+
+//   // Assert
+//   EXPECT_EQ(result, kCorrectOutput);
+
+
+// }
+
+// TEST (SetLastWiserNode, AdvertHasNoKeyValue_ReturnCorrect){
+//   // Arrange
+//   const string kInputAdvert = R"(
+//     path_group_descriptors {
+//         protocol : P_WISER
+//     }
+//     )";
+
+//   const int kInput= 22;
+
+//   const string kCorrectOutput = R"(
+//     path_group_descriptors {
+//         protocol : P_WISER
+//         key_values {
+//             key : 'LastWiserNode'
+//             value: '22'
+//         }
+//     }
+// )";
+
+//   IntegratedAdvertisement input_advert, output_advert, correct_output;
+//   google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+//   google::protobuf::TextFormat::ParseFromString(kCorrectOutput, &correct_output);
   
 
-  int size = input_advert.ByteSize();
-  char *serialized_input_advert= new char[size];
-  input_advert.SerializeToArray(serialized_input_advert, size);
+//   int size = input_advert.ByteSize();
+//   char *serialized_input_advert= new char[size];
+//   input_advert.SerializeToArray(serialized_input_advert, size);
 
-  // Act
-  int return_size;
-  char* result = SetLastWiserNode(serialized_input_advert, size, kInput, &return_size );
-  output_advert.ParseFromArray(result, return_size);
+//   // Act
+//   int return_size;
+//   char* result = SetLastWiserNode(serialized_input_advert, size, kInput, &return_size );
+//   output_advert.ParseFromArray(result, return_size);
 
-  // Assert
-  EXPECT_STREQ(output_advert.DebugString().c_str(), correct_output.DebugString().c_str() );
+//   // Assert
+//   EXPECT_STREQ(output_advert.DebugString().c_str(), correct_output.DebugString().c_str() );
 
 
-}
+// }
 
-TEST (SetLastWiserNode, AdvertHasNoWiserInfo_ReturnCorrect){
-  // Arrange
-  const string kInputAdvert = R"(
-    )";
+// TEST (SetLastWiserNode, AdvertHasNoWiserInfo_ReturnCorrect){
+//   // Arrange
+//   const string kInputAdvert = R"(
+//     )";
 
-  const int kInput= 22;
+//   const int kInput= 22;
 
-  const string kCorrectOutput = R"(
-    path_group_descriptors {
-        protocol : P_WISER
-        key_values {
-            key : 'LastWiserNode'
-            value: '22'
-        }
-    }
-)";
+//   const string kCorrectOutput = R"(
+//     path_group_descriptors {
+//         protocol : P_WISER
+//         key_values {
+//             key : 'LastWiserNode'
+//             value: '22'
+//         }
+//     }
+// )";
 
-  IntegratedAdvertisement input_advert, output_advert, correct_output;
-  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
-  google::protobuf::TextFormat::ParseFromString(kCorrectOutput, &correct_output);
+//   IntegratedAdvertisement input_advert, output_advert, correct_output;
+//   google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+//   google::protobuf::TextFormat::ParseFromString(kCorrectOutput, &correct_output);
   
 
-  int size = input_advert.ByteSize();
-  char *serialized_input_advert= new char[size];
-  input_advert.SerializeToArray(serialized_input_advert, size);
+//   int size = input_advert.ByteSize();
+//   char *serialized_input_advert= new char[size];
+//   input_advert.SerializeToArray(serialized_input_advert, size);
 
-  // Act
-  int return_size;
-  char* result = SetLastWiserNode(serialized_input_advert, size, kInput, &return_size );
-  output_advert.ParseFromArray(result, return_size);
+//   // Act
+//   int return_size;
+//   char* result = SetLastWiserNode(serialized_input_advert, size, kInput, &return_size );
+//   output_advert.ParseFromArray(result, return_size);
 
-  // Assert
-  EXPECT_STREQ(output_advert.DebugString().c_str(), correct_output.DebugString().c_str() );
+//   // Assert
+//   EXPECT_STREQ(output_advert.DebugString().c_str(), correct_output.DebugString().c_str() );
 
 
-}
+// }
 
-TEST (SetLastWiserNode, AdvertHasWiserInfoAndOldLastWiserNode_ReturnCorrect){
-  // Arrange
-  const string kInputAdvert = R"(
-    path_group_descriptors {
-        protocol : P_WISER
-        key_values {
-            key : 'LastWiserNode'
-            value: '15'
-        }
-    }
-    )";
+// TEST (SetLastWiserNode, AdvertHasWiserInfoAndOldLastWiserNode_ReturnCorrect){
+//   // Arrange
+//   const string kInputAdvert = R"(
+//     path_group_descriptors {
+//         protocol : P_WISER
+//         key_values {
+//             key : 'LastWiserNode'
+//             value: '15'
+//         }
+//     }
+//     )";
 
-  const int kInput= 22;
+//   const int kInput= 22;
 
-  const string kCorrectOutput = R"(
-    path_group_descriptors {
-        protocol : P_WISER
-        key_values {
-            key : 'LastWiserNode'
-            value: '22'
-        }
-    }
-)";
+//   const string kCorrectOutput = R"(
+//     path_group_descriptors {
+//         protocol : P_WISER
+//         key_values {
+//             key : 'LastWiserNode'
+//             value: '22'
+//         }
+//     }
+// )";
 
-  IntegratedAdvertisement input_advert, output_advert, correct_output;
-  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
-  google::protobuf::TextFormat::ParseFromString(kCorrectOutput, &correct_output);
+//   IntegratedAdvertisement input_advert, output_advert, correct_output;
+//   google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+//   google::protobuf::TextFormat::ParseFromString(kCorrectOutput, &correct_output);
   
 
-  int size = input_advert.ByteSize();
-  char *serialized_input_advert= new char[size];
-  input_advert.SerializeToArray(serialized_input_advert, size);
+//   int size = input_advert.ByteSize();
+//   char *serialized_input_advert= new char[size];
+//   input_advert.SerializeToArray(serialized_input_advert, size);
 
-  // Act
-  int return_size;
-  char* result = SetLastWiserNode(serialized_input_advert, size, kInput, &return_size );
-  output_advert.ParseFromArray(result, return_size);
+//   // Act
+//   int return_size;
+//   char* result = SetLastWiserNode(serialized_input_advert, size, kInput, &return_size );
+//   output_advert.ParseFromArray(result, return_size);
 
-  // Assert
-  EXPECT_STREQ(output_advert.DebugString().c_str(), correct_output.DebugString().c_str() );
+//   // Assert
+//   EXPECT_STREQ(output_advert.DebugString().c_str(), correct_output.DebugString().c_str() );
 
 
-}
+// }
 
 
 

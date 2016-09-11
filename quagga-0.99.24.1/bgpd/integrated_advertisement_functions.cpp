@@ -157,9 +157,43 @@ int GetLastWiserNode(char* serialized_advert, int advert_size) {
     return -1;
   }
 
-  return std::stoi(last_wiser->value());
+  LastWiserNode last_wiser_node;
+  last_wiser_node.ParseFromString(last_wiser->value());
+  return last_wiser_node.last_wiser(last_wiser_node.last_wiser_size() -1);
+
+  // return std::stoi(last_wiser->value());
 }
 
+int GetvirtualNeighbor(char* serialized_advert, int advert_size){
+  //unserialize advert
+  IntegratedAdvertisement input_ia;
+  input_ia.ParseFromArray(serialized_advert, advert_size);
+
+  PathGroupDescriptor *wiser_path_group_descriptor = GetProtocolPathGroupDescriptor(&input_ia, Protocol::P_WISER);
+
+  // if wiser_path_group_descriptor is null, then there is no last wiser node. return -1
+  if(wiser_path_group_descriptor == NULL)
+    {
+      return -1;
+    }
+
+  // if the key value for 'LastWiserNode' doesn't exist, return -1
+  KeyValue *last_wiser = GetKeyValue(wiser_path_group_descriptor, "LastWiserNode");
+  if (last_wiser == NULL) {
+    return -1;
+  }
+
+  LastWiserNode last_wiser_node;
+  last_wiser_node.ParseFromString(last_wiser->value());
+  if(last_wiser_node.last_wiser_size() > 1)
+    return last_wiser_node.last_wiser(last_wiser_node.last_wiser_size() - 2);
+  else {
+    return -1;
+  }
+
+  // return std::stoi(last_wiser->value());
+  
+}
 
 char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size) {
   //unserialize advert
@@ -179,11 +213,15 @@ char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_no
 
   // Get or create the key vlaue
   KeyValue *mutable_key_value = GetCreateKeyValue(wiser_path_group_descriptor, "LastWiserNode");
-  mutable_key_value->set_value(std::to_string(new_last_node));
+  LastWiserNode last_wiser_node;
+  last_wiser_node.ParseFromString(mutable_key_value->value());
+  last_wiser_node.add_last_wiser(new_last_node);
+  mutable_key_value->set_value(last_wiser_node.SerializeAsString());
 
   *return_advert_size = working_advertisement.ByteSize();
   char *return_advert = new char[*return_advert_size];
   working_advertisement.SerializeToArray(return_advert, *return_advert_size);
   return return_advert;
 }
+
 

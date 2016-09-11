@@ -53,5 +53,5 @@ message PathCost {
 // Holds the last wiser node that updated the path cost. Used for calculating
 // normalization.
 message LastWiserNode {
-  optional string last_wiser = 1;
+  repeated uint32 last_wiser = 1;
 }

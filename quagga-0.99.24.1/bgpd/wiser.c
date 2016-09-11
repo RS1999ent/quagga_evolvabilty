@@ -17,6 +17,8 @@ extern WiserConfigHandle  wiser_config_;
 char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive_path_cost, int* modified_advert_size);
 int GetWiserPathCost(char* serialized_advert, int advert_size);
 int GetLastWiserNode(char* serialized_advert, int advert_size);
+char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size);
+int GetvirtualNeighbor(char* serialized_advert, int advert_size);
 
 /* ********************* Private functions ********************* */
 
@@ -33,6 +35,41 @@ void AddLinkCostToIntegratedAdvertisement(int additive_link_cost, dbgp_control_i
 
 }
 
+void SetLastWiserNodeInIntegratedAdvertisement(int last_wiser_node, dbgp_control_info_t* control_info) {
+  char* old_integrated_advertisement = control_info->integrated_advertisement;
+  int old_integrated_advertisement_size = control_info->integrated_advertisement_size;
+  int new_size;
+  char* new_integrated_advertisement_info = SetLastWiserNode(old_integrated_advertisement,
+                                                                old_integrated_advertisement_size,
+                                                                last_wiser_node, &new_size);
+  free(old_integrated_advertisement);
+  control_info->integrated_advertisement = new_integrated_advertisement_info;
+  control_info->integrated_advertisement_size = new_size;
+
+}
+
+float ComputeNormalizationForAdvert(dbgp_control_info_t *control_info, int local_as) {
+
+  // get virtual neighbor
+  int virtual_neighbor = GetvirtualNeighbor(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
+  // if it's -1, then there is no partner to compute normalization, return 1.
+  if(virtual_neighbor == -1){
+    return 1;
+  }
+
+  
+  int cost_received_from_neighbor = RetrieveWiserCosts(local_as, virtual_neighbor);
+  int cost_neighbor_received_from_me = RetrieveWiserCosts(virtual_neighbor, local_as);
+
+  // if either aren't in teh lookup service, return 1
+  if(cost_neighbor_received_from_me == -1 || cost_received_from_neighbor == -1){
+    return 1;
+  }
+
+  // return normalization
+  return (float) cost_received_from_neighbor / cost_neighbor_received_from_me;
+}
+
 /* Given two extra attributes (this is where any extra control info is stored at
    where a lookup key would be) compute whether one is better than the other
    based on wiser infomation alone.
@@ -44,7 +81,7 @@ void AddLinkCostToIntegratedAdvertisement(int additive_link_cost, dbgp_control_i
    @return 1 if newattre is better than existattre. 0 if existattre is better
    than newattre. -1 if neither and we need to move on in the decision process.
 */
-int ComputeWiserDecision(const struct attr_extra* newattre, const struct attr_extra* existattre)
+int ComputeWiserDecision(const struct attr_extra* newattre, const struct attr_extra* existattre, int local_as)
 {
   struct transit *newtransit, *existtransit;
   newtransit = newattre->transit;
@@ -66,18 +103,25 @@ int ComputeWiserDecision(const struct attr_extra* newattre, const struct attr_ex
   int path_cost_from_exist = GetWiserPathCost(exist_control_info->integrated_advertisement,
                                              exist_control_info->integrated_advertisement_size);
 
+  int normalization_for_new = ComputeNormalizationForAdvert(new_control_info, local_as);
+  int normalization_for_exist = ComputeNormalizationForAdvert(exist_control_info, local_as);
+
+  float exist_normalized_cost = path_cost_from_exist * normalization_for_exist;
+  float new_normalized_cost = path_cost_from_new * normalization_for_new;
+
+
 
   // Return 1 if new is better than exist, 0  if exist is better than old, -1 if they are equal.
-  if (path_cost_from_new < path_cost_from_exist){
-    zlog_debug("wiser::ComputeWiserDecision: New (%i) is better than exist (%i)", path_cost_from_new, path_cost_from_exist);
+  if (new_normalized_cost < exist_normalized_cost){
+    zlog_debug("wiser::ComputeWiserDecision: New (%f) is better than exist (%f)", new_normalized_cost, exist_normalized_cost);
     return 1;
   }
-  if (path_cost_from_new > path_cost_from_exist){
-    zlog_debug("wiser::ComputeWiserDecision: New (%i) is worse than exist (%i)", path_cost_from_new, path_cost_from_exist);
+  if (new_normalized_cost > exist_normalized_cost){
+    zlog_debug("wiser::ComputeWiserDecision: New (%f) is worse than exist (%f)", new_normalized_cost, exist_normalized_cost);
     return 0;
   }
   // here if they are the same
-  zlog_debug("wiser::ComputeWiserDecision: New (%i) is the same than exist (%i)", path_cost_from_new, path_cost_from_exist);
+  zlog_debug("wiser::ComputeWiserDecision: New (%f) is the same than exist (%f)", new_normalized_cost, exist_normalized_cost);
   return -1;
 }
 
@@ -125,7 +169,15 @@ void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *p
       // update the lookupservice
       IncrementWiserCosts(peer->bgp->as, last_wiser_node, current_cost);
       zlog_debug("wiser::wiser_update_control_info: Advertisement has existing cost in it for key %i-%i. Incrementing lookup service by cost %i", peer->bgp->as, last_wiser_node, current_cost);
+      // need to set the info seen here so it can be used in wiser_info_cmp
+      // before updateing the value in the integrated advertisement
+      SetLastWiserNodeInIntegratedAdvertisement(last_wiser_node, control_info);
     }
+  else{
+    // set to -1 so we know whether there was wiser info originally in advert.
+    // This is for wiser_info_cmp
+    zlog_debug("wiser::wiser_update_control_info: There was no virtual wiser neighbor" );
+  }
 
   //mutate the control_info
   AddLinkCostToIntegratedAdvertisement(additive_link_cost, control_info);
@@ -222,7 +274,7 @@ int wiser_info_cmp (struct bgp *bgp, struct bgp_info *new, struct bgp_info *exis
   /* 3. Wiser computation. Will prefer the route with the lower cost. Both must
      have some cost in the advert otherwise the default decision process will
      take place */
-  int wiser_decision = ComputeWiserDecision(newattre, existattre);
+  int wiser_decision = ComputeWiserDecision(newattre, existattre, bgp->as);
   // If it is not -1, then that means we have a decision. Return it. Otherwise
   // use other decisions.
   if(wiser_decision != -1){

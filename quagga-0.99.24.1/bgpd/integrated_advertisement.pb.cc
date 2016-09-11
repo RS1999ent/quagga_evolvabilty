@@ -202,7 +202,7 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
     "col\022\035\n\nkey_values\030\002 \003(\0132\t.KeyValue\"&\n\010Ke"
     "yValue\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\035\n\010Pa"
     "thCost\022\021\n\tpath_cost\030\001 \001(\r\"#\n\rLastWiserNo"
-    "de\022\022\n\nlast_wiser\030\001 \001(\t*F\n\010Protocol\022\r\n\tP_"
+    "de\022\022\n\nlast_wiser\030\001 \003(\r*F\n\010Protocol\022\r\n\tP_"
     "UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020\002\022\016"
     "\n\nP_BASELINE\020\003", 494);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
@@ -1586,9 +1586,7 @@ LastWiserNode::LastWiserNode(const LastWiserNode& from)
 }
 
 void LastWiserNode::SharedCtor() {
-  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
-  last_wiser_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1598,9 +1596,6 @@ LastWiserNode::~LastWiserNode() {
 }
 
 void LastWiserNode::SharedDtor() {
-  if (last_wiser_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-    delete last_wiser_;
-  }
   if (this != default_instance_) {
   }
 }
@@ -1627,11 +1622,7 @@ LastWiserNode* LastWiserNode::New() const {
 }
 
 void LastWiserNode::Clear() {
-  if (has_last_wiser()) {
-    if (last_wiser_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-      last_wiser_->clear();
-    }
-  }
+  last_wiser_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -1646,18 +1637,21 @@ bool LastWiserNode::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional string last_wiser = 1;
+      // repeated uint32 last_wiser = 1;
       case 1: {
-        if (tag == 10) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_last_wiser()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-            this->last_wiser().data(), this->last_wiser().length(),
-            ::google::protobuf::internal::WireFormat::PARSE,
-            "last_wiser");
+        if (tag == 8) {
+         parse_last_wiser:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 1, 8, input, this->mutable_last_wiser())));
+        } else if (tag == 10) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, this->mutable_last_wiser())));
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(8)) goto parse_last_wiser;
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -1687,14 +1681,10 @@ failure:
 void LastWiserNode::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:LastWiserNode)
-  // optional string last_wiser = 1;
-  if (has_last_wiser()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->last_wiser().data(), this->last_wiser().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "last_wiser");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      1, this->last_wiser(), output);
+  // repeated uint32 last_wiser = 1;
+  for (int i = 0; i < this->last_wiser_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(
+      1, this->last_wiser(i), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -1707,15 +1697,10 @@ void LastWiserNode::SerializeWithCachedSizes(
 ::google::protobuf::uint8* LastWiserNode::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:LastWiserNode)
-  // optional string last_wiser = 1;
-  if (has_last_wiser()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->last_wiser().data(), this->last_wiser().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "last_wiser");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->last_wiser(), target);
+  // repeated uint32 last_wiser = 1;
+  for (int i = 0; i < this->last_wiser_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt32ToArray(1, this->last_wiser(i), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -1729,15 +1714,16 @@ void LastWiserNode::SerializeWithCachedSizes(
 int LastWiserNode::ByteSize() const {
   int total_size = 0;
 
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional string last_wiser = 1;
-    if (has_last_wiser()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->last_wiser());
+  // repeated uint32 last_wiser = 1;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->last_wiser_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt32Size(this->last_wiser(i));
     }
-
+    total_size += 1 * this->last_wiser_size() + data_size;
   }
+
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -1763,11 +1749,7 @@ void LastWiserNode::MergeFrom(const ::google::protobuf::Message& from) {
 
 void LastWiserNode::MergeFrom(const LastWiserNode& from) {
   GOOGLE_CHECK_NE(&from, this);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_last_wiser()) {
-      set_last_wiser(from.last_wiser());
-    }
-  }
+  last_wiser_.MergeFrom(from.last_wiser_);
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -1790,7 +1772,7 @@ bool LastWiserNode::IsInitialized() const {
 
 void LastWiserNode::Swap(LastWiserNode* other) {
   if (other != this) {
-    std::swap(last_wiser_, other->last_wiser_);
+    last_wiser_.Swap(&other->last_wiser_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

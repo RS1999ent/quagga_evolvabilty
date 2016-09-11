@@ -34,6 +34,11 @@ typedef struct dbgp_control_info_s {
   char *integrated_advertisement;
   // size of the Serialized integrated_advertisement
   int integrated_advertisement_size;
+
+  // Specific to wiser protocol. Will put the last seen wiser node that was
+  // originally in advertisement as receivced by this router. This is not put in
+  // lookup service.
+  int last_seen_wiser_node;
   /**
    * @bug: D-BGP - Add more stuff here for different protocols
    */
