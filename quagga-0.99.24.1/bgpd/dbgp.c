@@ -203,6 +203,8 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer)
   // If aspath is 0, then this the first thing going through, so there will be no extra attributes, return not filtered.
   unsigned int aspath_length = aspath_size(attr->aspath);
   zlog_debug("dbpg::dbpg_output_filter: aspath length: %i", aspath_length);
+  zlog_debug("dbpg::dbpg_output_filter: aspath: %s", attr->aspath->str);
+  /* zlog_debug("dbpg::dbpg_output_filter: aspath length: %i", attr->aspath->segments->length); */
   if (aspath_length == 0)
     {
       return retval;

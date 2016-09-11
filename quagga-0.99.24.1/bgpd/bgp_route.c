@@ -692,19 +692,28 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 	}
     }
 
-  /* D-BGP: If the as we are advertising to isn't a part of our island, append our island id to it. */
-  if(IsRemoteAsAnIslandMember(general_configuration_, peer->as) != 1) {
-    struct aspath* aspath = aspath_dup (attr->aspath);
-    aspath = aspath_add_seq (aspath, peer->bgp->island_id);
-    aspath_unintern (&attr->aspath);
-    attr->aspath = aspath_intern (aspath);
-    zlog_debug("bgp_route::bgp_announce_check: Advertising to AS %i is not a fellow island member of me (AS %i). Appending islandid %i", peer->as, peer->change_local_as, peer->bgp->island_id);
-    zlog_debug("bgp_route::bgp_announce_check: Aspath advertised to AS %i: %s", peer->as, aspath->str);
-  }
 
   /* D-BGP-specific filtering */
   if(dbgp_output_filter(riattr, peer) == DBGP_FILTERED) {
     return 0;
+  }
+
+  /* D-BGP: If the as we are advertising to isn't a part of our island, append
+     our island id to it. This should be done after dbgp_output_filter because
+     dbgp_output_filter has special logic for the announcing as (aspath length
+     is 0). If we add island id to aspath, aspath is no longer 0. */
+  if(IsRemoteAsAnIslandMember(general_configuration_, peer->as) != 1) {
+    zlog_debug("bgp_route::bgp_announce_check: Aspath before adding island id: %s", riattr->aspath->str);
+    /* if(attr->aspath->segments->length == 0) { */
+    /*   zlog_debug("bgp_route::bgp_announce_check: IN adding island id, aspath is null (this router is announcing)"); */
+    /*   attr->aspath = aspath_empty_get(); */
+    /* } */
+    struct aspath* aspath = aspath_dup (riattr->aspath);
+    aspath = aspath_add_seq (aspath, peer->bgp->island_id);
+    aspath_unintern (&riattr->aspath);
+    riattr->aspath = aspath_intern (aspath);
+    zlog_debug("bgp_route::bgp_announce_check: Advertising to AS %i is not a fellow island member of me (AS %i). Appending islandid %i", peer->as, peer->change_local_as, peer->bgp->island_id);
+    zlog_debug("bgp_route::bgp_announce_check: Aspath advertised to AS %i: %s", peer->as, aspath->str);
   }
   
   /* For modify attribute, copy it to temporary structure. */
@@ -827,6 +836,7 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
   if (peer->sort == BGP_PEER_EBGP
       && peer_af_flag_check (peer, afi, safi, PEER_FLAG_REMOVE_PRIVATE_AS)
       && aspath_private_as_check (attr->aspath))
+    zlog_debug("bgp_route::bgp_announce_check: ebgp peer and remove private as is set");
     attr->aspath = aspath_empty_get ();
 
   /* Route map & unsuppress-map apply. */
