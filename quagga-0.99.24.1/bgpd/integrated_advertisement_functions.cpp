@@ -124,6 +124,11 @@ int GetWiserPathCost(char* serialized_advert, int advert_size)
     GetProtocolPathGroupDescriptor(&proto_advert, 
                                    Protocol::P_WISER);
 
+  if(wiser_path_group_descriptor == NULL)
+    {
+      return -1;
+    }
+
   // Get the path cost from the assumed existent keyvalue
   KeyValue *path_cost_kv = GetKeyValue(wiser_path_group_descriptor, "PathCost");
   PathCost path_cost;

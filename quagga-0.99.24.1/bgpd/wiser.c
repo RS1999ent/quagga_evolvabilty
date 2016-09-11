@@ -16,6 +16,7 @@
 extern WiserConfigHandle  wiser_config_;
 char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive_path_cost, int* modified_advert_size);
 int GetWiserPathCost(char* serialized_advert, int advert_size);
+int GetLastWiserNode(char* serialized_advert, int advert_size);
 
 /* ********************* Private functions ********************* */
 
@@ -112,6 +113,19 @@ void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *p
   /* zlog_debug("wiser::wiser_update_control_info: printing linkcosts:\n %s", LinkCostsToString(wiser_config_)); */
   int additive_link_cost = GetLinkCost(wiser_config_, string_local_id, string_remote_id);
   assert(additive_link_cost != -1); // should not be -1. If it is, something is wrong.
+
+  // Get cost and last wiser node that touched advertisement
+  int current_cost = GetWiserPathCost(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
+  // if current_cost is -1, then there was no cost from a virtual neighbor.
+  if(current_cost != -1)
+    {
+      // here if we need to update the cost in the lookupservice.
+      int last_wiser_node = GetLastWiserNode(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
+      assert(last_wiser_node != -1);
+      // update the lookupservice
+      IncrementWiserCosts(peer->bgp->as, last_wiser_node, current_cost);
+      zlog_debug("wiser::wiser_update_control_info: Advertisement has existing cost in it for key %i-%i. Incrementing lookup service by cost %i", peer->bgp->as, last_wiser_node, current_cost);
+    }
 
   //mutate the control_info
   AddLinkCostToIntegratedAdvertisement(additive_link_cost, control_info);
