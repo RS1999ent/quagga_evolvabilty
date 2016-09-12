@@ -20,9 +20,10 @@
    additive_link_cost: The linkcost to add to the possibly existing link cost
    in control_info->integrated_advertisement
    control_info: The dbgp_control_info that contains the control information we are interested in.
+   normalization: the normalization factor to scale existing cost by.
 
 */
-void AddLinkCostToIntegratedAdvertisement(int additive_link_cost, dbgp_control_info_t* control_info);
+void AddLinkCostToIntegratedAdvertisement(int additive_link_cost, float normalization, dbgp_control_info_t* control_info);
 
 /* ********************* Public functions ********************* */
 

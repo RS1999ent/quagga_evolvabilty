@@ -21,13 +21,15 @@ extern "C" char* CreateEmptyIntegratedAdvertisement(int *size);
       additive_path_cost: the cost to add on to the 'PathCost' attribute of wiser.
       modified_advert_size: The size of the advertisement after the cost has
       been added.
+      normalization: How much the existing cost should be normalized before
+      adding our own cost.
 
    Returns: A ptr to a new serialized advertisement. Ownership is passed to caller.
 
 */
 extern "C" char* SetWiserControlInfo(char *serialized_advert,
                                      int advert_size,  int additive_path_cost,
-                                     int *modified_advert_size);
+                                     int *modified_advert_size, float normalization);
 
 
 /* Gets the wiser path cost associated with this serialized advert.

@@ -70,7 +70,7 @@ KeyValue* GetKeyValue(PathGroupDescriptor* path_group_descriptor,
 }
 
 
-char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive_path_cost, int* modified_advert_size) {
+char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive_path_cost, int* modified_advert_size, float normalization) {
 
   // Parse the existing advertisement if it exists
   IntegratedAdvertisement working_advertisement;
@@ -93,11 +93,12 @@ char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive
   // Get the keyvalue corresponding to wiser path cost.
   KeyValue *mutable_key_value = GetCreateKeyValue(wiser_path_group_descriptor, "PathCost");
 
-  // add onto the path cost and reserialize it into the value of the key value
+  // add onto the path cost and reserialize it into the value of the key value.
+  // Normalize the current cost first
   PathCost path_cost;
   path_cost.ParseFromString(mutable_key_value->value());
   int current_cost = path_cost.path_cost();
-  int new_cost = current_cost + additive_path_cost;
+  int new_cost = current_cost * normalization + additive_path_cost;
   printf("integrated_advertisement_functions::SetWiserControlInfo: cost %i added to entering control info with cost %i giving total %i", additive_path_cost, current_cost, new_cost);
   path_cost.set_path_cost(new_cost);
   mutable_key_value->set_value(path_cost.SerializeAsString());

@@ -294,21 +294,34 @@ void IncrementWiserCosts(int as1, int as2, int increment_by){
 
   char* key = malloc(100);
   char* increment_by_str = malloc(100);
+  char* command = malloc(100);
+  // zero out so that strings is guranteed to be null terminated
+  memset(key, 0, 100);
+  memset(increment_by_str, 0, 100);
+  memset(command, 0, 100);
 
   sprintf(key, "%i-%i", as1, as2);
   sprintf(increment_by_str, "%i", increment_by);
+  sprintf(command, "INCRBY %s %s", key, increment_by_str);
+
+  zlog_debug("dbgp_lookup::IncrementWiserCosts: Command sent to Redis: %s", command);
   
 
   c = connect_to_redis();
-  reply = redisCommand(c, "INCRBY %s %s", *key, *increment_by_str);
+  /* reply = redisCommand(c, "INCRBY %s %s", *key, *increment_by_str); */
+  reply = redisCommand(c, command);
 
   if (reply->type == REDIS_REPLY_ERROR) {
     zlog_err("dbgp_lookup::IncrementWiserCosts: failed to increment wiser costs for key %s", key);
     assert(0);
   }
 
+  // free dynamically allocated memory.
   free(reply); 
   free(c);
+  free(command);
+  free(increment_by_str);
+  free(key);
   
 }
 
@@ -317,24 +330,29 @@ int RetrieveWiserCosts(int as1, int as2)
   redisContext *c;
   redisReply* reply;
 
-  char* key = malloc(100);
-  sprintf(key,"%i-%i", as1, as2 );
+  char* command = malloc(100);
+  sprintf(command,"GET %i-%i", as1, as2 );
 
 
   /* Get D-BGP control info from lookup service */
   c = connect_to_redis();
-  reply = redisCommand(c, "GET %s", *key);
+  reply = redisCommand(c, command);
 
   if(reply->type == REDIS_REPLY_ERROR) {
-    zlog_err("dbgp_lookup::RetreiveWiserCosts: failed to get wiser costs for key %s", key);
+    zlog_err("dbgp_lookup::RetreiveWiserCosts: failed to get wiser costs for key %i-%i", as1, as2);
     assert(0);
   }
   if(reply->type == REDIS_REPLY_NIL) {
-    zlog_debug("dbgp_lookup::RetreiveWiserCosts: Key (%s) did not exist for retrieving", key);
+    zlog_debug("dbgp_lookup::RetreiveWiserCosts: Key (%i-%i) did not exist for retrieving", as1, as2);
     return -1;
+  }
+  if(reply->type != REDIS_REPLY_INTEGER){
+    zlog_debug("dbgp_lookup::RetrieveWiserCosts: Key(%i-%i) exist and got back STRING cost %s", as1, as2, reply->str);
+    return strtol(reply->str, NULL, 0);
   }
 
   int return_val = reply->integer;
+  zlog_debug("dbgp_lookup::RetrieveWiserCosts: Key(%i-%i) exist and got back cost %i", as1, as2, return_val);
   free(reply);
   free(c);
 

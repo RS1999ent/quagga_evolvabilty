@@ -311,7 +311,7 @@ path_group_descriptors {
   char* result = SetWiserControlInfo(serialized_input_advert,
                                      input_advert_size,
                                      kAdditivePathCost,
-                                     &modified_advert_size);
+                                     &modified_advert_size, 1);
   result_advert.ParseFromArray(result, modified_advert_size);
 
   // Assert
@@ -356,7 +356,7 @@ path_group_descriptors {
   char* result = SetWiserControlInfo(serialized_input_advert,
                                      input_advert_size,
                                      kAdditivePathCost,
-                                     &modified_advert_size);
+                                     &modified_advert_size, 1);
   result_advert.ParseFromArray(result, modified_advert_size);
 
   // Assert
@@ -405,7 +405,7 @@ path_group_descriptors {
   char* result = SetWiserControlInfo(serialized_input_advert,
                                      input_advert_size,
                                      kAdditivePathCost,
-                                     &modified_advert_size);
+                                     &modified_advert_size, 1);
   result_advert.ParseFromArray(result, modified_advert_size);
 
   // Assert
@@ -468,7 +468,7 @@ TEST(GetWiserPathCost, IntegrationTestWithSetLastWiserNode_ReturnProperCost){
                                                              kInputLastWiser, &new_size);
   free(old_integrated_advertisement);
 
-  new_integrated_advertisement_info = SetWiserControlInfo(new_integrated_advertisement_info, new_size, 10, &new_size);
+  new_integrated_advertisement_info = SetWiserControlInfo(new_integrated_advertisement_info, new_size, 10, &new_size, 1);
 
   // Act
   int result = GetWiserPathCost(new_integrated_advertisement_info, new_size);

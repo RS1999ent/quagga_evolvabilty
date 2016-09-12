@@ -14,7 +14,8 @@
 
 /* ********************* Global vars ************************** */
 extern WiserConfigHandle  wiser_config_;
-char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive_path_cost, int* modified_advert_size);
+char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive_path_cost, int* modified_advert_size,
+                          float normalization);
 int GetWiserPathCost(char* serialized_advert, int advert_size);
 int GetLastWiserNode(char* serialized_advert, int advert_size);
 char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size);
@@ -23,13 +24,13 @@ char* SerializedAdverToString(char* serialized_advert, int advert_size);
 
 /* ********************* Private functions ********************* */
 
-void AddLinkCostToIntegratedAdvertisement(int additive_link_cost, dbgp_control_info_t* control_info) {
+void AddLinkCostToIntegratedAdvertisement(int additive_link_cost, float normalization, dbgp_control_info_t* control_info) {
   char* old_integrated_advertisement = control_info->integrated_advertisement;
   int old_integrated_advertisement_size = control_info->integrated_advertisement_size;
   int new_size;
   char* new_integrated_advertisement_info = SetWiserControlInfo(old_integrated_advertisement,
                                                                 old_integrated_advertisement_size,
-                                                                additive_link_cost, &new_size);
+                                                                additive_link_cost, &new_size, normalization);
   free(old_integrated_advertisement);
   control_info->integrated_advertisement = new_integrated_advertisement_info;
   control_info->integrated_advertisement_size = new_size;
@@ -50,26 +51,32 @@ void SetLastWiserNodeInIntegratedAdvertisement(int last_wiser_node, dbgp_control
 }
 
 float ComputeNormalizationForAdvert(dbgp_control_info_t *control_info, int local_as) {
-  return 1;
-  /* // get virtual neighbor */
-  /* int virtual_neighbor = GetvirtualNeighbor(control_info->integrated_advertisement, control_info->integrated_advertisement_size); */
-  /* // if it's -1, then there is no partner to compute normalization, return 1. */
-  /* if(virtual_neighbor == -1){ */
-  /*   return 1; */
-  /* } */
+  // get virtual neighbor
+  int virtual_neighbor = GetLastWiserNode(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
+  // if it's -1, then there is no partner to compute normalization, return 1.
+  if(virtual_neighbor == -1){
+    return 1;
+  }
 
   
-  /* int cost_received_from_neighbor = RetrieveWiserCosts(local_as, virtual_neighbor); */
-  /* int cost_neighbor_received_from_me = RetrieveWiserCosts(virtual_neighbor, local_as); */
+  int cost_received_from_neighbor = RetrieveWiserCosts(local_as, virtual_neighbor);
+  int cost_neighbor_received_from_me = RetrieveWiserCosts(virtual_neighbor, local_as);
+  zlog_debug("wiser::ComputeNormalizationForAdvert: cost recieved from neighbor %i: %i", virtual_neighbor, cost_received_from_neighbor);
+  zlog_debug("wiser::ComputeNormalizationForAdvert: cost neighbor %i received from me: %i",
+             virtual_neighbor, cost_neighbor_received_from_me);
 
-  /* // if either aren't in teh lookup service, return 1 */
-  /* if(cost_neighbor_received_from_me == -1 || cost_received_from_neighbor == -1){ */
-  /*   return 1; */
-  /* } */
+  // if either aren't in teh lookup service, return 1
+  if(cost_neighbor_received_from_me == -1 || cost_received_from_neighbor == -1){
+    return 1;
+  }
 
-  /* // return normalization */
-  /* // reverse TODO */
+  // return normalization
+  // reverse TODO
   /* return (float) cost_received_from_neighbor / cost_neighbor_received_from_me; */
+  float normalization = (float) cost_neighbor_received_from_me / cost_received_from_neighbor ;
+  zlog_debug("wiser::ComputeNormalizationForAdvert: Normalization for advert is: %f", normalization);
+  assert(normalization > 0);  // normalization should alwyas be greater than 0
+  return normalization;
 }
 
 /* Given two extra attributes (this is where any extra control info is stored at
@@ -106,25 +113,25 @@ int ComputeWiserDecision(const struct attr_extra* newattre, const struct attr_ex
                                              exist_control_info->integrated_advertisement_size);
 
   // normalized cost is: normalizaiton * cost in advert + our cost.
-  int normalization_for_new = ComputeNormalizationForAdvert(new_control_info, local_as);
-  int normalization_for_exist = ComputeNormalizationForAdvert(exist_control_info, local_as);
+  /* int normalization_for_new = ComputeNormalizationForAdvert(new_control_info, local_as); */
+  /* int normalization_for_exist = ComputeNormalizationForAdvert(exist_control_info, local_as); */
 
-  float exist_normalized_cost = path_cost_from_exist * normalization_for_exist;
-  float new_normalized_cost = path_cost_from_new * normalization_for_new;
+  /* float path_cost_from_exist = path_cost_from_exist * normalization_for_exist; */
+  /* float path_cost_from_new = path_cost_from_new * normalization_for_new; */
 
 
 
   // Return 1 if new is better than exist, 0  if exist is better than old, -1 if they are equal.
-  if (new_normalized_cost < exist_normalized_cost){
-    zlog_debug("wiser::ComputeWiserDecision: New (%f) is better than exist (%f)", new_normalized_cost, exist_normalized_cost);
+  if (path_cost_from_new < path_cost_from_exist){
+    zlog_debug("wiser::ComputeWiserDecision: New (%i) is better than exist (%i)", path_cost_from_new, path_cost_from_exist);
     return 1;
   }
-  if (new_normalized_cost > exist_normalized_cost){
-    zlog_debug("wiser::ComputeWiserDecision: New (%f) is worse than exist (%f)", new_normalized_cost, exist_normalized_cost);
+  if (path_cost_from_new > path_cost_from_exist){
+    zlog_debug("wiser::ComputeWiserDecision: New (%i) is worse than exist (%i)", path_cost_from_new, path_cost_from_exist);
     return 0;
   }
   // here if they are the same
-  zlog_debug("wiser::ComputeWiserDecision: New (%f) is the same than exist (%f)", new_normalized_cost, exist_normalized_cost);
+  zlog_debug("wiser::ComputeWiserDecision: New (%i) is the same than exist (%i)", path_cost_from_new, path_cost_from_exist);
   return -1;
 }
 
@@ -166,34 +173,41 @@ void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *p
   int current_cost = GetWiserPathCost(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
   zlog_debug("HERE 2");
   // if current_cost is -1, then there was no cost from a virtual neighbor.
-  /* if(current_cost != -1) */
-  /*   { */
-  /*     zlog_debug("HERE 3"); */
-  /*     // here if we need to update the cost in the lookupservice. */
-  /*     int last_wiser_node = GetLastWiserNode(control_info->integrated_advertisement, control_info->integrated_advertisement_size); */
-  /*     zlog_debug("HERE 4"); */
-  /*     assert(last_wiser_node != -1); */
-  /*     zlog_debug("HERE 5"); */
-  /*     // update the lookupservice */
-  /*     IncrementWiserCosts(peer->bgp->as, last_wiser_node, current_cost); */
-  /*     zlog_debug("HERE 6"); */
-  /*     zlog_debug("wiser::wiser_update_control_info: Advertisement has existing cost in it for key %i-%i. Incrementing lookup service by cost %i", peer->bgp->as, last_wiser_node, current_cost); */
-  /*   } */
-  /* else{ */
-  /*   // set to -1 so we know whether there was wiser info originally in advert. */
-  /*   // This is for wiser_info_cmp */
-  /*   zlog_debug("wiser::wiser_update_control_info: There was no virtual wiser neighbor" ); */
-  /* } */
+  if(current_cost != -1)
+    {
+      zlog_debug("HERE 3");
+      // here if we need to update the cost in the lookupservice.
+      int last_wiser_node = GetLastWiserNode(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
+      zlog_debug("HERE 4");
+      assert(last_wiser_node != -1);
+      zlog_debug("HERE 5");
+      // update the lookupservice
+      IncrementWiserCosts(peer->bgp->as, last_wiser_node, current_cost);
+      zlog_debug("HERE 6");
+      zlog_debug("wiser::wiser_update_control_info: Advertisement has existing cost in it for key %i-%i. Incrementing lookup service by cost %i", peer->bgp->as, last_wiser_node, current_cost);
+    }
+  else{
+    // set to -1 so we know whether there was wiser info originally in advert.
+    // This is for wiser_info_cmp
+    zlog_debug("wiser::wiser_update_control_info: There was no virtual wiser neighbor" );
+  }
+
+  // compute normalization before overriding setlasstwisernode in order to get
+  // the costs arriving at both ends.
+  zlog_debug("HERE 7");
+  float normalization = ComputeNormalizationForAdvert(control_info, peer->bgp->as);
 
   //set us as the last wiser node
-  zlog_debug("HERE 7");
-  SetLastWiserNodeInIntegratedAdvertisement(peer->bgp->as, control_info);
   zlog_debug("HERE 8");
+  SetLastWiserNodeInIntegratedAdvertisement(peer->bgp->as, control_info);
+  zlog_debug("HERE 9");
 
   //mutate the control_info
-  zlog_debug("HERE 9");
-  AddLinkCostToIntegratedAdvertisement(additive_link_cost, control_info);
   zlog_debug("HERE 10");
+  AddLinkCostToIntegratedAdvertisement(additive_link_cost, normalization, control_info);
+  int normalized_cost = GetWiserPathCost(control_info->integrated_advertisement, control_info->integrated_advertisement_size) - additive_link_cost;
+  zlog_debug("wiser::wiser_update_control_info: updated control info -  %f (normalization) * %i (old cost) + %i (additive) = %i (truncated))", normalization, current_cost, additive_link_cost, normalized_cost + additive_link_cost);
+  zlog_debug("HERE 11");
 
   //Debug info
   /* zlog_debug("wiser::wiser_update_control_info: Link %s, %s with cost %i added to entering control info with cost %lld giving total %lld", string_local_id, string_remote_id, additive_link_cost, old_control_info_value , control_info->sentinel); */
