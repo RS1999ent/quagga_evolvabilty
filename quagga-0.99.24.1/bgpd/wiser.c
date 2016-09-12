@@ -167,23 +167,17 @@ void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *p
   /* zlog_debug("wiser::wiser_update_control_info: printing linkcosts:\n %s", LinkCostsToString(wiser_config_)); */
   int additive_link_cost = GetLinkCost(wiser_config_, string_local_id, string_remote_id);
   assert(additive_link_cost != -1); // should not be -1. If it is, something is wrong.
-  zlog_debug("HERE 1");
   zlog_debug("advert_tostring: %s", SerializedAdverToString(control_info->integrated_advertisement, control_info->integrated_advertisement_size));
   // Get cost and last wiser node that touched advertisement
   int current_cost = GetWiserPathCost(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
-  zlog_debug("HERE 2");
   // if current_cost is -1, then there was no cost from a virtual neighbor.
   if(current_cost != -1)
     {
-      zlog_debug("HERE 3");
       // here if we need to update the cost in the lookupservice.
       int last_wiser_node = GetLastWiserNode(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
-      zlog_debug("HERE 4");
       assert(last_wiser_node != -1);
-      zlog_debug("HERE 5");
       // update the lookupservice
       IncrementWiserCosts(peer->bgp->as, last_wiser_node, current_cost);
-      zlog_debug("HERE 6");
       zlog_debug("wiser::wiser_update_control_info: Advertisement has existing cost in it for key %i-%i. Incrementing lookup service by cost %i", peer->bgp->as, last_wiser_node, current_cost);
     }
   else{
@@ -194,20 +188,15 @@ void wiser_update_control_info(dbgp_control_info_t *control_info, struct peer *p
 
   // compute normalization before overriding setlasstwisernode in order to get
   // the costs arriving at both ends.
-  zlog_debug("HERE 7");
   float normalization = ComputeNormalizationForAdvert(control_info, peer->bgp->as);
 
   //set us as the last wiser node
-  zlog_debug("HERE 8");
   SetLastWiserNodeInIntegratedAdvertisement(peer->bgp->as, control_info);
-  zlog_debug("HERE 9");
 
   //mutate the control_info
-  zlog_debug("HERE 10");
   AddLinkCostToIntegratedAdvertisement(additive_link_cost, normalization, control_info);
   int normalized_cost = GetWiserPathCost(control_info->integrated_advertisement, control_info->integrated_advertisement_size) - additive_link_cost;
   zlog_debug("wiser::wiser_update_control_info: updated control info -  %f (normalization) * %i (old cost) + %i (additive) = %i (truncated))", normalization, current_cost, additive_link_cost, normalized_cost + additive_link_cost);
-  zlog_debug("HERE 11");
 
   //Debug info
   /* zlog_debug("wiser::wiser_update_control_info: Link %s, %s with cost %i added to entering control info with cost %lld giving total %lld", string_local_id, string_remote_id, additive_link_cost, old_control_info_value , control_info->sentinel); */
