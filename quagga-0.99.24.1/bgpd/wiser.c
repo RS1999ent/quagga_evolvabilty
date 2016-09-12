@@ -50,26 +50,26 @@ void SetLastWiserNodeInIntegratedAdvertisement(int last_wiser_node, dbgp_control
 }
 
 float ComputeNormalizationForAdvert(dbgp_control_info_t *control_info, int local_as) {
-
-  // get virtual neighbor
-  int virtual_neighbor = GetvirtualNeighbor(control_info->integrated_advertisement, control_info->integrated_advertisement_size);
-  // if it's -1, then there is no partner to compute normalization, return 1.
-  if(virtual_neighbor == -1){
-    return 1;
-  }
+  return 1;
+  /* // get virtual neighbor */
+  /* int virtual_neighbor = GetvirtualNeighbor(control_info->integrated_advertisement, control_info->integrated_advertisement_size); */
+  /* // if it's -1, then there is no partner to compute normalization, return 1. */
+  /* if(virtual_neighbor == -1){ */
+  /*   return 1; */
+  /* } */
 
   
-  int cost_received_from_neighbor = RetrieveWiserCosts(local_as, virtual_neighbor);
-  int cost_neighbor_received_from_me = RetrieveWiserCosts(virtual_neighbor, local_as);
+  /* int cost_received_from_neighbor = RetrieveWiserCosts(local_as, virtual_neighbor); */
+  /* int cost_neighbor_received_from_me = RetrieveWiserCosts(virtual_neighbor, local_as); */
 
-  // if either aren't in teh lookup service, return 1
-  if(cost_neighbor_received_from_me == -1 || cost_received_from_neighbor == -1){
-    return 1;
-  }
+  /* // if either aren't in teh lookup service, return 1 */
+  /* if(cost_neighbor_received_from_me == -1 || cost_received_from_neighbor == -1){ */
+  /*   return 1; */
+  /* } */
 
-  // return normalization
-  // reverse TODO
-  return (float) cost_received_from_neighbor / cost_neighbor_received_from_me;
+  /* // return normalization */
+  /* // reverse TODO */
+  /* return (float) cost_received_from_neighbor / cost_neighbor_received_from_me; */
 }
 
 /* Given two extra attributes (this is where any extra control info is stored at

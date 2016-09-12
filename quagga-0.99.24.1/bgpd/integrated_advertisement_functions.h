@@ -58,13 +58,6 @@ extern "C" int GetWiserPathCost(char* serialized_advert, int advert_size);
  */
 extern "C" int GetLastWiserNode(char* serialized_advert, int advert_size);
 
-/* Hacky function in order to get the virtual neighbor after a quagga router has
-   already added itself onto the list. This is necessary because the contorl
-   info is updated before best path selection. Returns -1 if one doesn't exist */
-extern "C" int GetvirtualNeighbor(char* serialized_advert, int advert_size);
-
-extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_size);
-
 /* Sets a new LastWiserNode key value.  If it doesn't exist, it creates one and sets it
 
    Arguments:
@@ -76,3 +69,5 @@ extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_siz
    Returns: A serialized advert with the new information set
  */
 extern "C" char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size);
+
+extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_size);

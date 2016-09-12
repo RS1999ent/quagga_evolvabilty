@@ -75,7 +75,7 @@ char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive
   // Parse the existing advertisement if it exists
   IntegratedAdvertisement working_advertisement;
   if(advert_size != 0){
-    assert(working_advertisement.ParseFromArray(serialized_advert, advert_size) == true);
+    working_advertisement.ParseFromArray(serialized_advert, advert_size);
   }
 
   // Get a wiser path group descriptor if it exists
@@ -105,7 +105,7 @@ char* SetWiserControlInfo(char* serialized_advert, int advert_size, int additive
   // working_advertisement.PrintDebugString();
 
   *modified_advert_size = working_advertisement.ByteSize();
-  char *modified_advert = new char[*modified_advert_size];
+  char *modified_advert = (char*) malloc(*modified_advert_size);
 
   working_advertisement.SerializeToArray(modified_advert, *modified_advert_size);
 
@@ -117,7 +117,7 @@ int GetWiserPathCost(char* serialized_advert, int advert_size)
 {
   // Parse the advertisement
   IntegratedAdvertisement proto_advert;
-  assert(proto_advert.ParseFromArray(serialized_advert, advert_size) == 1);
+  proto_advert.ParseFromArray(serialized_advert, advert_size);
 
   // Get the wiser descriptor (we are assuming that it is always there)
   PathGroupDescriptor *wiser_path_group_descriptor =
@@ -131,10 +131,8 @@ int GetWiserPathCost(char* serialized_advert, int advert_size)
 
   // Get the path cost from the assumed existent keyvalue
   KeyValue *path_cost_kv = GetKeyValue(wiser_path_group_descriptor, "PathCost");
-  // this should not be null if there is wiser info in the advert
-  assert(path_cost_kv != NULL);
   PathCost path_cost;
-  assert(path_cost.ParseFromString(path_cost_kv->value()) == 1);
+  path_cost.ParseFromString(path_cost_kv->value());
   return path_cost.path_cost();
 
 }
@@ -159,52 +157,9 @@ int GetLastWiserNode(char* serialized_advert, int advert_size) {
     return -1;
   }
 
-  LastWiserNode last_wiser_node;
-  last_wiser_node.ParseFromString(last_wiser->value());
-  return last_wiser_node.last_wiser(last_wiser_node.last_wiser_size() -1);
-
-  // return std::stoi(last_wiser->value());
+  return std::stoi(last_wiser->value());
 }
 
-int GetvirtualNeighbor(char* serialized_advert, int advert_size){
-  //unserialize advert
-  IntegratedAdvertisement input_ia;
-  input_ia.ParseFromArray(serialized_advert, advert_size);
-
-  PathGroupDescriptor *wiser_path_group_descriptor = GetProtocolPathGroupDescriptor(&input_ia, Protocol::P_WISER);
-
-  // if wiser_path_group_descriptor is null, then there is no last wiser node. return -1
-  if(wiser_path_group_descriptor == NULL)
-    {
-      return -1;
-    }
-
-  // if the key value for 'LastWiserNode' doesn't exist, return -1
-  KeyValue *last_wiser = GetKeyValue(wiser_path_group_descriptor, "LastWiserNode");
-  if (last_wiser == NULL) {
-    return -1;
-  }
-
-  LastWiserNode last_wiser_node;
-  last_wiser_node.ParseFromString(last_wiser->value());
-  if(last_wiser_node.last_wiser_size() > 1)
-    return last_wiser_node.last_wiser(last_wiser_node.last_wiser_size() - 2);
-  else {
-    return -1;
-  }
-
-  // return std::stoi(last_wiser->value());
-  
-}
-
-char* SerializedAdverToString(char* serialized_advert, int advert_size){
-  IntegratedAdvertisement parsed_advert;
-  parsed_advert.ParseFromArray(serialized_advert, advert_size);
-  int num_chars = parsed_advert.DebugString().size();
-  char *return_buffer = (char*) malloc( num_chars);
-  parsed_advert.DebugString().copy(return_buffer, num_chars, 0);
-  return return_buffer;
-}
 
 char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size) {
   //unserialize advert
@@ -224,15 +179,19 @@ char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_no
 
   // Get or create the key vlaue
   KeyValue *mutable_key_value = GetCreateKeyValue(wiser_path_group_descriptor, "LastWiserNode");
-  LastWiserNode last_wiser_node;
-  last_wiser_node.ParseFromString(mutable_key_value->value());
-  last_wiser_node.add_last_wiser(new_last_node);
-  mutable_key_value->set_value(last_wiser_node.SerializeAsString());
+  mutable_key_value->set_value(std::to_string(new_last_node));
 
   *return_advert_size = working_advertisement.ByteSize();
-  char *return_advert = new char[*return_advert_size];
+  char *return_advert = (char*) malloc(*return_advert_size);
   working_advertisement.SerializeToArray(return_advert, *return_advert_size);
   return return_advert;
 }
 
-
+char* SerializedAdverToString(char* serialized_advert, int advert_size){
+  IntegratedAdvertisement parsed_advert;
+  parsed_advert.ParseFromArray(serialized_advert, advert_size);
+  int num_chars = parsed_advert.DebugString().size();
+  char *return_buffer = (char*) malloc( num_chars);
+  parsed_advert.DebugString().copy(return_buffer, num_chars, 0);
+  return return_buffer;
+}
