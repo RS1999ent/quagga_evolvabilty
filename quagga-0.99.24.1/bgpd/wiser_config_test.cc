@@ -414,6 +414,70 @@ path_group_descriptors {
 
 }
 
+TEST(GetWierPathCost, GivenAdvertWithMultipleKeyVals_ReturnProperCost){
+  // Arrange
+  const string kInputAdvert = R"(
+path_group_descriptors {
+  protocol: P_WISER
+  key_values {
+    key: 'LastWiserNode'
+    value: '\010e'
+  }
+  key_values {
+    key: 'PathCost'
+    value: '\010\n'
+  }
+})";
+
+  const int kCorrectPathCost = 10;
+  
+  IntegratedAdvertisement input_advert;
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+  int input_advert_size = input_advert.ByteSize();
+  char * serialized_input_advert = new char[input_advert_size];
+  input_advert.SerializeToArray(serialized_input_advert, input_advert_size);
+
+  // Act
+  int result = GetWiserPathCost(serialized_input_advert, input_advert_size);
+
+  // Assert
+  EXPECT_EQ(result, kCorrectPathCost);
+
+}
+
+TEST(GetWiserPathCost, IntegrationTestWithSetLastWiserNode_ReturnProperCost){
+  // Arrange
+  const string kInputAdvert = R"()";
+
+  const int kCorrectPathCost = 10;
+  const uint32_t kInputLastWiser = 20;
+  
+  IntegratedAdvertisement input_advert;
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+  int input_advert_size = input_advert.ByteSize();
+  char * serialized_input_advert = new char[input_advert_size];
+  input_advert.SerializeToArray(serialized_input_advert, input_advert_size);
+
+
+  //SetLastWiserNodeInIntegratedAdvertisement
+  char* old_integrated_advertisement = serialized_input_advert;
+  int old_integrated_advertisement_size = input_advert_size; 
+  int new_size;
+  char* new_integrated_advertisement_info = SetLastWiserNode(old_integrated_advertisement,
+                                                             old_integrated_advertisement_size,
+                                                             kInputLastWiser, &new_size);
+  free(old_integrated_advertisement);
+
+  new_integrated_advertisement_info = SetWiserControlInfo(new_integrated_advertisement_info, new_size, 10, &new_size);
+
+  // Act
+  int result = GetWiserPathCost(new_integrated_advertisement_info, new_size);
+
+  // Assert
+  EXPECT_EQ(result, kCorrectPathCost);
+
+}
+
 // TEST (GetLastWiserNode, AdvertHasNoExistingLastWiserNode_ReturnNeg1){
 //   // Arrange
 //   const string kInputAdvert = R"()";
@@ -612,6 +676,7 @@ path_group_descriptors {
 
 
 // }
+
 
 
 

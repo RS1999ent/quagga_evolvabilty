@@ -131,8 +131,10 @@ int GetWiserPathCost(char* serialized_advert, int advert_size)
 
   // Get the path cost from the assumed existent keyvalue
   KeyValue *path_cost_kv = GetKeyValue(wiser_path_group_descriptor, "PathCost");
+  // this should not be null if there is wiser info in the advert
+  assert(path_cost_kv != NULL);
   PathCost path_cost;
-  path_cost.ParseFromString(path_cost_kv->value());
+  assert(path_cost.ParseFromString(path_cost_kv->value()) == 1);
   return path_cost.path_cost();
 
 }
@@ -193,6 +195,15 @@ int GetvirtualNeighbor(char* serialized_advert, int advert_size){
 
   // return std::stoi(last_wiser->value());
   
+}
+
+char* SerializedAdverToString(char* serialized_advert, int advert_size){
+  IntegratedAdvertisement parsed_advert;
+  parsed_advert.ParseFromArray(serialized_advert, advert_size);
+  int num_chars = parsed_advert.DebugString().size();
+  char *return_buffer = (char*) malloc( num_chars);
+  parsed_advert.DebugString().copy(return_buffer, num_chars, 0);
+  return return_buffer;
 }
 
 char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size) {

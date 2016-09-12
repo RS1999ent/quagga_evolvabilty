@@ -63,6 +63,8 @@ extern "C" int GetLastWiserNode(char* serialized_advert, int advert_size);
    info is updated before best path selection. Returns -1 if one doesn't exist */
 extern "C" int GetvirtualNeighbor(char* serialized_advert, int advert_size);
 
+extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_size);
+
 /* Sets a new LastWiserNode key value.  If it doesn't exist, it creates one and sets it
 
    Arguments:
