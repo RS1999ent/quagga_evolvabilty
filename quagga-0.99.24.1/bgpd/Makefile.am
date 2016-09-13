@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in.
 
-AM_CPPFLAGS = -I.. -I$(top_srcdir) -I$(top_srcdir)/lib -I$(top_builddir)/lib -I /home/david/third-party/googletest-release-1.8.0/googletest/include
+AM_CPPFLAGS = -I.. -I$(top_srcdir) -I$(top_srcdir)/lib -I$(top_builddir)/lib
 DEFS = @DEFS@ -DSYSCONFDIR=\"$(sysconfdir)/\"
 INSTALL_SDATA=@INSTALL@ -m 600
 
@@ -32,7 +32,7 @@ bgpd_SOURCES = bgp_main.c
 bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ @LIBHIREDIS@ @PROTOBUF_LIBS@ @libstdcxx_LIBS@ 
 
 unittests_SOURCES = wiser_config_test.cc
-unittests_LDADD = libbgp.a /home/david/third-party/googletest-release-1.8.0/googletest/libgtest.so @PROTOBUF_LIBS@ @libstdcxx_LIBS@
+unittests_LDADD = libbgp.a /usr/lib/libgtest.so @PROTOBUF_LIBS@ @libstdcxx_LIBS@
 
 examplesdir = $(exampledir)
 dist_examples_DATA = bgpd.conf.sample bgpd.conf.sample2
