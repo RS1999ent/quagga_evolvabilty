@@ -58,11 +58,14 @@ message LastWiserNode {
 }
 
 // Pathlet message below here
+// HOlds a series of pathlets (usually forming a graph)
 message Pathlets{
   repeated Pathlet pathlets = 1;
 }
 
+// Holds an individual pathlet.
 message Pathlet {
-  repeated uint32 fids = 1;
-  repeated uint32 vnodes = 2;
+  optional uint32 fid = 1; // The fid associated with the link
+  repeated uint32 vnodes = 2; //This will contain two entries only that denote a
+                              //link that the FID is associated with
 }

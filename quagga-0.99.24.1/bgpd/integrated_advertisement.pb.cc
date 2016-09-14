@@ -165,7 +165,7 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       sizeof(Pathlets));
   Pathlet_descriptor_ = file->message_type(7);
   static const int Pathlet_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, fids_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, fid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, vnodes_),
   };
   Pathlet_reflection_ =
@@ -250,9 +250,9 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
     "\n\005value\030\002 \001(\t\"\035\n\010PathCost\022\021\n\tpath_cost\030\001"
     " \001(\r\"#\n\rLastWiserNode\022\022\n\nlast_wiser\030\001 \003("
     "\r\"&\n\010Pathlets\022\032\n\010pathlets\030\001 \003(\0132\010.Pathle"
-    "t\"\'\n\007Pathlet\022\014\n\004fids\030\001 \003(\r\022\016\n\006vnodes\030\002 \003"
-    "(\r*F\n\010Protocol\022\r\n\tP_UNKNOWN\020\000\022\013\n\007P_WISER"
-    "\020\001\022\016\n\nP_PATHLETS\020\002\022\016\n\nP_BASELINE\020\003", 594);
+    "t\"&\n\007Pathlet\022\013\n\003fid\030\001 \001(\r\022\016\n\006vnodes\030\002 \003("
+    "\r*F\n\010Protocol\022\r\n\tP_UNKNOWN\020\000\022\013\n\007P_WISER\020"
+    "\001\022\016\n\nP_PATHLETS\020\002\022\016\n\nP_BASELINE\020\003", 593);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "integrated_advertisement.proto", &protobuf_RegisterTypes);
   IntegratedAdvertisement::default_instance_ = new IntegratedAdvertisement();
@@ -2114,7 +2114,7 @@ void Pathlets::Swap(Pathlets* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int Pathlet::kFidsFieldNumber;
+const int Pathlet::kFidFieldNumber;
 const int Pathlet::kVnodesFieldNumber;
 #endif  // !_MSC_VER
 
@@ -2136,6 +2136,7 @@ Pathlet::Pathlet(const Pathlet& from)
 
 void Pathlet::SharedCtor() {
   _cached_size_ = 0;
+  fid_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2171,7 +2172,7 @@ Pathlet* Pathlet::New() const {
 }
 
 void Pathlet::Clear() {
-  fids_.Clear();
+  fid_ = 0u;
   vnodes_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -2187,21 +2188,16 @@ bool Pathlet::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated uint32 fids = 1;
+      // optional uint32 fid = 1;
       case 1: {
         if (tag == 8) {
-         parse_fids:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 1, 8, input, this->mutable_fids())));
-        } else if (tag == 10) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 input, this->mutable_fids())));
+                 input, &fid_)));
+          set_has_fid();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(8)) goto parse_fids;
         if (input->ExpectTag(16)) goto parse_vnodes;
         break;
       }
@@ -2250,10 +2246,9 @@ failure:
 void Pathlet::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:Pathlet)
-  // repeated uint32 fids = 1;
-  for (int i = 0; i < this->fids_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(
-      1, this->fids(i), output);
+  // optional uint32 fid = 1;
+  if (has_fid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->fid(), output);
   }
 
   // repeated uint32 vnodes = 2;
@@ -2272,10 +2267,9 @@ void Pathlet::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Pathlet::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:Pathlet)
-  // repeated uint32 fids = 1;
-  for (int i = 0; i < this->fids_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteUInt32ToArray(1, this->fids(i), target);
+  // optional uint32 fid = 1;
+  if (has_fid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->fid(), target);
   }
 
   // repeated uint32 vnodes = 2;
@@ -2295,16 +2289,15 @@ void Pathlet::SerializeWithCachedSizes(
 int Pathlet::ByteSize() const {
   int total_size = 0;
 
-  // repeated uint32 fids = 1;
-  {
-    int data_size = 0;
-    for (int i = 0; i < this->fids_size(); i++) {
-      data_size += ::google::protobuf::internal::WireFormatLite::
-        UInt32Size(this->fids(i));
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional uint32 fid = 1;
+    if (has_fid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->fid());
     }
-    total_size += 1 * this->fids_size() + data_size;
-  }
 
+  }
   // repeated uint32 vnodes = 2;
   {
     int data_size = 0;
@@ -2340,8 +2333,12 @@ void Pathlet::MergeFrom(const ::google::protobuf::Message& from) {
 
 void Pathlet::MergeFrom(const Pathlet& from) {
   GOOGLE_CHECK_NE(&from, this);
-  fids_.MergeFrom(from.fids_);
   vnodes_.MergeFrom(from.vnodes_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_fid()) {
+      set_fid(from.fid());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -2364,7 +2361,7 @@ bool Pathlet::IsInitialized() const {
 
 void Pathlet::Swap(Pathlet* other) {
   if (other != this) {
-    fids_.Swap(&other->fids_);
+    std::swap(fid_, other->fid_);
     vnodes_.Swap(&other->vnodes_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);

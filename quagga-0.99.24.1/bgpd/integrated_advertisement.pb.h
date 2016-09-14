@@ -748,17 +748,12 @@ class Pathlet : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // repeated uint32 fids = 1;
-  inline int fids_size() const;
-  inline void clear_fids();
-  static const int kFidsFieldNumber = 1;
-  inline ::google::protobuf::uint32 fids(int index) const;
-  inline void set_fids(int index, ::google::protobuf::uint32 value);
-  inline void add_fids(::google::protobuf::uint32 value);
-  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
-      fids() const;
-  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
-      mutable_fids();
+  // optional uint32 fid = 1;
+  inline bool has_fid() const;
+  inline void clear_fid();
+  static const int kFidFieldNumber = 1;
+  inline ::google::protobuf::uint32 fid() const;
+  inline void set_fid(::google::protobuf::uint32 value);
 
   // repeated uint32 vnodes = 2;
   inline int vnodes_size() const;
@@ -774,13 +769,15 @@ class Pathlet : public ::google::protobuf::Message {
 
   // @@protoc_insertion_point(class_scope:Pathlet)
  private:
+  inline void set_has_fid();
+  inline void clear_has_fid();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > fids_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > vnodes_;
+  ::google::protobuf::uint32 fid_;
   friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
@@ -1253,34 +1250,28 @@ Pathlets::mutable_pathlets() {
 
 // Pathlet
 
-// repeated uint32 fids = 1;
-inline int Pathlet::fids_size() const {
-  return fids_.size();
+// optional uint32 fid = 1;
+inline bool Pathlet::has_fid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Pathlet::clear_fids() {
-  fids_.Clear();
+inline void Pathlet::set_has_fid() {
+  _has_bits_[0] |= 0x00000001u;
 }
-inline ::google::protobuf::uint32 Pathlet::fids(int index) const {
-  // @@protoc_insertion_point(field_get:Pathlet.fids)
-  return fids_.Get(index);
+inline void Pathlet::clear_has_fid() {
+  _has_bits_[0] &= ~0x00000001u;
 }
-inline void Pathlet::set_fids(int index, ::google::protobuf::uint32 value) {
-  fids_.Set(index, value);
-  // @@protoc_insertion_point(field_set:Pathlet.fids)
+inline void Pathlet::clear_fid() {
+  fid_ = 0u;
+  clear_has_fid();
 }
-inline void Pathlet::add_fids(::google::protobuf::uint32 value) {
-  fids_.Add(value);
-  // @@protoc_insertion_point(field_add:Pathlet.fids)
+inline ::google::protobuf::uint32 Pathlet::fid() const {
+  // @@protoc_insertion_point(field_get:Pathlet.fid)
+  return fid_;
 }
-inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
-Pathlet::fids() const {
-  // @@protoc_insertion_point(field_list:Pathlet.fids)
-  return fids_;
-}
-inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
-Pathlet::mutable_fids() {
-  // @@protoc_insertion_point(field_mutable_list:Pathlet.fids)
-  return &fids_;
+inline void Pathlet::set_fid(::google::protobuf::uint32 value) {
+  set_has_fid();
+  fid_ = value;
+  // @@protoc_insertion_point(field_set:Pathlet.fid)
 }
 
 // repeated uint32 vnodes = 2;
