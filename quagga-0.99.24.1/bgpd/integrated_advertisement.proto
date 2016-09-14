@@ -28,8 +28,9 @@ message PathGroupDescriptor {
 
 // Corresponds to hop descriptors in the paper.
 message HopDescriptor{
-  optional Protocol protocol = 1; // required
-  repeated KeyValue key_values = 2; 
+  optional uint32 island_id = 1; //required
+  optional Protocol protocol = 2; // required
+  repeated KeyValue key_values = 3; 
 }
 
 
@@ -54,4 +55,14 @@ message PathCost {
 // normalization.
 message LastWiserNode {
   repeated uint32 last_wiser = 1;
+}
+
+// Pathlet message below here
+message Pathlets{
+  repeated Pathlet pathlets = 1;
+}
+
+message Pathlet {
+  repeated uint32 fids = 1;
+  repeated uint32 vnodes = 2;
 }

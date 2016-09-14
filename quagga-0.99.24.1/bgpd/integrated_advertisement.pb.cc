@@ -36,6 +36,12 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* LastWiserNode_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   LastWiserNode_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Pathlets_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Pathlets_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Pathlet_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Pathlet_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* Protocol_descriptor_ = NULL;
 
 }  // namespace
@@ -80,7 +86,8 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PathGroupDescriptor));
   HopDescriptor_descriptor_ = file->message_type(2);
-  static const int HopDescriptor_offsets_[2] = {
+  static const int HopDescriptor_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HopDescriptor, island_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HopDescriptor, protocol_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HopDescriptor, key_values_),
   };
@@ -141,6 +148,37 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(LastWiserNode));
+  Pathlets_descriptor_ = file->message_type(6);
+  static const int Pathlets_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlets, pathlets_),
+  };
+  Pathlets_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Pathlets_descriptor_,
+      Pathlets::default_instance_,
+      Pathlets_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlets, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlets, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Pathlets));
+  Pathlet_descriptor_ = file->message_type(7);
+  static const int Pathlet_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, fids_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, vnodes_),
+  };
+  Pathlet_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Pathlet_descriptor_,
+      Pathlet::default_instance_,
+      Pathlet_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Pathlet));
   Protocol_descriptor_ = file->enum_type(0);
 }
 
@@ -166,6 +204,10 @@ void protobuf_RegisterTypes(const ::std::string&) {
     PathCost_descriptor_, &PathCost::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     LastWiserNode_descriptor_, &LastWiserNode::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Pathlets_descriptor_, &Pathlets::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Pathlet_descriptor_, &Pathlet::default_instance());
 }
 
 }  // namespace
@@ -183,6 +225,10 @@ void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto() {
   delete PathCost_reflection_;
   delete LastWiserNode::default_instance_;
   delete LastWiserNode_reflection_;
+  delete Pathlets::default_instance_;
+  delete Pathlets_reflection_;
+  delete Pathlet::default_instance_;
+  delete Pathlet_reflection_;
 }
 
 void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
@@ -197,14 +243,16 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
     "ptors\030\001 \003(\0132\024.PathGroupDescriptor\022\'\n\017hop"
     "_descriptors\030\002 \003(\0132\016.HopDescriptor\"Q\n\023Pa"
     "thGroupDescriptor\022\033\n\010protocol\030\001 \001(\0162\t.Pr"
-    "otocol\022\035\n\nkey_values\030\002 \003(\0132\t.KeyValue\"K\n"
-    "\rHopDescriptor\022\033\n\010protocol\030\001 \001(\0162\t.Proto"
-    "col\022\035\n\nkey_values\030\002 \003(\0132\t.KeyValue\"&\n\010Ke"
-    "yValue\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\035\n\010Pa"
-    "thCost\022\021\n\tpath_cost\030\001 \001(\r\"#\n\rLastWiserNo"
-    "de\022\022\n\nlast_wiser\030\001 \003(\r*F\n\010Protocol\022\r\n\tP_"
-    "UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020\002\022\016"
-    "\n\nP_BASELINE\020\003", 494);
+    "otocol\022\035\n\nkey_values\030\002 \003(\0132\t.KeyValue\"^\n"
+    "\rHopDescriptor\022\021\n\tisland_id\030\001 \001(\r\022\033\n\010pro"
+    "tocol\030\002 \001(\0162\t.Protocol\022\035\n\nkey_values\030\003 \003"
+    "(\0132\t.KeyValue\"&\n\010KeyValue\022\013\n\003key\030\001 \001(\t\022\r"
+    "\n\005value\030\002 \001(\t\"\035\n\010PathCost\022\021\n\tpath_cost\030\001"
+    " \001(\r\"#\n\rLastWiserNode\022\022\n\nlast_wiser\030\001 \003("
+    "\r\"&\n\010Pathlets\022\032\n\010pathlets\030\001 \003(\0132\010.Pathle"
+    "t\"\'\n\007Pathlet\022\014\n\004fids\030\001 \003(\r\022\016\n\006vnodes\030\002 \003"
+    "(\r*F\n\010Protocol\022\r\n\tP_UNKNOWN\020\000\022\013\n\007P_WISER"
+    "\020\001\022\016\n\nP_PATHLETS\020\002\022\016\n\nP_BASELINE\020\003", 594);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "integrated_advertisement.proto", &protobuf_RegisterTypes);
   IntegratedAdvertisement::default_instance_ = new IntegratedAdvertisement();
@@ -213,12 +261,16 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
   KeyValue::default_instance_ = new KeyValue();
   PathCost::default_instance_ = new PathCost();
   LastWiserNode::default_instance_ = new LastWiserNode();
+  Pathlets::default_instance_ = new Pathlets();
+  Pathlet::default_instance_ = new Pathlet();
   IntegratedAdvertisement::default_instance_->InitAsDefaultInstance();
   PathGroupDescriptor::default_instance_->InitAsDefaultInstance();
   HopDescriptor::default_instance_->InitAsDefaultInstance();
   KeyValue::default_instance_->InitAsDefaultInstance();
   PathCost::default_instance_->InitAsDefaultInstance();
   LastWiserNode::default_instance_->InitAsDefaultInstance();
+  Pathlets::default_instance_->InitAsDefaultInstance();
+  Pathlet::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_integrated_5fadvertisement_2eproto);
 }
 
@@ -773,6 +825,7 @@ void PathGroupDescriptor::Swap(PathGroupDescriptor* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int HopDescriptor::kIslandIdFieldNumber;
 const int HopDescriptor::kProtocolFieldNumber;
 const int HopDescriptor::kKeyValuesFieldNumber;
 #endif  // !_MSC_VER
@@ -795,6 +848,7 @@ HopDescriptor::HopDescriptor(const HopDescriptor& from)
 
 void HopDescriptor::SharedCtor() {
   _cached_size_ = 0;
+  island_id_ = 0u;
   protocol_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -831,7 +885,21 @@ HopDescriptor* HopDescriptor::New() const {
 }
 
 void HopDescriptor::Clear() {
-  protocol_ = 0;
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<HopDescriptor*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  ZR_(island_id_, protocol_);
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
   key_values_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -847,9 +915,24 @@ bool HopDescriptor::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional .Protocol protocol = 1;
+      // optional uint32 island_id = 1;
       case 1: {
         if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &island_id_)));
+          set_has_island_id();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_protocol;
+        break;
+      }
+
+      // optional .Protocol protocol = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_protocol:
           int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
@@ -857,25 +940,25 @@ bool HopDescriptor::MergePartialFromCodedStream(
           if (::Protocol_IsValid(value)) {
             set_protocol(static_cast< ::Protocol >(value));
           } else {
-            mutable_unknown_fields()->AddVarint(1, value);
+            mutable_unknown_fields()->AddVarint(2, value);
           }
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(18)) goto parse_key_values;
+        if (input->ExpectTag(26)) goto parse_key_values;
         break;
       }
 
-      // repeated .KeyValue key_values = 2;
-      case 2: {
-        if (tag == 18) {
+      // repeated .KeyValue key_values = 3;
+      case 3: {
+        if (tag == 26) {
          parse_key_values:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                 input, add_key_values()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(18)) goto parse_key_values;
+        if (input->ExpectTag(26)) goto parse_key_values;
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -905,16 +988,21 @@ failure:
 void HopDescriptor::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:HopDescriptor)
-  // optional .Protocol protocol = 1;
-  if (has_protocol()) {
-    ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      1, this->protocol(), output);
+  // optional uint32 island_id = 1;
+  if (has_island_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->island_id(), output);
   }
 
-  // repeated .KeyValue key_values = 2;
+  // optional .Protocol protocol = 2;
+  if (has_protocol()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      2, this->protocol(), output);
+  }
+
+  // repeated .KeyValue key_values = 3;
   for (int i = 0; i < this->key_values_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->key_values(i), output);
+      3, this->key_values(i), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -927,17 +1015,22 @@ void HopDescriptor::SerializeWithCachedSizes(
 ::google::protobuf::uint8* HopDescriptor::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:HopDescriptor)
-  // optional .Protocol protocol = 1;
-  if (has_protocol()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
-      1, this->protocol(), target);
+  // optional uint32 island_id = 1;
+  if (has_island_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->island_id(), target);
   }
 
-  // repeated .KeyValue key_values = 2;
+  // optional .Protocol protocol = 2;
+  if (has_protocol()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      2, this->protocol(), target);
+  }
+
+  // repeated .KeyValue key_values = 3;
   for (int i = 0; i < this->key_values_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        2, this->key_values(i), target);
+        3, this->key_values(i), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -952,14 +1045,21 @@ int HopDescriptor::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional .Protocol protocol = 1;
+    // optional uint32 island_id = 1;
+    if (has_island_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->island_id());
+    }
+
+    // optional .Protocol protocol = 2;
     if (has_protocol()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->protocol());
     }
 
   }
-  // repeated .KeyValue key_values = 2;
+  // repeated .KeyValue key_values = 3;
   total_size += 1 * this->key_values_size();
   for (int i = 0; i < this->key_values_size(); i++) {
     total_size +=
@@ -994,6 +1094,9 @@ void HopDescriptor::MergeFrom(const HopDescriptor& from) {
   GOOGLE_CHECK_NE(&from, this);
   key_values_.MergeFrom(from.key_values_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_island_id()) {
+      set_island_id(from.island_id());
+    }
     if (from.has_protocol()) {
       set_protocol(from.protocol());
     }
@@ -1020,6 +1123,7 @@ bool HopDescriptor::IsInitialized() const {
 
 void HopDescriptor::Swap(HopDescriptor* other) {
   if (other != this) {
+    std::swap(island_id_, other->island_id_);
     std::swap(protocol_, other->protocol_);
     key_values_.Swap(&other->key_values_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
@@ -1784,6 +1888,495 @@ void LastWiserNode::Swap(LastWiserNode* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = LastWiserNode_descriptor_;
   metadata.reflection = LastWiserNode_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int Pathlets::kPathletsFieldNumber;
+#endif  // !_MSC_VER
+
+Pathlets::Pathlets()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:Pathlets)
+}
+
+void Pathlets::InitAsDefaultInstance() {
+}
+
+Pathlets::Pathlets(const Pathlets& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:Pathlets)
+}
+
+void Pathlets::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Pathlets::~Pathlets() {
+  // @@protoc_insertion_point(destructor:Pathlets)
+  SharedDtor();
+}
+
+void Pathlets::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void Pathlets::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Pathlets::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Pathlets_descriptor_;
+}
+
+const Pathlets& Pathlets::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  return *default_instance_;
+}
+
+Pathlets* Pathlets::default_instance_ = NULL;
+
+Pathlets* Pathlets::New() const {
+  return new Pathlets;
+}
+
+void Pathlets::Clear() {
+  pathlets_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Pathlets::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:Pathlets)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .Pathlet pathlets = 1;
+      case 1: {
+        if (tag == 10) {
+         parse_pathlets:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_pathlets()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(10)) goto parse_pathlets;
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:Pathlets)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:Pathlets)
+  return false;
+#undef DO_
+}
+
+void Pathlets::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:Pathlets)
+  // repeated .Pathlet pathlets = 1;
+  for (int i = 0; i < this->pathlets_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->pathlets(i), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:Pathlets)
+}
+
+::google::protobuf::uint8* Pathlets::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Pathlets)
+  // repeated .Pathlet pathlets = 1;
+  for (int i = 0; i < this->pathlets_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->pathlets(i), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Pathlets)
+  return target;
+}
+
+int Pathlets::ByteSize() const {
+  int total_size = 0;
+
+  // repeated .Pathlet pathlets = 1;
+  total_size += 1 * this->pathlets_size();
+  for (int i = 0; i < this->pathlets_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->pathlets(i));
+  }
+
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Pathlets::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Pathlets* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Pathlets*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Pathlets::MergeFrom(const Pathlets& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  pathlets_.MergeFrom(from.pathlets_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Pathlets::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Pathlets::CopyFrom(const Pathlets& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Pathlets::IsInitialized() const {
+
+  return true;
+}
+
+void Pathlets::Swap(Pathlets* other) {
+  if (other != this) {
+    pathlets_.Swap(&other->pathlets_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Pathlets::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Pathlets_descriptor_;
+  metadata.reflection = Pathlets_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int Pathlet::kFidsFieldNumber;
+const int Pathlet::kVnodesFieldNumber;
+#endif  // !_MSC_VER
+
+Pathlet::Pathlet()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:Pathlet)
+}
+
+void Pathlet::InitAsDefaultInstance() {
+}
+
+Pathlet::Pathlet(const Pathlet& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:Pathlet)
+}
+
+void Pathlet::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Pathlet::~Pathlet() {
+  // @@protoc_insertion_point(destructor:Pathlet)
+  SharedDtor();
+}
+
+void Pathlet::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void Pathlet::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Pathlet::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Pathlet_descriptor_;
+}
+
+const Pathlet& Pathlet::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  return *default_instance_;
+}
+
+Pathlet* Pathlet::default_instance_ = NULL;
+
+Pathlet* Pathlet::New() const {
+  return new Pathlet;
+}
+
+void Pathlet::Clear() {
+  fids_.Clear();
+  vnodes_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Pathlet::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:Pathlet)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated uint32 fids = 1;
+      case 1: {
+        if (tag == 8) {
+         parse_fids:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 1, 8, input, this->mutable_fids())));
+        } else if (tag == 10) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, this->mutable_fids())));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(8)) goto parse_fids;
+        if (input->ExpectTag(16)) goto parse_vnodes;
+        break;
+      }
+
+      // repeated uint32 vnodes = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_vnodes:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 1, 16, input, this->mutable_vnodes())));
+        } else if (tag == 18) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, this->mutable_vnodes())));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_vnodes;
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:Pathlet)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:Pathlet)
+  return false;
+#undef DO_
+}
+
+void Pathlet::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:Pathlet)
+  // repeated uint32 fids = 1;
+  for (int i = 0; i < this->fids_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(
+      1, this->fids(i), output);
+  }
+
+  // repeated uint32 vnodes = 2;
+  for (int i = 0; i < this->vnodes_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(
+      2, this->vnodes(i), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:Pathlet)
+}
+
+::google::protobuf::uint8* Pathlet::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Pathlet)
+  // repeated uint32 fids = 1;
+  for (int i = 0; i < this->fids_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt32ToArray(1, this->fids(i), target);
+  }
+
+  // repeated uint32 vnodes = 2;
+  for (int i = 0; i < this->vnodes_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt32ToArray(2, this->vnodes(i), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Pathlet)
+  return target;
+}
+
+int Pathlet::ByteSize() const {
+  int total_size = 0;
+
+  // repeated uint32 fids = 1;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->fids_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt32Size(this->fids(i));
+    }
+    total_size += 1 * this->fids_size() + data_size;
+  }
+
+  // repeated uint32 vnodes = 2;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->vnodes_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt32Size(this->vnodes(i));
+    }
+    total_size += 1 * this->vnodes_size() + data_size;
+  }
+
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Pathlet::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Pathlet* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Pathlet*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Pathlet::MergeFrom(const Pathlet& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  fids_.MergeFrom(from.fids_);
+  vnodes_.MergeFrom(from.vnodes_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Pathlet::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Pathlet::CopyFrom(const Pathlet& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Pathlet::IsInitialized() const {
+
+  return true;
+}
+
+void Pathlet::Swap(Pathlet* other) {
+  if (other != this) {
+    fids_.Swap(&other->fids_);
+    vnodes_.Swap(&other->vnodes_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Pathlet::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Pathlet_descriptor_;
+  metadata.reflection = Pathlet_reflection_;
   return metadata;
 }
 

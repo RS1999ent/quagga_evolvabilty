@@ -73,3 +73,22 @@ extern "C" int GetLastWiserNode(char* serialized_advert, int advert_size);
 extern "C" char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size);
 
 extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_size);
+
+
+////////////////////////////////////
+/// Pathlet specific functions/////
+//////////////////////////////////
+
+// converts adjacency graph to hop descriptors and creates a new IA from it.
+// (adding to the existing IA)
+extern "C" char* GenerateExternalPathletControlInf(char *serialized_advert, int advert_size, int *new_advert_size);
+
+extern "C" int HasPathletInformation(char* serialized_advert, int advert_size);
+
+extern "C" void MergePathletInformationIntoGraph(/* PathletInternalState handle */ char *serialized_advert, int advert_size);
+
+extern "C" char* GenerateInternalPathletControlInfo(char *serialized_advert, int advert_size, char* ip_address);
+
+
+
+

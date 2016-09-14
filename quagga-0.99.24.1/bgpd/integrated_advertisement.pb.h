@@ -38,6 +38,8 @@ class HopDescriptor;
 class KeyValue;
 class PathCost;
 class LastWiserNode;
+class Pathlets;
+class Pathlet;
 
 enum Protocol {
   P_UNKNOWN = 0,
@@ -302,17 +304,24 @@ class HopDescriptor : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // optional .Protocol protocol = 1;
+  // optional uint32 island_id = 1;
+  inline bool has_island_id() const;
+  inline void clear_island_id();
+  static const int kIslandIdFieldNumber = 1;
+  inline ::google::protobuf::uint32 island_id() const;
+  inline void set_island_id(::google::protobuf::uint32 value);
+
+  // optional .Protocol protocol = 2;
   inline bool has_protocol() const;
   inline void clear_protocol();
-  static const int kProtocolFieldNumber = 1;
+  static const int kProtocolFieldNumber = 2;
   inline ::Protocol protocol() const;
   inline void set_protocol(::Protocol value);
 
-  // repeated .KeyValue key_values = 2;
+  // repeated .KeyValue key_values = 3;
   inline int key_values_size() const;
   inline void clear_key_values();
-  static const int kKeyValuesFieldNumber = 2;
+  static const int kKeyValuesFieldNumber = 3;
   inline const ::KeyValue& key_values(int index) const;
   inline ::KeyValue* mutable_key_values(int index);
   inline ::KeyValue* add_key_values();
@@ -323,6 +332,8 @@ class HopDescriptor : public ::google::protobuf::Message {
 
   // @@protoc_insertion_point(class_scope:HopDescriptor)
  private:
+  inline void set_has_island_id();
+  inline void clear_has_island_id();
   inline void set_has_protocol();
   inline void clear_has_protocol();
 
@@ -330,8 +341,9 @@ class HopDescriptor : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedPtrField< ::KeyValue > key_values_;
+  ::google::protobuf::uint32 island_id_;
   int protocol_;
+  ::google::protobuf::RepeatedPtrField< ::KeyValue > key_values_;
   friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
@@ -599,6 +611,183 @@ class LastWiserNode : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static LastWiserNode* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class Pathlets : public ::google::protobuf::Message {
+ public:
+  Pathlets();
+  virtual ~Pathlets();
+
+  Pathlets(const Pathlets& from);
+
+  inline Pathlets& operator=(const Pathlets& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Pathlets& default_instance();
+
+  void Swap(Pathlets* other);
+
+  // implements Message ----------------------------------------------
+
+  Pathlets* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Pathlets& from);
+  void MergeFrom(const Pathlets& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .Pathlet pathlets = 1;
+  inline int pathlets_size() const;
+  inline void clear_pathlets();
+  static const int kPathletsFieldNumber = 1;
+  inline const ::Pathlet& pathlets(int index) const;
+  inline ::Pathlet* mutable_pathlets(int index);
+  inline ::Pathlet* add_pathlets();
+  inline const ::google::protobuf::RepeatedPtrField< ::Pathlet >&
+      pathlets() const;
+  inline ::google::protobuf::RepeatedPtrField< ::Pathlet >*
+      mutable_pathlets();
+
+  // @@protoc_insertion_point(class_scope:Pathlets)
+ private:
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::Pathlet > pathlets_;
+  friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
+
+  void InitAsDefaultInstance();
+  static Pathlets* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Pathlet : public ::google::protobuf::Message {
+ public:
+  Pathlet();
+  virtual ~Pathlet();
+
+  Pathlet(const Pathlet& from);
+
+  inline Pathlet& operator=(const Pathlet& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Pathlet& default_instance();
+
+  void Swap(Pathlet* other);
+
+  // implements Message ----------------------------------------------
+
+  Pathlet* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Pathlet& from);
+  void MergeFrom(const Pathlet& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated uint32 fids = 1;
+  inline int fids_size() const;
+  inline void clear_fids();
+  static const int kFidsFieldNumber = 1;
+  inline ::google::protobuf::uint32 fids(int index) const;
+  inline void set_fids(int index, ::google::protobuf::uint32 value);
+  inline void add_fids(::google::protobuf::uint32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      fids() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_fids();
+
+  // repeated uint32 vnodes = 2;
+  inline int vnodes_size() const;
+  inline void clear_vnodes();
+  static const int kVnodesFieldNumber = 2;
+  inline ::google::protobuf::uint32 vnodes(int index) const;
+  inline void set_vnodes(int index, ::google::protobuf::uint32 value);
+  inline void add_vnodes(::google::protobuf::uint32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      vnodes() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_vnodes();
+
+  // @@protoc_insertion_point(class_scope:Pathlet)
+ private:
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > fids_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > vnodes_;
+  friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
+
+  void InitAsDefaultInstance();
+  static Pathlet* default_instance_;
+};
 // ===================================================================
 
 
@@ -729,15 +918,39 @@ PathGroupDescriptor::mutable_key_values() {
 
 // HopDescriptor
 
-// optional .Protocol protocol = 1;
-inline bool HopDescriptor::has_protocol() const {
+// optional uint32 island_id = 1;
+inline bool HopDescriptor::has_island_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void HopDescriptor::set_has_protocol() {
+inline void HopDescriptor::set_has_island_id() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void HopDescriptor::clear_has_protocol() {
+inline void HopDescriptor::clear_has_island_id() {
   _has_bits_[0] &= ~0x00000001u;
+}
+inline void HopDescriptor::clear_island_id() {
+  island_id_ = 0u;
+  clear_has_island_id();
+}
+inline ::google::protobuf::uint32 HopDescriptor::island_id() const {
+  // @@protoc_insertion_point(field_get:HopDescriptor.island_id)
+  return island_id_;
+}
+inline void HopDescriptor::set_island_id(::google::protobuf::uint32 value) {
+  set_has_island_id();
+  island_id_ = value;
+  // @@protoc_insertion_point(field_set:HopDescriptor.island_id)
+}
+
+// optional .Protocol protocol = 2;
+inline bool HopDescriptor::has_protocol() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void HopDescriptor::set_has_protocol() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void HopDescriptor::clear_has_protocol() {
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void HopDescriptor::clear_protocol() {
   protocol_ = 0;
@@ -754,7 +967,7 @@ inline void HopDescriptor::set_protocol(::Protocol value) {
   // @@protoc_insertion_point(field_set:HopDescriptor.protocol)
 }
 
-// repeated .KeyValue key_values = 2;
+// repeated .KeyValue key_values = 3;
 inline int HopDescriptor::key_values_size() const {
   return key_values_.size();
 }
@@ -1000,6 +1213,104 @@ inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
 LastWiserNode::mutable_last_wiser() {
   // @@protoc_insertion_point(field_mutable_list:LastWiserNode.last_wiser)
   return &last_wiser_;
+}
+
+// -------------------------------------------------------------------
+
+// Pathlets
+
+// repeated .Pathlet pathlets = 1;
+inline int Pathlets::pathlets_size() const {
+  return pathlets_.size();
+}
+inline void Pathlets::clear_pathlets() {
+  pathlets_.Clear();
+}
+inline const ::Pathlet& Pathlets::pathlets(int index) const {
+  // @@protoc_insertion_point(field_get:Pathlets.pathlets)
+  return pathlets_.Get(index);
+}
+inline ::Pathlet* Pathlets::mutable_pathlets(int index) {
+  // @@protoc_insertion_point(field_mutable:Pathlets.pathlets)
+  return pathlets_.Mutable(index);
+}
+inline ::Pathlet* Pathlets::add_pathlets() {
+  // @@protoc_insertion_point(field_add:Pathlets.pathlets)
+  return pathlets_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::Pathlet >&
+Pathlets::pathlets() const {
+  // @@protoc_insertion_point(field_list:Pathlets.pathlets)
+  return pathlets_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::Pathlet >*
+Pathlets::mutable_pathlets() {
+  // @@protoc_insertion_point(field_mutable_list:Pathlets.pathlets)
+  return &pathlets_;
+}
+
+// -------------------------------------------------------------------
+
+// Pathlet
+
+// repeated uint32 fids = 1;
+inline int Pathlet::fids_size() const {
+  return fids_.size();
+}
+inline void Pathlet::clear_fids() {
+  fids_.Clear();
+}
+inline ::google::protobuf::uint32 Pathlet::fids(int index) const {
+  // @@protoc_insertion_point(field_get:Pathlet.fids)
+  return fids_.Get(index);
+}
+inline void Pathlet::set_fids(int index, ::google::protobuf::uint32 value) {
+  fids_.Set(index, value);
+  // @@protoc_insertion_point(field_set:Pathlet.fids)
+}
+inline void Pathlet::add_fids(::google::protobuf::uint32 value) {
+  fids_.Add(value);
+  // @@protoc_insertion_point(field_add:Pathlet.fids)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+Pathlet::fids() const {
+  // @@protoc_insertion_point(field_list:Pathlet.fids)
+  return fids_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+Pathlet::mutable_fids() {
+  // @@protoc_insertion_point(field_mutable_list:Pathlet.fids)
+  return &fids_;
+}
+
+// repeated uint32 vnodes = 2;
+inline int Pathlet::vnodes_size() const {
+  return vnodes_.size();
+}
+inline void Pathlet::clear_vnodes() {
+  vnodes_.Clear();
+}
+inline ::google::protobuf::uint32 Pathlet::vnodes(int index) const {
+  // @@protoc_insertion_point(field_get:Pathlet.vnodes)
+  return vnodes_.Get(index);
+}
+inline void Pathlet::set_vnodes(int index, ::google::protobuf::uint32 value) {
+  vnodes_.Set(index, value);
+  // @@protoc_insertion_point(field_set:Pathlet.vnodes)
+}
+inline void Pathlet::add_vnodes(::google::protobuf::uint32 value) {
+  vnodes_.Add(value);
+  // @@protoc_insertion_point(field_add:Pathlet.vnodes)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+Pathlet::vnodes() const {
+  // @@protoc_insertion_point(field_list:Pathlet.vnodes)
+  return vnodes_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+Pathlet::mutable_vnodes() {
+  // @@protoc_insertion_point(field_mutable_list:Pathlet.vnodes)
+  return &vnodes_;
 }
 
 
