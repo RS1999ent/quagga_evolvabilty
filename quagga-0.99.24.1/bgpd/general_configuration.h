@@ -2,6 +2,7 @@
 #define BGPD_GENERAL_CONFIGURATION_H
 #include "quagga_config.pb.h"
 #include "wiser_config.h"
+#include "pathlet_config.h"
 #include "shared_enum_definitions.h"
 
 enum kCProtocolType{
@@ -42,6 +43,14 @@ public:
   /* Returns a reference to a Wiserconfig (if it exists). Null if it doesn't */
   /* exist. */
   WiserConfig* GetWiserConfig();
+
+
+  /* Creates and returns a reference to the PathletConfig class (that is the */
+  /* object that works with the wiserconfig protobuf). */
+  
+  /* Returns a reference to a PathletConfig (if it exists). Null if it doesn't */
+  /* exist. */
+  PathletConfig* GetPathletConfig();
 
 
 private:

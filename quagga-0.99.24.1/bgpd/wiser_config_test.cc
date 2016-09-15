@@ -4,7 +4,7 @@
 #include <google/protobuf/text_format.h>
 #include "integrated_advertisement_functions.h"
 #include "integrated_advertisement.pb.h"
-#include "pathlets.h"
+#include "pathlet_internal_state.h"
 
 using std::string;
 using namespace std;

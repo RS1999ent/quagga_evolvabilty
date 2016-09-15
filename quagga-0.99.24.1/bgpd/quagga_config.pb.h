@@ -42,11 +42,12 @@ class PathletProtoConfig;
 
 enum ProtocolType {
   PT_UNKNOWN = 0,
-  PT_WISER = 1
+  PT_WISER = 1,
+  PT_PATHLETS = 2
 };
 bool ProtocolType_IsValid(int value);
 const ProtocolType ProtocolType_MIN = PT_UNKNOWN;
-const ProtocolType ProtocolType_MAX = PT_WISER;
+const ProtocolType ProtocolType_MAX = PT_PATHLETS;
 const int ProtocolType_ARRAYSIZE = ProtocolType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* ProtocolType_descriptor();

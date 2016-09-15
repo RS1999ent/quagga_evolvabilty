@@ -107,6 +107,8 @@ char protocol_config_default[] = SYSCONFDIR "protobuf_config";
 
 GeneralConfigurationHandle general_configuration_;
 WiserConfigHandle wiser_config_;
+PathletConfigHandle pathlet_config_;
+PathletInternalStateHandle pathlet_internal_state_;
 
 
 
@@ -342,6 +344,8 @@ main (int argc, char **argv)
 
   general_configuration_ = CreateGeneralConfig(protocol_config_default);
   wiser_config_ = GetWiserConfig(general_configuration_);
+  pathlet_config_ = CreatePathletConfig(general_configuration_);
+  pathlet_internal_state_ = CreatePathletInternalState(pathlet_config_);
 
   /* Preserve name of myself. */
   progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);

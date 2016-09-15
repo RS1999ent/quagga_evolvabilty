@@ -21,6 +21,9 @@ dbgp_protocol_t GeneralConfiguration::GetProtocolType()
   case PT_WISER:
     return dbgp_critical_wiser;
     break;
+  case PT_PATHLETS:
+    return dbgp_replacement_pathlets;
+    break;
 
   default :
     return dbgp_protocol_baseline;
@@ -52,4 +55,16 @@ WiserConfig* GeneralConfiguration::GetWiserConfig() {
     }
 
   return return_wiser_config;
+}
+
+PathletConfig* GeneralConfiguration::GetPathletConfig(){
+  PathletConfig* return_pathlet_config = NULL;
+
+  if(general_configuration_.has_pathlet_config())
+    {
+      PathletProtoConfig general_config_copy = general_configuration_.pathlet_config();
+      return_pathlet_config = new PathletConfig(general_config_copy);
+    }
+  return return_pathlet_config;
+
 }

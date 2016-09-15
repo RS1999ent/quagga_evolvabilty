@@ -1,6 +1,6 @@
 #include "wiser_config_interface.h"
 #include "wiser_config.h"
-#include "pathlets.h"
+#include "pathlet_internal_state.h"
 #include "pathlet_config.h"
 #include "general_configuration.h"
 #include "integrated_advertisement.pb.h"
@@ -92,11 +92,6 @@ extern "C"
     return general_config_handle->GetWiserConfig();
   }
 
-
-  PathletInternalStateHandle CreatePathletInternalState(char* private_addr_range){
-    return new PathletInternalState(string(private_addr_range));
-  }
-
   char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state, int *size){
     Pathlets return_pathlets;
     return_pathlets = pathlet_internal_state->ConvertGraphToPathlets();
@@ -134,4 +129,16 @@ extern "C"
     return return_serialized;
   }
 
+}
+
+
+PathletConfigHandle CreatePathletConfig(GeneralConfigurationHandle general_config){
+  return general_config->GetPathletConfig();
+  
+}
+PathletInternalStateHandle CreatePathletInternalState(PathletConfigHandle pathlet_config){
+  return pathlet_config->CreatePathletInternalState();
+}
+int IsIslandBorderRouter(PathletConfigHandle pathlet_config){
+  return pathlet_config->IsIslandBorderRouter();
 }

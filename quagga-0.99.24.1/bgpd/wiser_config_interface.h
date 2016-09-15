@@ -29,7 +29,6 @@ extern "C" {
 
   // pathletInternalState handle creator
   typedef struct PathletInternalState* PathletInternalStateHandle;
-  PathletInternalStateHandle CreatePathletInternalState(char* private_addr_range);
   char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state, int *size);
   void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
                               char *pathlet, int size);
@@ -38,7 +37,10 @@ extern "C" {
   char *GetPathletAssociatedWithIp(PathletInternalStateHandle pathlet_internal_state, const char *associated_ip, int *return_size);
 
   // pathlet config functions
-  typdef struct PathletConfig *PathletConfigHandle;
+  typedef struct PathletConfig *PathletConfigHandle;
+  PathletConfigHandle CreatePathletConfig(GeneralConfigurationHandle general_config);
+  PathletInternalStateHandle CreatePathletInternalState(PathletConfigHandle pathlet_config);
+  int IsIslandBorderRouter(PathletConfigHandle pathlet_config);
 
 
 #ifdef __cplusplus
