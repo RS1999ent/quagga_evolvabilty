@@ -73,6 +73,15 @@ class PathletInternalState{
   */
   Pathlet GetPathletToSend(string associated_ip);
 
+  /* Inserts an entry in 'ip_to_pathlet_to_send' with 'associated_ip' being the
+     key and 'pathlet_to_send' being the value.
+
+     Arguments:
+        associated_ip: the ip address to associated the pathlet_to_send.
+        pathlet_to_send: the pathlet to associate with 'associated_ip'
+  */
+  void InsertPathletToSend(string associated_ip, Pathlet pathlet_to_send);
+
  private:
 
   /* The pathlet graph where the key is the primary vnode mapping to an adjacent
