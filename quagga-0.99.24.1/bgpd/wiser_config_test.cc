@@ -879,7 +879,7 @@ TEST(HasPathletInformation, ItDoesNotHavePathletInfo_Get0){
   EXPECT_EQ(result,  kCorrectResult);
 }
 
-TEST(MergePathletInformationIntoGraph, _GetCorrectAdvertBack){
+TEST(MergePathletInformationIntoGraph, GivePathletWithAbunchOfInformation_GetCorrectAdvertBack){
   // Arrange
   const string kInputAdvert = R"(
     path_group_descriptors {
@@ -928,6 +928,59 @@ TEST(MergePathletInformationIntoGraph, _GetCorrectAdvertBack){
 
   EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
 }
+
+TEST(GenerateInternalPathletControlInfo, IpHasControlInfoAssocaited_GetCorrectAdvertBack){
+  // Arrange
+  const string kInputAdvert = R"()";
+  const string kCorrectAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    hop_descriptors{
+        protocol: P_PATHLETS
+        island_id: 1
+        key_values{
+            key : 'PathletGraph'
+            value: ''
+        }
+    }
+    )";
+  const map<string, string> kAssociatedIpToPathlet = {
+    {
+      "192.168.1.1",
+      R"(
+        fid: 1
+        vnodes: 1
+        vnodes: 2
+    )"
+    }
+  };
+
+  const string kAssociatedIp = "192.168.1.1";
+  PathletInternalState pathlet_internal_state("");
+  for (auto kv : kAssociatedIpToPathlet){
+    Pathlet pathlet;
+    google::protobuf::TextFormat::ParseFromString(kv.second, &pathlet);
+    pathlet_internal_state.InsertPathletToSend(kv.first, pathlet);
+  }
+
+  IntegratedAdvertisement correct_advert, input_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvert, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  int size = input_advert.ByteSize();
+  int newsize;
+  char serialized_input[size];
+  input_advert.SerializeToArray(serialized_input, size);
+
+  // act
+  char *result = GenerateInternalPathletControlInfo(serialized_input, size, kAssociatedIp.c_str(), &newsize, 1);
+  result_advert.ParseFromArray(result, newsize);
+
+  // Assert
+  EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
+}
+
 
 
 ////////////////////////////////

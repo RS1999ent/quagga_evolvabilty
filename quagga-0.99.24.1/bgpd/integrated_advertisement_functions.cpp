@@ -350,7 +350,7 @@ void MergePathletInformationIntoGraph(PathletInternalStateHandle pathlet_interna
 }
 
 
-char* GenerateInternalPathletControlInfo(char *serialized_advert, int advert_size, char* ip_address, int* new_size){
+char* GenerateInternalPathletControlInfo(char *serialized_advert, int advert_size, const char* ip_address, int* new_size, int island_id){
   
   return NULL;
 }

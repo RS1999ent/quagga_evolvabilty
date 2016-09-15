@@ -114,4 +114,12 @@ extern "C"
     pathlet_internal_state->InsertPathletIntoGraph(pathlet);
   }
 
+  void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state, char *associated_ip, char* pathlet_serialized, int size){
+
+    //parse serialized
+    Pathlet pathlet;
+    pathlet.ParseFromArray(pathlet_serialized, size);
+    pathlet_internal_state->InsertPathletToSend(string(associated_ip), pathlet);
+  }
+
 }
