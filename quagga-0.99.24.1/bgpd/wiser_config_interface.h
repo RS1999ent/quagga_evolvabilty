@@ -5,6 +5,7 @@
 
 struct WiserConfig;
 struct GeneralConfiguration;
+struct PathletInternalState;
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,6 +25,11 @@ extern "C" {
   uint32_t GetIslandId(GeneralConfigurationHandle general_config_handle);
   int IsRemoteAsAnIslandMember(GeneralConfigurationHandle general_config_handle, int remote_as);
   WiserConfigHandle GetWiserConfig(GeneralConfigurationHandle general_config_handle);
+
+  // pathletInternalState handle creator
+  typedef struct PathletInternalState* PathletInternalStateHandle;
+  PathletInternalStateHandle CreatePathletInternalState(char* private_addr_range);
+  char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state, int *size);
 
 
 #ifdef __cplusplus

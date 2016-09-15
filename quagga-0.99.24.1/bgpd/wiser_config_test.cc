@@ -675,9 +675,211 @@ TEST (SetLastWiserNode, AdvertHasWiserInfoAndOldLastWiserNode_ReturnCorrect){
 
   // Assert
   EXPECT_STREQ(output_advert.DebugString().c_str(), correct_output.DebugString().c_str() );
+}
 
+TEST(GenerateExternalPathletControlInfo, InsertSomePathletsIn_GetCorrectAdvertBack){
+  // Arrange
+  const string kInputAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+)";
+  const int kInputIslandid = 1;
+  const vector<string> kInsertPathlets = {
+    R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    )",
+    R"(
+    fid: 2
+    vnodes: 1
+    vnodes: 3
+    )",
+    R"(
+    fid: 3
+    vnodes: 2
+    vnodes: 4
+    )",
+    R"(
+    fid: 4
+    vnodes: 2
+    vnodes: 5
+    )"
+} ;
+  const string kCorrectAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    hop_descriptors{
+        protocol: P_PATHLETS
+        island_id: 1
+        key_values{
+            key : 'PathletGraph'
+            value: "\n\006\010\001\020\001\020\002\n\006\010\002\020\001\020\003\n\006\010\003\020\002\020\004\n\006\010\004\020\002\020\005"
+        }
+    }
+    )";
+
+  PathletInternalState pathlet_internal_state("");
+
+  IntegratedAdvertisement correct_advert, input_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvert, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  for(const string& pathlet_string : kInsertPathlets){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  int size = input_advert.ByteSize();
+  int newsize;
+  char serialized_input[size];
+  input_advert.SerializeToArray(serialized_input, size);
+
+  // act
+  char* result = GenerateExternalPathletControlInfo(&pathlet_internal_state, kInputIslandid, serialized_input, size, &newsize);
+
+  result_advert.ParseFromArray(result, newsize);
+
+  // Assert
+  EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
 
 }
+
+TEST(GenerateExternalPathletControlInfo, ExistingPathletHopDescriptorsInsertSomePathletsIn_GetCorrectAdvertBack){
+  // Arrange
+  const string kInputAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    hop_descriptors {
+        island_id: 1
+        protocol : P_PATHLETS
+    }
+    )";
+  const int kInputIslandid = 1;
+  const vector<string> kInsertPathlets = {
+    R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    )",
+    R"(
+    fid: 2
+    vnodes: 1
+    vnodes: 3
+    )",
+    R"(
+    fid: 3
+    vnodes: 2
+    vnodes: 4
+    )",
+    R"(
+    fid: 4
+    vnodes: 2
+    vnodes: 5
+    )"
+} ;
+  const string kCorrectAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    hop_descriptors{
+        protocol: P_PATHLETS
+        island_id: 1
+        key_values{
+            key : 'PathletGraph'
+            value: "\n\006\010\001\020\001\020\002\n\006\010\002\020\001\020\003\n\006\010\003\020\002\020\004\n\006\010\004\020\002\020\005"
+        }
+    }
+    )";
+
+  PathletInternalState pathlet_internal_state("");
+
+  IntegratedAdvertisement correct_advert, input_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvert, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  for(const string& pathlet_string : kInsertPathlets){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  int size = input_advert.ByteSize();
+  int newsize;
+  char serialized_input[size];
+  input_advert.SerializeToArray(serialized_input, size);
+
+  // act
+  char* result = GenerateExternalPathletControlInfo(&pathlet_internal_state, kInputIslandid, serialized_input, size, &newsize);
+
+  result_advert.ParseFromArray(result, newsize);
+
+  // Assert
+  EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
+
+}
+
+TEST(HasPathletInformation, ItDoesHavePathletInfo_Get1){
+  // Arrange
+  const string kInputAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    hop_descriptors {
+        island_id: 1
+        protocol : P_PATHLETS
+    }
+    )";
+  const int kInputIslandid = 1;
+  const int kCorrectResult = 1;
+
+
+  IntegratedAdvertisement input_advert;
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  int size = input_advert.ByteSize();
+  int newsize;
+  char serialized_input[size];
+  input_advert.SerializeToArray(serialized_input, size);
+
+  // act
+  int result = HasPathletInformation( serialized_input, size,kInputIslandid);
+
+  // Assert
+  EXPECT_EQ(result,  kCorrectResult);
+}
+
+TEST(HasPathletInformation, ItDoesNotHavePathletInfo_Get0){
+  // Arrange
+  const string kInputAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    )";
+  const int kInputIslandid = 1;
+  const int kCorrectResult = 0;
+
+
+  IntegratedAdvertisement input_advert;
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  int size = input_advert.ByteSize();
+  int newsize;
+  char serialized_input[size];
+  input_advert.SerializeToArray(serialized_input, size);
+
+  // act
+  int result = HasPathletInformation( serialized_input, size,kInputIslandid);
+
+  // Assert
+  EXPECT_EQ(result,  kCorrectResult);
+}
+
+
 
 ////////////////////////////////
 /// pathlets tests below here//

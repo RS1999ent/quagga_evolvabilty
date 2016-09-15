@@ -1,6 +1,8 @@
 #include "wiser_config_interface.h"
 #include "wiser_config.h"
+#include "pathlets.h"
 #include "general_configuration.h"
+#include "integrated_advertisement.pb.h"
 #include <iostream>
 #include <fcntl.h>
 #include <fstream>
@@ -87,6 +89,19 @@ extern "C"
 
   WiserConfigHandle GetWiserConfig(GeneralConfigurationHandle general_config_handle){
     return general_config_handle->GetWiserConfig();
+  }
+
+
+  PathletInternalStateHandle CreatePathletInternalState(char* private_addr_range){
+    return new PathletInternalState(string(private_addr_range));
+  }
+  char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state, int *size){
+    Pathlets return_pathlets;
+    return_pathlets = pathlet_internal_state->ConvertGraphToPathlets();
+    *size = return_pathlets.ByteSize();
+    char *return_serialized = (char*) malloc(*size);
+    return_pathlets.SerializeToArray(return_serialized, *size);
+    return return_serialized;
   }
 
 }

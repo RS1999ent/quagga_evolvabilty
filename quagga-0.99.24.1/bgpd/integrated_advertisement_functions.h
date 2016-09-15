@@ -1,3 +1,4 @@
+#include "wiser_config_interface.h"
 /* Creates a empty integrated advertisement and returns a reference to its
    serialized form.
 
@@ -81,13 +82,14 @@ extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_siz
 
 // converts adjacency graph to hop descriptors and creates a new IA from it.
 // (adding to the existing IA)
-extern "C" char* GenerateExternalPathletControlInf(char *serialized_advert, int advert_size, int *new_advert_size);
+extern "C" char* GenerateExternalPathletControlInfo(PathletInternalStateHandle pathlet_internal_state, int island_id, char *serialized_advert, int advert_size, int *new_advert_size);
 
 // Given an serialized advert, will return 1 if it has pathlet control
 // information in it.
-extern "C" int HasPathletInformation(char* serialized_advert, int advert_size);
+extern "C" int HasPathletInformation(char* serialized_advert, int advert_size, int island_id);
 
-// Given a serialized advert, will merge any pathlet information into the internal pathlet state maintained by PathletInternalState
+// Given a serialized advert, will merge any pathlet information into the
+// internal pathlet state maintained by PathletInternalState
 extern "C" void MergePathletInformationIntoGraph(/* PathletInternalState handle */ char *serialized_advert, int advert_size);
 
 // Given an ip address, will get the pathlet information associated with it
