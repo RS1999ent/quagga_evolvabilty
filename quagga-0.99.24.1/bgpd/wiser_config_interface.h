@@ -34,6 +34,7 @@ extern "C" {
                               char *pathlet, int size);
   // INSERT PATHLET, takes 3 ints, and an ip address.
   void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state, char *associated_ip, char* pathlet_serialized, int size);
+  char *GetPathletAssociatedWithIp(PathletInternalStateHandle pathlet_internal_state, const char *associated_ip, int *return_size);
 
 
 #ifdef __cplusplus

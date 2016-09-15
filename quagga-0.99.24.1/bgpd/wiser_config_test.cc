@@ -933,15 +933,12 @@ TEST(GenerateInternalPathletControlInfo, IpHasControlInfoAssocaited_GetCorrectAd
   // Arrange
   const string kInputAdvert = R"()";
   const string kCorrectAdvert = R"(
-    path_group_descriptors {
-        protocol : P_WISER
-    }
-    hop_descriptors{
-        protocol: P_PATHLETS
+    hop_descriptors {
         island_id: 1
-        key_values{
-            key : 'PathletGraph'
-            value: ''
+        protocol: P_PATHLETS
+        key_values {
+            key: "PathletGraph"
+            value: "\010\001\020\001\020\002"
         }
     }
     )";
@@ -974,11 +971,49 @@ TEST(GenerateInternalPathletControlInfo, IpHasControlInfoAssocaited_GetCorrectAd
   input_advert.SerializeToArray(serialized_input, size);
 
   // act
-  char *result = GenerateInternalPathletControlInfo(serialized_input, size, kAssociatedIp.c_str(), &newsize, 1);
+  char *result = GenerateInternalPathletControlInfo(&pathlet_internal_state, serialized_input, size, kAssociatedIp.c_str(), &newsize, 1);
   result_advert.ParseFromArray(result, newsize);
 
   // Assert
   EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
+}
+
+TEST(GenerateInternalPathletControlInfo, IpHasNoControlInfoAssocaited_GetNull){
+  // Arrange
+  const string kInputAdvert = R"()";
+  const string kCorrectAdvert = R"()";
+  const map<string, string> kAssociatedIpToPathlet = {
+    {
+      "192.168.1.1",
+      R"(
+        fid: 1
+        vnodes: 1
+        vnodes: 2
+    )"
+    }
+  };
+
+  const string kAssociatedIp = "999.999.9999";
+  PathletInternalState pathlet_internal_state("");
+  for (auto kv : kAssociatedIpToPathlet){
+    Pathlet pathlet;
+    google::protobuf::TextFormat::ParseFromString(kv.second, &pathlet);
+    pathlet_internal_state.InsertPathletToSend(kv.first, pathlet);
+  }
+
+  IntegratedAdvertisement correct_advert, input_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvert, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  int size = input_advert.ByteSize();
+  int newsize;
+  char serialized_input[size];
+  input_advert.SerializeToArray(serialized_input, size);
+
+  // act
+  char *result = GenerateInternalPathletControlInfo(&pathlet_internal_state, serialized_input, size, kAssociatedIp.c_str(), &newsize, 1);
+
+  EXPECT_TRUE(result == NULL);
 }
 
 

@@ -95,7 +95,10 @@ extern "C" void MergePathletInformationIntoGraph(PathletInternalStateHandle path
 // Given an ip address, will get the pathlet information associated with it
 // (that is in the map of ipaddress_to_pathlet information) and return a new
 // advertisement with the pathlet information in it.
-extern "C" char* GenerateInternalPathletControlInfo(char *serialized_advert, int advert_size, const char* ip_address, int* new_size, int island_id);
+//
+// Returns: The new serialzied advert, NULL if there was no pathlet associated
+// with the ip address
+extern "C" char* GenerateInternalPathletControlInfo(PathletInternalStateHandle pathlet_internal_state, char *serialized_advert, int advert_size, const char* ip_address, int* new_size, int island_id);
 
 
 

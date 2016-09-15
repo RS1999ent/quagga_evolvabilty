@@ -122,4 +122,15 @@ extern "C"
     pathlet_internal_state->InsertPathletToSend(string(associated_ip), pathlet);
   }
 
+  char *GetPathletAssociatedWithIp(PathletInternalStateHandle pathlet_internal_state, const char *associated_ip, int *return_size){
+    Pathlet gotten_pathlet;
+    char* return_serialized;
+
+    gotten_pathlet = pathlet_internal_state->GetPathletToSend(string(associated_ip));
+    *return_size = gotten_pathlet.ByteSize();
+    return_serialized = (char*) malloc(*return_size);
+    gotten_pathlet.SerializeToArray(return_serialized, *return_size);
+    return return_serialized;
+  }
+
 }

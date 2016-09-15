@@ -350,7 +350,39 @@ void MergePathletInformationIntoGraph(PathletInternalStateHandle pathlet_interna
 }
 
 
-char* GenerateInternalPathletControlInfo(char *serialized_advert, int advert_size, const char* ip_address, int* new_size, int island_id){
-  
-  return NULL;
+char* GenerateInternalPathletControlInfo(PathletInternalStateHandle pathlet_internal_state, char *serialized_advert, int advert_size, const char* ip_address, int* new_size, int island_id){
+  // parse advert
+  IntegratedAdvertisement parsed_advert;
+  parsed_advert.ParseFromArray(serialized_advert, advert_size);
+
+  int pathlet_size;
+  char* serialzied_pathlet = GetPathletAssociatedWithIp(pathlet_internal_state, ip_address, &pathlet_size);
+
+  // you should always get something back if this function is called
+  if(pathlet_size == 0){
+    return NULL;
+  }
+  // parse the gottne pathlet
+  Pathlet gotten_pathlet;
+  gotten_pathlet.ParseFromArray(serialzied_pathlet, pathlet_size);
+
+  HopDescriptor* pathlet_hop_descriptor = GetProtocolHopDescriptor(&parsed_advert, Protocol::P_PATHLETS, island_id);
+  // if null, there is no existing pathlet hop descriptor, generate one
+  if(pathlet_hop_descriptor == NULL){
+    pathlet_hop_descriptor = parsed_advert.add_hop_descriptors();
+    pathlet_hop_descriptor->set_protocol(Protocol::P_PATHLETS);
+    pathlet_hop_descriptor->set_island_id(island_id);
+  }
+
+  KeyValue *pathlet_kv = GetCreateKeyValueFromHopDesc(pathlet_hop_descriptor, "PathletGraph");
+  pathlet_kv->set_value(gotten_pathlet.SerializeAsString());
+
+  // We added the pathlet, serialized the advert.
+  *new_size = parsed_advert.ByteSize();
+  char *return_serialized = (char*) malloc(*new_size);
+  parsed_advert.SerializeToArray(return_serialized, *new_size);
+  gotten_pathlet.PrintDebugString();
+  parsed_advert.PrintDebugString();
+
+  return return_serialized;
 }
