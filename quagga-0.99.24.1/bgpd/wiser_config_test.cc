@@ -7,6 +7,7 @@
 #include "pathlets.h"
 
 using std::string;
+using namespace std;
 class WiserConfigTest : public testing::Test {
   public:
     WiserConfigTest(){
@@ -751,6 +752,87 @@ TEST(GetNextFid, CallThisFUnction255Time_GetCorrectFidBack){
   EXPECT_EQ(result, kCorrecdtFidBack);
 }
 
+TEST(InsertPathletIntoGraph, InsertOnePathlet_MapIsCorrect){
+  // arrange
+  const vector<string> kPathletsToInsert = {R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    )"
+  };
+   map<int, map<int,int>> kCorrectMap = {
+     {
+       1, {
+         {2, 1}
+       }
+     }
+
+   };
+
+  PathletInternalState pathlet_internal_state("");
+  // Act
+  for(const string& pathlet_string : kPathletsToInsert){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  map<int, map<int,int>> result_map = pathlet_internal_state.GetPathletGraph();
+  EXPECT_EQ(result_map, kCorrectMap);
+
+}
+
+TEST(InsertPathletIntoGraph, InsertFourPathlet_MapIsCorrect){
+  // arrange
+  const vector<string> kPathletsToInsert = {
+    R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    )",
+    R"(
+    fid: 2
+    vnodes: 1
+    vnodes: 3
+    )",
+    R"(
+    fid: 3
+    vnodes: 2
+    vnodes: 4
+    )",
+    R"(
+    fid: 4
+    vnodes: 2
+    vnodes: 5
+    )"
+  };
+  map<int, map<int,int>> kCorrectMap = {
+    {
+      1, {
+        {2, 1},
+        {3, 2}
+      }
+    },
+    {
+      2, {
+        {4, 3},
+        {5, 4}
+      }
+    }
+  };
+
+  PathletInternalState pathlet_internal_state("");
+  // Act
+  for(const string& pathlet_string : kPathletsToInsert){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  map<int, map<int,int>> result_map = pathlet_internal_state.GetPathletGraph();
+  EXPECT_EQ(result_map, kCorrectMap);
+
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

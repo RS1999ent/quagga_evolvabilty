@@ -42,7 +42,8 @@ class PathletInternalState{
   int GetNextFid();
 
   /* Given a pathlet (which consists of a FID and a pair of vnodes), inserts an
-     entry into the pathlet_graph.
+     entry into the pathlet_graph. If entry already exists, this will overwrite
+     it.
 
      Arguments:
         pathlet: the Pathlet message proto.
@@ -82,6 +83,8 @@ class PathletInternalState{
   */
   void InsertPathletToSend(string associated_ip, Pathlet pathlet_to_send);
 
+  const map<int,map<int, int>> GetPathletGraph();
+
  private:
 
   /* The pathlet graph where the key is the primary vnode mapping to an adjacent
@@ -106,3 +109,4 @@ class PathletInternalState{
 };
 
 #endif
+
