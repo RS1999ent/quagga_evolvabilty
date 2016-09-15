@@ -6,6 +6,7 @@
 struct WiserConfig;
 struct GeneralConfiguration;
 struct PathletInternalState;
+struct PathletConfig;
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,6 +36,9 @@ extern "C" {
   // INSERT PATHLET, takes 3 ints, and an ip address.
   void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state, char *associated_ip, char* pathlet_serialized, int size);
   char *GetPathletAssociatedWithIp(PathletInternalStateHandle pathlet_internal_state, const char *associated_ip, int *return_size);
+
+  // pathlet config functions
+  typdef struct PathletConfig *PathletConfigHandle;
 
 
 #ifdef __cplusplus

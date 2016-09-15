@@ -16,6 +16,8 @@ message Configuration {
   repeated uint32 island_member_ases = 3;
   // Protocol configuration for wiser.
   optional WiserProtocolConfig wiser_protocol_config = 4;
+  // Protocol configuration for Pathlets
+  optional PathletProtoConfig pathlet_config = 5;
 }
 
 // Holds information for nodes running the wiser protocol. Thus far, this is
@@ -55,4 +57,10 @@ message Link {
 message NodeProperty {
   optional string node_name = 1;
   optional string interface_ip = 2;
+}
+
+// Pathlet config stuff under here
+message PathletProtoConfig{
+  optional uint32 is_island_border_router = 1;
+  optional string private_slash24_ip = 2;
 }

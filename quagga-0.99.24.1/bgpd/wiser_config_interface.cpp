@@ -1,6 +1,7 @@
 #include "wiser_config_interface.h"
 #include "wiser_config.h"
 #include "pathlets.h"
+#include "pathlet_config.h"
 #include "general_configuration.h"
 #include "integrated_advertisement.pb.h"
 #include <iostream>

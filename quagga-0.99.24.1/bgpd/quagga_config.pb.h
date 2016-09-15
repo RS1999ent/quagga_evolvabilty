@@ -38,6 +38,7 @@ class Topology;
 class NodeLink;
 class Link;
 class NodeProperty;
+class PathletProtoConfig;
 
 enum ProtocolType {
   PT_UNKNOWN = 0,
@@ -148,6 +149,15 @@ class Configuration : public ::google::protobuf::Message {
   inline ::WiserProtocolConfig* release_wiser_protocol_config();
   inline void set_allocated_wiser_protocol_config(::WiserProtocolConfig* wiser_protocol_config);
 
+  // optional .PathletProtoConfig pathlet_config = 5;
+  inline bool has_pathlet_config() const;
+  inline void clear_pathlet_config();
+  static const int kPathletConfigFieldNumber = 5;
+  inline const ::PathletProtoConfig& pathlet_config() const;
+  inline ::PathletProtoConfig* mutable_pathlet_config();
+  inline ::PathletProtoConfig* release_pathlet_config();
+  inline void set_allocated_pathlet_config(::PathletProtoConfig* pathlet_config);
+
   // @@protoc_insertion_point(class_scope:Configuration)
  private:
   inline void set_has_protocol_type();
@@ -156,6 +166,8 @@ class Configuration : public ::google::protobuf::Message {
   inline void clear_has_island_id();
   inline void set_has_wiser_protocol_config();
   inline void clear_has_wiser_protocol_config();
+  inline void set_has_pathlet_config();
+  inline void clear_has_pathlet_config();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -165,6 +177,7 @@ class Configuration : public ::google::protobuf::Message {
   ::google::protobuf::uint32 island_id_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > island_member_ases_;
   ::WiserProtocolConfig* wiser_protocol_config_;
+  ::PathletProtoConfig* pathlet_config_;
   friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
   friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
   friend void protobuf_ShutdownFile_quagga_5fconfig_2eproto();
@@ -619,6 +632,100 @@ class NodeProperty : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static NodeProperty* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class PathletProtoConfig : public ::google::protobuf::Message {
+ public:
+  PathletProtoConfig();
+  virtual ~PathletProtoConfig();
+
+  PathletProtoConfig(const PathletProtoConfig& from);
+
+  inline PathletProtoConfig& operator=(const PathletProtoConfig& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PathletProtoConfig& default_instance();
+
+  void Swap(PathletProtoConfig* other);
+
+  // implements Message ----------------------------------------------
+
+  PathletProtoConfig* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PathletProtoConfig& from);
+  void MergeFrom(const PathletProtoConfig& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional uint32 is_island_border_router = 1;
+  inline bool has_is_island_border_router() const;
+  inline void clear_is_island_border_router();
+  static const int kIsIslandBorderRouterFieldNumber = 1;
+  inline ::google::protobuf::uint32 is_island_border_router() const;
+  inline void set_is_island_border_router(::google::protobuf::uint32 value);
+
+  // optional string private_slash24_ip = 2;
+  inline bool has_private_slash24_ip() const;
+  inline void clear_private_slash24_ip();
+  static const int kPrivateSlash24IpFieldNumber = 2;
+  inline const ::std::string& private_slash24_ip() const;
+  inline void set_private_slash24_ip(const ::std::string& value);
+  inline void set_private_slash24_ip(const char* value);
+  inline void set_private_slash24_ip(const char* value, size_t size);
+  inline ::std::string* mutable_private_slash24_ip();
+  inline ::std::string* release_private_slash24_ip();
+  inline void set_allocated_private_slash24_ip(::std::string* private_slash24_ip);
+
+  // @@protoc_insertion_point(class_scope:PathletProtoConfig)
+ private:
+  inline void set_has_is_island_border_router();
+  inline void clear_has_is_island_border_router();
+  inline void set_has_private_slash24_ip();
+  inline void clear_has_private_slash24_ip();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* private_slash24_ip_;
+  ::google::protobuf::uint32 is_island_border_router_;
+  friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
+  friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
+  friend void protobuf_ShutdownFile_quagga_5fconfig_2eproto();
+
+  void InitAsDefaultInstance();
+  static PathletProtoConfig* default_instance_;
+};
 // ===================================================================
 
 
@@ -744,6 +851,47 @@ inline void Configuration::set_allocated_wiser_protocol_config(::WiserProtocolCo
     clear_has_wiser_protocol_config();
   }
   // @@protoc_insertion_point(field_set_allocated:Configuration.wiser_protocol_config)
+}
+
+// optional .PathletProtoConfig pathlet_config = 5;
+inline bool Configuration::has_pathlet_config() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void Configuration::set_has_pathlet_config() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void Configuration::clear_has_pathlet_config() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void Configuration::clear_pathlet_config() {
+  if (pathlet_config_ != NULL) pathlet_config_->::PathletProtoConfig::Clear();
+  clear_has_pathlet_config();
+}
+inline const ::PathletProtoConfig& Configuration::pathlet_config() const {
+  // @@protoc_insertion_point(field_get:Configuration.pathlet_config)
+  return pathlet_config_ != NULL ? *pathlet_config_ : *default_instance_->pathlet_config_;
+}
+inline ::PathletProtoConfig* Configuration::mutable_pathlet_config() {
+  set_has_pathlet_config();
+  if (pathlet_config_ == NULL) pathlet_config_ = new ::PathletProtoConfig;
+  // @@protoc_insertion_point(field_mutable:Configuration.pathlet_config)
+  return pathlet_config_;
+}
+inline ::PathletProtoConfig* Configuration::release_pathlet_config() {
+  clear_has_pathlet_config();
+  ::PathletProtoConfig* temp = pathlet_config_;
+  pathlet_config_ = NULL;
+  return temp;
+}
+inline void Configuration::set_allocated_pathlet_config(::PathletProtoConfig* pathlet_config) {
+  delete pathlet_config_;
+  pathlet_config_ = pathlet_config;
+  if (pathlet_config) {
+    set_has_pathlet_config();
+  } else {
+    clear_has_pathlet_config();
+  }
+  // @@protoc_insertion_point(field_set_allocated:Configuration.pathlet_config)
 }
 
 // -------------------------------------------------------------------
@@ -1123,6 +1271,110 @@ inline void NodeProperty::set_allocated_interface_ip(::std::string* interface_ip
     interface_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:NodeProperty.interface_ip)
+}
+
+// -------------------------------------------------------------------
+
+// PathletProtoConfig
+
+// optional uint32 is_island_border_router = 1;
+inline bool PathletProtoConfig::has_is_island_border_router() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void PathletProtoConfig::set_has_is_island_border_router() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void PathletProtoConfig::clear_has_is_island_border_router() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void PathletProtoConfig::clear_is_island_border_router() {
+  is_island_border_router_ = 0u;
+  clear_has_is_island_border_router();
+}
+inline ::google::protobuf::uint32 PathletProtoConfig::is_island_border_router() const {
+  // @@protoc_insertion_point(field_get:PathletProtoConfig.is_island_border_router)
+  return is_island_border_router_;
+}
+inline void PathletProtoConfig::set_is_island_border_router(::google::protobuf::uint32 value) {
+  set_has_is_island_border_router();
+  is_island_border_router_ = value;
+  // @@protoc_insertion_point(field_set:PathletProtoConfig.is_island_border_router)
+}
+
+// optional string private_slash24_ip = 2;
+inline bool PathletProtoConfig::has_private_slash24_ip() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void PathletProtoConfig::set_has_private_slash24_ip() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void PathletProtoConfig::clear_has_private_slash24_ip() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void PathletProtoConfig::clear_private_slash24_ip() {
+  if (private_slash24_ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    private_slash24_ip_->clear();
+  }
+  clear_has_private_slash24_ip();
+}
+inline const ::std::string& PathletProtoConfig::private_slash24_ip() const {
+  // @@protoc_insertion_point(field_get:PathletProtoConfig.private_slash24_ip)
+  return *private_slash24_ip_;
+}
+inline void PathletProtoConfig::set_private_slash24_ip(const ::std::string& value) {
+  set_has_private_slash24_ip();
+  if (private_slash24_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    private_slash24_ip_ = new ::std::string;
+  }
+  private_slash24_ip_->assign(value);
+  // @@protoc_insertion_point(field_set:PathletProtoConfig.private_slash24_ip)
+}
+inline void PathletProtoConfig::set_private_slash24_ip(const char* value) {
+  set_has_private_slash24_ip();
+  if (private_slash24_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    private_slash24_ip_ = new ::std::string;
+  }
+  private_slash24_ip_->assign(value);
+  // @@protoc_insertion_point(field_set_char:PathletProtoConfig.private_slash24_ip)
+}
+inline void PathletProtoConfig::set_private_slash24_ip(const char* value, size_t size) {
+  set_has_private_slash24_ip();
+  if (private_slash24_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    private_slash24_ip_ = new ::std::string;
+  }
+  private_slash24_ip_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:PathletProtoConfig.private_slash24_ip)
+}
+inline ::std::string* PathletProtoConfig::mutable_private_slash24_ip() {
+  set_has_private_slash24_ip();
+  if (private_slash24_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    private_slash24_ip_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:PathletProtoConfig.private_slash24_ip)
+  return private_slash24_ip_;
+}
+inline ::std::string* PathletProtoConfig::release_private_slash24_ip() {
+  clear_has_private_slash24_ip();
+  if (private_slash24_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = private_slash24_ip_;
+    private_slash24_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void PathletProtoConfig::set_allocated_private_slash24_ip(::std::string* private_slash24_ip) {
+  if (private_slash24_ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete private_slash24_ip_;
+  }
+  if (private_slash24_ip) {
+    set_has_private_slash24_ip();
+    private_slash24_ip_ = private_slash24_ip;
+  } else {
+    clear_has_private_slash24_ip();
+    private_slash24_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:PathletProtoConfig.private_slash24_ip)
 }
 
 
