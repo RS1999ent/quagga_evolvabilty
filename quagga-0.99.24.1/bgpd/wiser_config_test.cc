@@ -879,6 +879,55 @@ TEST(HasPathletInformation, ItDoesNotHavePathletInfo_Get0){
   EXPECT_EQ(result,  kCorrectResult);
 }
 
+TEST(MergePathletInformationIntoGraph, _GetCorrectAdvertBack){
+  // Arrange
+  const string kInputAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    hop_descriptors {
+        island_id: 1
+        protocol : P_PATHLETS
+        key_values{
+            key : 'PathletGraph'
+            value: "\n\006\010\001\020\001\020\002\n\006\010\002\020\001\020\003\n\006\010\003\020\002\020\004\n\006\010\004\020\002\020\005"
+        }
+    }
+    )";
+  const string kCorrectAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    hop_descriptors{
+        protocol: P_PATHLETS
+        island_id: 1
+        key_values{
+            key : 'PathletGraph'
+            value: "\n\006\010\001\020\001\020\002\n\006\010\002\020\001\020\003\n\006\010\003\020\002\020\004\n\006\010\004\020\002\020\005"
+        }
+    }
+    )";
+
+  PathletInternalState pathlet_internal_state("");
+
+  IntegratedAdvertisement correct_advert, input_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvert, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  int size = input_advert.ByteSize();
+  int newsize;
+  char serialized_input[size];
+  input_advert.SerializeToArray(serialized_input, size);
+
+  // act
+  MergePathletInformationIntoGraph(&pathlet_internal_state, serialized_input, size, 1);
+
+  // Assert
+  char* result = GenerateExternalPathletControlInfo(&pathlet_internal_state, 1, serialized_input, size, &newsize);
+  result_advert.ParseFromArray(result, newsize);
+
+  EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
+}
 
 
 ////////////////////////////////

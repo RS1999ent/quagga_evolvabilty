@@ -100,12 +100,33 @@ KeyValue* GetCreateKeyValueFromHopDesc(HopDescriptor* hop_descriptor,
 // in. If it does not exist, it will return null
 //
 // Arguments:
+//   hop_descriptor: The hop_descriptor to search for a given key. May be mutated
+//   search_key: the key to search for a keyvalue of.
+//
+// Returns a reference to a given KeyValue. Null if it doesn't exist.
+KeyValue* GetHopDescriptorKeyValue(HopDescriptor* hop_descriptor,
+                            const std::string& search_key){
+  // Go through each keyvalue and check if the key is equal to the search_key passed in.
+  for(int i = 0; i < hop_descriptor->key_values_size(); i++){
+    KeyValue* mutable_key_value = hop_descriptor->mutable_key_values(i);
+    if(mutable_key_value->key().compare(search_key) == 0)
+      {
+        return mutable_key_value;
+      }
+  }
+  return NULL;
+}
+
+// Returns a reference to a mutable Keyvalue that corresponds to the key passed
+// in. If it does not exist, it will return null
+//
+// Arguments:
 //   path_group_descriptor: The path_group_descriptor to search for a given key. May be mutated
 //   search_key: the key to search for a keyvalue of.
 //
 // Returns a reference to a given KeyValue. Null if it doesn't exist.
-KeyValue* GetKeyValue(PathGroupDescriptor* path_group_descriptor,
-                            const std::string& search_key){
+KeyValue* GetPathGroupKeyValue(PathGroupDescriptor* path_group_descriptor,
+                               const std::string& search_key){
   // Go through each keyvalue and check if the key is equal to the search_key passed in.
   for(int i = 0; i < path_group_descriptor->key_values_size(); i++){
     KeyValue* mutable_key_value = path_group_descriptor->mutable_key_values(i);
@@ -179,7 +200,7 @@ int GetWiserPathCost(char* serialized_advert, int advert_size)
     }
 
   // Get the path cost from the assumed existent keyvalue
-  KeyValue *path_cost_kv = GetKeyValue(wiser_path_group_descriptor, "PathCost");
+  KeyValue *path_cost_kv = GetPathGroupKeyValue(wiser_path_group_descriptor, "PathCost");
   PathCost path_cost;
   path_cost.ParseFromString(path_cost_kv->value());
   return path_cost.path_cost();
@@ -201,7 +222,7 @@ int GetLastWiserNode(char* serialized_advert, int advert_size) {
     }
 
   // if the key value for 'LastWiserNode' doesn't exist, return -1
-  KeyValue *last_wiser = GetKeyValue(wiser_path_group_descriptor, "LastWiserNode");
+  KeyValue *last_wiser = GetPathGroupKeyValue(wiser_path_group_descriptor, "LastWiserNode");
   if (last_wiser == NULL) {
     return -1;
   }
@@ -298,3 +319,38 @@ int HasPathletInformation(char* serialized_advert, int advert_size, int island_i
   }
 }
 
+void MergePathletInformationIntoGraph(PathletInternalStateHandle pathlet_internal_state, char *serialized_advert, int advert_size, int island_id) {
+  // parse advert
+  IntegratedAdvertisement parsed_advert;
+  parsed_advert.ParseFromArray(serialized_advert, advert_size);
+
+  HopDescriptor* pathlet_hop_descriptor =
+    GetProtocolHopDescriptor(&parsed_advert,
+                             Protocol::P_PATHLETS,
+                             island_id);
+  // if there is no pathlet information, there is nothing to do.
+  if(pathlet_hop_descriptor == NULL){
+    return;
+  }
+
+  Pathlets pathlets;
+  KeyValue *pathlet_info = GetHopDescriptorKeyValue(pathlet_hop_descriptor, "PathletGraph");
+
+  pathlets.ParseFromString(pathlet_info->value());
+
+  // For each pathlet, merge into datastruct
+  for(const Pathlet& pathlet : pathlets.pathlets()){
+    int pathlet_size = pathlet.ByteSize();
+    char *serialized_pathlet = (char*) malloc(pathlet_size);
+    pathlet.SerializeToArray(serialized_pathlet, pathlet_size);
+    pathlet.PrintDebugString();
+    InsertPathletIntoGraph(pathlet_internal_state, serialized_pathlet, pathlet_size);
+    free(serialized_pathlet);
+  }
+}
+
+
+char* GenerateInternalPathletControlInfo(char *serialized_advert, int advert_size, char* ip_address, int* new_size){
+  
+  return NULL;
+}

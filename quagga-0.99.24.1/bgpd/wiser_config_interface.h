@@ -30,6 +30,9 @@ extern "C" {
   typedef struct PathletInternalState* PathletInternalStateHandle;
   PathletInternalStateHandle CreatePathletInternalState(char* private_addr_range);
   char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state, int *size);
+  void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
+                              char *pathlet, int size);
+  // INSERT PATHLET, takes 3 ints, and an ip address.
 
 
 #ifdef __cplusplus

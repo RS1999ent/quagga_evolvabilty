@@ -95,6 +95,7 @@ extern "C"
   PathletInternalStateHandle CreatePathletInternalState(char* private_addr_range){
     return new PathletInternalState(string(private_addr_range));
   }
+
   char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state, int *size){
     Pathlets return_pathlets;
     return_pathlets = pathlet_internal_state->ConvertGraphToPathlets();
@@ -102,6 +103,15 @@ extern "C"
     char *return_serialized = (char*) malloc(*size);
     return_pathlets.SerializeToArray(return_serialized, *size);
     return return_serialized;
+  }
+
+  void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
+                              char *pathlet_serialized, int size){
+    // parse pathlet_serialized
+    Pathlet pathlet;
+    pathlet.ParseFromArray(pathlet_serialized, size);
+
+    pathlet_internal_state->InsertPathletIntoGraph(pathlet);
   }
 
 }
