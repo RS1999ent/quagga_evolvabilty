@@ -83,11 +83,17 @@ extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_siz
 // (adding to the existing IA)
 extern "C" char* GenerateExternalPathletControlInf(char *serialized_advert, int advert_size, int *new_advert_size);
 
+// Given an serialized advert, will return 1 if it has pathlet control
+// information in it.
 extern "C" int HasPathletInformation(char* serialized_advert, int advert_size);
 
+// Given a serialized advert, will merge any pathlet information into the internal pathlet state maintained by PathletInternalState
 extern "C" void MergePathletInformationIntoGraph(/* PathletInternalState handle */ char *serialized_advert, int advert_size);
 
-extern "C" char* GenerateInternalPathletControlInfo(char *serialized_advert, int advert_size, char* ip_address);
+// Given an ip address, will get the pathlet information associated with it
+// (that is in the map of ipaddress_to_pathlet information) and return a new
+// advertisement with the pathlet information in it.
+extern "C" char* GenerateInternalPathletControlInfo(char *serialized_advert, int advert_size, char* ip_address, int* new_size);
 
 
 

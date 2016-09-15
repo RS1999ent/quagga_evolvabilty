@@ -2,16 +2,36 @@
 #include <arpa/inet.h>
 
 
-Pathlet PathletInternalState::GetPathletToSend(string associated_ip) {
-  Pathlet b;
+void PathletInternalState::InsertPathletToSend(string associated_ip, Pathlet pathlet_to_send) {
+  ip_to_pathlet_to_send[associated_ip] = pathlet_to_send;
+}
 
-  return b;
+// untested
+Pathlet PathletInternalState::GetPathletToSend(string associated_ip) {
+  Pathlet return_pathlet;
+
+  return ip_to_pathlet_to_send[associated_ip];
+
 }
 
 Pathlets PathletInternalState::ConvertGraphToPathlets() {
-  Pathlets b;
+  // for each entry in each map, create a pathlet and add it to the return
+  // pathlets
+  Pathlets return_pathlets;
+  for(auto primarynode_and_map : pathlet_graph_){
+    int primarynode = primarynode_and_map.first;
+    for(auto adjacent_and_fid : primarynode_and_map.second){
+      // create a pathlet and insert it into return_pathlets
+      Pathlet *new_pathlet = return_pathlets.add_pathlets();
+      int adjacent_node = adjacent_and_fid.first;
+      int fid = adjacent_and_fid.second;
+      new_pathlet->set_fid(fid);
+      new_pathlet->add_vnodes(primarynode);
+      new_pathlet->add_vnodes(adjacent_node);
+    }
 
-  return b;
+  }
+  return return_pathlets;
 }
 
 void PathletInternalState::InsertPathletIntoGraph(Pathlet pathlet) {

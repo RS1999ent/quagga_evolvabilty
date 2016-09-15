@@ -196,3 +196,8 @@ char* SerializedAdverToString(char* serialized_advert, int advert_size){
   parsed_advert.DebugString().copy(return_buffer, num_chars, 0);
   return return_buffer;
 }
+
+
+char* GenerateExternalPathletControlInf(char *serialized_advert, int advert_size, int *new_advert_size) {
+  return NULL;
+}

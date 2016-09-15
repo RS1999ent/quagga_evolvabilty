@@ -679,7 +679,9 @@ TEST (SetLastWiserNode, AdvertHasWiserInfoAndOldLastWiserNode_ReturnCorrect){
 
 }
 
-/// pathlets tests below here
+////////////////////////////////
+/// pathlets tests below here//
+//////////////////////////////
 TEST(GetNextIp, CallThisFunction1Time_GetCorrectIpBack){
   //Arrange
   const int kNumTimesToCall = 1;
@@ -833,6 +835,113 @@ TEST(InsertPathletIntoGraph, InsertFourPathlet_MapIsCorrect){
   EXPECT_EQ(result_map, kCorrectMap);
 
 }
+
+TEST(ConvertGraphToPathlets, Insert1Pathlet_GetCorrectPathletsBack){
+
+  // Arrange
+  const vector<string> kInsertPathlets = {
+    R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    )"
+  };
+
+  const string kCorrectPathlets =
+    R"(
+    pathlets {
+        fid: 1
+        vnodes: 1
+        vnodes: 2
+    }
+    )";
+
+  PathletInternalState pathlet_internal_state("");
+
+  Pathlets correct_pathlets;
+  google::protobuf::TextFormat::ParseFromString(kCorrectPathlets, &correct_pathlets);
+  // Act
+  for(const string& pathlet_string : kInsertPathlets){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  Pathlets result = pathlet_internal_state.ConvertGraphToPathlets();
+
+  EXPECT_STREQ(result.DebugString().c_str(),
+               correct_pathlets.DebugString().c_str());
+
+}
+
+TEST(ConvertGraphToPathlets, Insert4Pathlet_GetCorrectPathletsBack){
+
+  // Arrange
+  const vector<string> kInsertPathlets = {
+    R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    )",
+    R"(
+    fid: 2
+    vnodes: 1
+    vnodes: 3
+    )",
+    R"(
+    fid: 3
+    vnodes: 2
+    vnodes: 4
+    )",
+    R"(
+    fid: 4
+    vnodes: 2
+    vnodes: 5
+    )"
+  };
+
+  const string kCorrectPathlets =
+    R"(
+    pathlets {
+        fid: 1
+        vnodes: 1
+        vnodes: 2
+    }
+    pathlets {
+        fid: 2
+        vnodes: 1
+        vnodes: 3
+    }
+    pathlets {
+        fid: 3
+        vnodes: 2
+        vnodes: 4
+    }
+    pathlets {
+        fid: 4
+        vnodes: 2
+        vnodes: 5
+    }
+    )";
+
+  PathletInternalState pathlet_internal_state("");
+
+  Pathlets correct_pathlets;
+  google::protobuf::TextFormat::ParseFromString(kCorrectPathlets, &correct_pathlets);
+  // Act
+  for(const string& pathlet_string : kInsertPathlets){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  Pathlets result = pathlet_internal_state.ConvertGraphToPathlets();
+
+  EXPECT_STREQ(result.DebugString().c_str(),
+               correct_pathlets.DebugString().c_str());
+
+}
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
