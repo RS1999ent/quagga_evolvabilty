@@ -13,6 +13,7 @@ enum kCProtocolType{
 struct GeneralConfiguration {
 
 public:
+  GeneralConfiguration(){}
   GeneralConfiguration(Configuration general_configuration);
 
   // Gets the protocol being used on this router from the configuration in an

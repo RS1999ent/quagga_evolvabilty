@@ -1,6 +1,10 @@
 #include "pathlets.h"
 #include "bgpd/bgp_aspath.h"
 #include "wiser_config_interface.h"
+#include "lib/vty.h"
+#include "lib/memory.h"
+#include "bgpd/bgp_route.h"
+/* #include "bgpd/bgp_vty.h" */
 /* #include "bgpd/dbgp_lookup.h" */
 /* #include "bgpd/bgp_common.h" */
 /* #include "bgpd/bgp_route.h" */
@@ -10,8 +14,20 @@
 /* ********************* Global vars ************************** */
 extern GeneralConfigurationHandle general_configuration_;
 extern PathletInternalStateHandle pathlet_internal_state_;
+extern int vtysh_execute(const char *line);
+/* extern struct vty* vty; */
 int HasPathletInformation(char* serialized_advert, int advert_size, int island_id);
 
+void AnounceStaticRoute(char* ip_and_prefix, struct bgp* bgp){
+  struct bgp_static *bgp_static;
+  struct prefix p;
+  str2prefix (ip_and_prefix, &p);
+  bgp_static = XCALLOC (MTYPE_BGP_STATIC, sizeof (struct bgp_static));
+  bgp_static->backdoor = 0;
+  bgp_static->valid = 0;
+  bgp_static->igpmetric = 0;
+  bgp_static->igpnexthop.s_addr = 0;
+}
 
 int
 aspath_get_rightmost (struct aspath *aspath)
@@ -71,7 +87,16 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info, 
   zlog_debug("pathlets::pathlets_input_filter: creating pathlet for ip (%s) fid (%i) as1(%i) as2(%i)", new_ip, free_fid, as1, as2);
   InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2);
   
-  vty_out (vty, " network %s/%d", new_ip, 32);
+  // Create the vty command to announce a new prefix
+  char* command = malloc(256);
+  memset(command, 0, 256);
+
+  snprintf(command, 256, "conf t -c \"router bgp %i\" -c \"network %s/%d\"", peer->bgp->as, new_ip, 32);
+  /* vtysh_execute(command); */
+  /* vty_out(vty, command); */
+
+  /* bgp_static_set (vty, vty->index, new_ip, AFI_IP, SAFI_UNICAST, */
+                         /* NULL, 1); */
   return DBGP_NOT_FILTERED;
 }
 

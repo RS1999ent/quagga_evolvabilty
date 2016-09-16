@@ -66,6 +66,7 @@ extern "C"
       }
 
     std::cerr << "error" << std::endl;
+    return new GeneralConfiguration();
   }
 
   dbgp_protocol_t GetProtocolType(GeneralConfigurationHandle general_config_handle) {

@@ -64,6 +64,7 @@ dbgp_control_info_t* GetControlInformation(struct attr* attr, struct transit** t
 
 void dbgp_update_control_info(struct attr *attr, struct peer *peer) 
 {
+  zlog_debug("dbgp::dbgp_update_control_info: aspath of attr: %s", attr->aspath->str);
   dbgp_control_info_t *control_info;
   struct transit *transit;
 
@@ -146,6 +147,7 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new,
 
 dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
 {
+  zlog_debug("dbgp::dbgp_input_filter: aspath of attr: %s", attr->aspath->str);
   dbgp_control_info_t *control_info;
   struct attr_extra *extra;
   struct transit *transit;
@@ -189,6 +191,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
 
 dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer) 
 {
+  zlog_debug("dbgp::dbgp_output_filter: aspath of attr: %s", attr->aspath->str);
   dbgp_control_info_t *control_info;
   struct attr_extra *extra;
   struct transit *transit;
