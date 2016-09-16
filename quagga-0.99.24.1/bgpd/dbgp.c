@@ -7,6 +7,7 @@
 #include "bgpd/dbgp.h"
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/wiser.h"
+#include "bgpd/pathlets.h"
 #include "bgpd/bgp_common.h"
 #include "bgpd/bgp_aspath.h"
 
@@ -92,8 +93,7 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      // pathlets_update_control_info(control_info, peer);
-      assert(0);
+      pathlets_update_control_info(control_info, peer);
       break;
 
     default:
@@ -132,6 +132,7 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new,
     break;
     /* repalcement protocols */
   case dbgp_replacement_pathlets:
+    return(bgp_info_cmp(bgp, new, exist, path_eq));
     //pathlets_info_cmp(bgp, bgp_info, new, exists, path_eq);
     assert(0);
     break;
@@ -149,21 +150,18 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
   struct attr_extra *extra;
   struct transit *transit;
   int retval = DBGP_NOT_FILTERED;
+  // Precondition asserts
+  assert(peer != NULL);
+  assert(attr != NULL);
 
-  assert(attr != NULL && peer != NULL 
-	 && attr->extra != NULL 
-	 && attr->extra->transit != NULL);
-  
-  extra = attr->extra;
-  transit = extra->transit;
+  control_info = GetControlInformation(attr, &transit);
+  assert(transit != NULL);
 
   /* Don't apply any protocol-specific filters to a lookup-service path */
   if (is_lookup_service_path(transit)) { 
     return DBGP_NOT_FILTERED;
   }
   
-  control_info = retrieve_control_info(transit);
-
   switch (peer->bgp->dbgp_protocol) {
     { 
       /* Just BGP */
@@ -178,8 +176,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      //return(pathlets_output_fitler(control_info, attr, peer));
-      assert(0);
+      return(pathlets_input_filter(control_info, attr, peer));
       break;
 
     default:
@@ -237,8 +234,7 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer)
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      //return(pathlets_output_filter(control_info, attr, peer));
-      assert(0);
+      return(pathlets_output_filter(control_info, attr, peer));
       break;
 
     default:

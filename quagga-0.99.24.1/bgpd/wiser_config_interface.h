@@ -33,8 +33,10 @@ extern "C" {
   void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
                               char *pathlet, int size);
   // INSERT PATHLET, takes 3 ints, and an ip address.
-  void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state, char *associated_ip, char* pathlet_serialized, int size);
+  void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state, char *associated_ip, int fid, int as1, int as2);
   char *GetPathletAssociatedWithIp(PathletInternalStateHandle pathlet_internal_state, const char *associated_ip, int *return_size);
+  char* GetNextIp(PathletInternalStateHandle pathlet_internal_state);
+  int GetNextFid(PathletInternalStateHandle pathlet_internal_state);
 
   // pathlet config functions
   typedef struct PathletConfig *PathletConfigHandle;

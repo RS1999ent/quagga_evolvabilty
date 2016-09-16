@@ -9,6 +9,7 @@
 #include <fstream>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <mutex>
 
 #include "quagga_config.pb.h"
 
@@ -92,43 +93,70 @@ extern "C"
     return general_config_handle->GetWiserConfig();
   }
 
+  std::mutex internal_state_mutex;
   char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state, int *size){
+    internal_state_mutex.lock();
     Pathlets return_pathlets;
     return_pathlets = pathlet_internal_state->ConvertGraphToPathlets();
     *size = return_pathlets.ByteSize();
     char *return_serialized = (char*) malloc(*size);
     return_pathlets.SerializeToArray(return_serialized, *size);
+    internal_state_mutex.unlock();
     return return_serialized;
   }
 
   void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
                               char *pathlet_serialized, int size){
+    internal_state_mutex.lock();
     // parse pathlet_serialized
     Pathlet pathlet;
     pathlet.ParseFromArray(pathlet_serialized, size);
 
     pathlet_internal_state->InsertPathletIntoGraph(pathlet);
+    internal_state_mutex.unlock();
   }
 
-  void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state, char *associated_ip, char* pathlet_serialized, int size){
+  void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state, char *associated_ip, int fid, int as1, int as2){
 
+    internal_state_mutex.lock();
     //parse serialized
     Pathlet pathlet;
-    pathlet.ParseFromArray(pathlet_serialized, size);
+    pathlet.set_fid(fid);
+    pathlet.add_vnodes(as1);
+    pathlet.add_vnodes(as2);
     pathlet_internal_state->InsertPathletToSend(string(associated_ip), pathlet);
+    internal_state_mutex.unlock();
   }
 
   char *GetPathletAssociatedWithIp(PathletInternalStateHandle pathlet_internal_state, const char *associated_ip, int *return_size){
     Pathlet gotten_pathlet;
     char* return_serialized;
+    internal_state_mutex.lock();
 
     gotten_pathlet = pathlet_internal_state->GetPathletToSend(string(associated_ip));
     *return_size = gotten_pathlet.ByteSize();
     return_serialized = (char*) malloc(*return_size);
     gotten_pathlet.SerializeToArray(return_serialized, *return_size);
+    internal_state_mutex.unlock();
     return return_serialized;
   }
+}
 
+char* GetNextIp(PathletInternalStateHandle pathlet_internal_state){
+  
+  internal_state_mutex.lock();
+  string next_ip = pathlet_internal_state->GetNextIp();
+  char* return_buffer = (char*) malloc(next_ip.size() + 1);
+  strcpy(return_buffer, next_ip.c_str());
+  internal_state_mutex.unlock();
+  return return_buffer;
+}
+int GetNextFid(PathletInternalStateHandle pathlet_internal_state){
+  
+  internal_state_mutex.lock();
+  int next_fid = pathlet_internal_state->GetNextFid();
+  internal_state_mutex.unlock();
+  return next_fid;
 }
 
 
