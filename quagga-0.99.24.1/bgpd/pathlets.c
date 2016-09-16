@@ -27,6 +27,8 @@ void AnounceStaticRoute(char* ip_and_prefix, struct bgp* bgp){
   bgp_static->valid = 0;
   bgp_static->igpmetric = 0;
   bgp_static->igpnexthop.s_addr = 0;
+
+	bgp_static_update (bgp, &p, bgp_static, AFI_IP, SAFI_UNICAST);
 }
 
 int
@@ -88,12 +90,14 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info, 
   InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2);
   
   // Create the vty command to announce a new prefix
-  char* command = malloc(256);
-  memset(command, 0, 256);
+  /* char* command = malloc(256); */
+  /* memset(command, 0, 256); */
 
-  snprintf(command, 256, "conf t -c \"router bgp %i\" -c \"network %s/%d\"", peer->bgp->as, new_ip, 32);
+  /* snprintf(command, 256, "conf t -c \"router bgp %i\" -c \"network %s/%d\"", peer->bgp->as, new_ip, 32); */
   /* vtysh_execute(command); */
   /* vty_out(vty, command); */
+
+  AnounceStaticRoute(new_ip, peer->bgp);
 
   /* bgp_static_set (vty, vty->index, new_ip, AFI_IP, SAFI_UNICAST, */
                          /* NULL, 1); */
