@@ -27,6 +27,12 @@ struct PathletConfig{
     return new PathletInternalState(pathlet_config_.private_slash24_ip());
   }
 
+  // Gets the private slash 24 associated with this ip
+  string GetPrivateIp()
+  {
+    return pathlet_config_.private_slash24_ip();
+  }
+
 private:
 
   PathletProtoConfig pathlet_config_;

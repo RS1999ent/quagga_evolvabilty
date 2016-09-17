@@ -17,7 +17,7 @@
  * @param attr: the attribute information (used for determining if this is an
  * internal advert0)
  */
-void pathlets_update_control_info(dbgp_control_info_t *control_info, struct peer *peer, struct attr* attr);
+void pathlets_update_control_info(dbgp_control_info_t *control_info, struct peer *peer, struct attr* attr, struct prefix* prefix);
 
 
 /* Announces a static route prefix
@@ -43,7 +43,7 @@ pathlets_input_filter(dbgp_control_info_t *control_info, struct attr *attr, stru
  * @param peer: Informatoin about the neighbor that sent the adv.
  */
 dbgp_filtered_status_t
-pathlets_output_filter(dbgp_control_info_t *control_info, struct attr *attr, struct peer *peer);
+pathlets_output_filter(/* dbgp_control_info_t *control_info, */ struct attr *attr, struct peer *peer, struct prefix* prefix);
 
 /* /\** */
 /*  * Applies pathlets's best-path selection algorithm */

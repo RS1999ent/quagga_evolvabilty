@@ -51,7 +51,7 @@ wiser_input_filter(dbgp_control_info_t *control_info, struct attr *attr, struct 
  * @param peer: Informatoin about the neighbor that sent the adv.
  */
 dbgp_filtered_status_t
-wiser_output_filter(dbgp_control_info_t *control_info, struct attr *attr, struct peer *peer);
+wiser_output_filter(/* dbgp_control_info_t *control_info, */ struct attr *attr, struct peer *peer);
 
 /**
  * Applies wiser's best-path selection algorithm

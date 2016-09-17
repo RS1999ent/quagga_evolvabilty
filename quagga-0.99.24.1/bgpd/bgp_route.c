@@ -1958,21 +1958,22 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	}
     }
 
-  /** @note:  D-BGP: update control info before best-path selection here */
-  /* Need to do this BEFORE EVER interning the new attribute */
-  dbgp_update_control_info(&new_attr, peer);
-
   /* D-BGP protocol specific filtering */
   /* Need to do this AFTER updating control information in case the
    *  incoming adv does not have a lookup key attached.  I assume that
    *  calling dbgp_update_control_info will attach some sort of
    *  protocol-specific information and a lookup key */
   // BUG: dbgp_input_filter formerly had attr going int, changed to new_attr
+  // NO longer assuming this is called before update control info
   if (dbgp_input_filter(&new_attr, peer) == DBGP_FILTERED) {
     bgp_attr_flush(&new_attr);
     reason = "dbgp_protocol_specific_filtered";
     goto filtered;
   }
+  /** @note:  D-BGP: update control info before best-path selection here */
+  /* Need to do this BEFORE EVER interning the new attribute */
+  dbgp_update_control_info(&new_attr, peer, p);
+
 
   attr_new = bgp_attr_intern (&new_attr);
 

@@ -64,7 +64,7 @@ dbgp_control_info_t* GetControlInformation(struct attr* attr, struct transit** t
 /* ********************* Public functions ********************* */
 
 
-void dbgp_update_control_info(struct attr *attr, struct peer *peer) 
+void dbgp_update_control_info(struct attr *attr, struct peer *peer, struct prefix* prefix) 
 {
   zlog_debug("dbgp::dbgp_update_control_info: aspath of attr: %s", attr->aspath->str);
   dbgp_control_info_t *control_info;
@@ -96,7 +96,7 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      pathlets_update_control_info(control_info, peer, attr);
+      pathlets_update_control_info(control_info, peer, attr, prefix);
       break;
 
     default:
@@ -204,27 +204,27 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer, 
   zlog_debug("dbgp::dbgp_output_filter: protocol type: %i", peer->bgp->dbgp_protocol);
 
   // If aspath is 0, then this the first thing going through, so there will be no extra attributes, return not filtered.
-  unsigned int aspath_length = aspath_size(attr->aspath);
-  zlog_debug("dbpg::dbpg_output_filter: aspath length: %i", aspath_length);
-  if (aspath_length == 0)
-    {
-      return retval;
-    }
+  /* unsigned int aspath_length = aspath_size(attr->aspath); */
+  /* zlog_debug("dbpg::dbpg_output_filter: aspath length: %i", aspath_length); */
+  /* if (aspath_length == 0) */
+  /*   { */
+  /*     return retval; */
+  /*   } */
 
 
-  assert(attr != NULL && peer != NULL 
-	 && attr->extra != NULL 
-         && attr->extra->transit != NULL && aspath_size(attr->aspath) > 0);
+  /* assert(attr != NULL && peer != NULL  */
+	/*  && attr->extra != NULL  */
+  /*        && attr->extra->transit != NULL && aspath_size(attr->aspath) > 0); */
 
-  extra = attr->extra;
-  transit = extra->transit;
+  /* extra = attr->extra; */
+  /* transit = extra->transit; */
   
   /* Don't apply any protocol-specific filters to a lookup-service path */
-  if (is_lookup_service_path(transit)) { 
-    return DBGP_NOT_FILTERED;
-  }
+  /* if (is_lookup_service_path(transit)) {  */
+  /*   return DBGP_NOT_FILTERED; */
+  /* } */
   
-  control_info = retrieve_control_info(transit);
+  /* control_info = retrieve_control_info(transit); */
 
   switch (peer->bgp->dbgp_protocol) {
     { 
@@ -235,12 +235,12 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer, 
 
       /* Critical fixes */
     case dbgp_critical_wiser: 
-      return(wiser_output_filter(control_info, attr, peer));
+      return(wiser_output_filter(/* control_info, */ attr, peer));
       break; 
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      return(pathlets_output_filter(control_info, attr, peer));
+      return(pathlets_output_filter(/* control_info, */ attr, peer, prefix));
       break;
 
     default:

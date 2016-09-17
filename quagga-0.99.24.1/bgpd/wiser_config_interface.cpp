@@ -10,6 +10,7 @@
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <mutex>
+#include <arpa/inet.h>
 
 #include "quagga_config.pb.h"
 
@@ -170,4 +171,10 @@ PathletInternalStateHandle CreatePathletInternalState(PathletConfigHandle pathle
 }
 int IsIslandBorderRouter(PathletConfigHandle pathlet_config){
   return pathlet_config->IsIslandBorderRouter();
+}
+
+char* GetPrivateIp(PathletConfigHandle pathlet_config){
+  char* return_buffer = (char*) malloc(INET_ADDRSTRLEN);
+  strcpy(return_buffer, pathlet_config->GetPrivateIp().c_str());
+  return return_buffer;
 }

@@ -43,6 +43,7 @@ extern "C" {
   PathletConfigHandle CreatePathletConfig(GeneralConfigurationHandle general_config);
   PathletInternalStateHandle CreatePathletInternalState(PathletConfigHandle pathlet_config);
   int IsIslandBorderRouter(PathletConfigHandle pathlet_config);
+  char* GetPrivateIp(PathletConfigHandle pathlet_config);
 
 
 #ifdef __cplusplus

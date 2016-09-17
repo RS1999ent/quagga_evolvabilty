@@ -18,16 +18,46 @@ extern PathletInternalStateHandle pathlet_internal_state_;
 int HasPathletInformation(char* serialized_advert, int advert_size, int island_id);
 char* GenerateInternalPathletControlInfo(PathletInternalStateHandle pathlet_internal_state, char *serialized_advert, int advert_size, const char* ip_address, int* new_size, int island_id);
 void MergePathletInformationIntoGraph(PathletInternalStateHandle pathlet_internal_state, char *serialized_advert, int advert_size, int island_id);
+char* SerializedAdverToString(char* serialized_advert, int advert_size);
+
+/* Determines if two ips are on the same subnet. It is assumed that both ips are
+   valid and allocated */
+int IpInSameSubnet(char* ip1_str, char* ip2_str, uint32_t netmask){
+  assert(ip1_str != NULL);
+  assert(ip2_str != NULL);
+  struct sockaddr_in sa_ip1, sa_ip2;
+
+  // store this IP address in sa:
+  inet_pton(AF_INET, ip1_str, &(sa_ip1.sin_addr));
+  inet_pton(AF_INET, ip2_str, &(sa_ip2.sin_addr));
+  uint32_t ip1,ip2;
+  ip1 = sa_ip1.sin_addr.s_addr;
+  ip2 = sa_ip2.sin_addr.s_addr;
+  if ((ip1 & netmask) == (ip2 & netmask))
+    {
+      return 1;
+    }
+  else{
+    return 0;
+  }
+}
 
 void AddAssociatedPathlet(char* associated_ip, int island_id, dbgp_control_info_t* control_info) {
   char* old_integrated_advertisement = control_info->integrated_advertisement;
   int old_integrated_advertisement_size = control_info->integrated_advertisement_size;
   int new_size;
+  zlog_debug("HERE1");
+  zlog_debug("HERE2");
   char* new_integrated_advertisement_info = GenerateInternalPathletControlInfo(pathlet_internal_state_, old_integrated_advertisement, old_integrated_advertisement_size, associated_ip, &new_size, island_id);
+  zlog_debug("HERE3");
+  assert(new_integrated_advertisement_info != NULL);
 
   free(old_integrated_advertisement);
+  zlog_debug("HERE4");
   control_info->integrated_advertisement = new_integrated_advertisement_info;
+  zlog_debug("HERE5");
   control_info->integrated_advertisement_size = new_size;
+  zlog_debug("HERE6");
 
 }
 
@@ -70,7 +100,7 @@ aspath_get_rightmost (struct aspath *aspath)
 }
 /* ********************* Public functions ********************* */
 
-void pathlets_update_control_info(dbgp_control_info_t* control_info, struct peer* peer, struct attr* attr) {
+void pathlets_update_control_info(dbgp_control_info_t* control_info, struct peer* peer, struct attr* attr, struct prefix* prefix) {
   int originating_as = aspath_get_rightmost(attr->aspath);
   // Is the originating as an island member
   int is_originating_island_member = IsRemoteAsAnIslandMember(general_configuration_, originating_as);
@@ -86,20 +116,20 @@ void pathlets_update_control_info(dbgp_control_info_t* control_info, struct peer
   // case where it is external and has pathlet info, merge into adjacency graph associated with island id
   // TODO
 
-  // If it is the case that the advert originated from our island and has no
-  // pathlet info, then this is one we originated (we would have filtered it
-  // otherwise in input filter) and we should have some pathlet information for
-  // it.
-  if(is_originating_island_member){
+  // If we originated the pathlet and it has no control info, then we have
+  // pathlet information (we would have filtered it otherwise)
+  if(aspath_size(attr->aspath) == 0){
     char *string_ip = malloc(INET_ADDRSTRLEN);
-    inet_ntop (AF_INET, &attr->nexthop, string_ip, INET_ADDRSTRLEN);
+    inet_ntop (AF_INET, &prefix->u.prefix4, string_ip, INET_ADDRSTRLEN);
     zlog_debug("pathlets::pathlets_update_control_info: Next for advert: %s", string_ip);
     AddAssociatedPathlet(string_ip, peer->bgp->island_id, control_info);
+    zlog_debug("pathlets::pathlets_update_control_info: advertisement: %s", SerializedAdverToString(control_info->integrated_advertisement, control_info->integrated_advertisement_size));
   }
 }
 
 dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info, struct attr* attr, struct peer* peer) {
 
+  zlog_debug("pathlets::pathlets_input_filter: in pathlets input filter");
   // if an incoming advertisement has control info
   int has_pathlet_info = HasPathletInformation(control_info->integrated_advertisement, control_info->integrated_advertisement_size, peer->bgp->island_id);
 
@@ -140,17 +170,22 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info, 
   return DBGP_FILTERED;
 }
 
-dbgp_filtered_status_t pathlets_output_filter(dbgp_control_info_t* control_info, struct attr* attr, struct peer* peer) {
+dbgp_filtered_status_t pathlets_output_filter(/* dbgp_control_info_t* control_info, */ struct attr* attr, struct peer* peer, struct prefix* prefix) {
 
   int peer_apart_of_island = IsRemoteAsAnIslandMember(general_configuration_, peer->as);
   int originated_in_island = IsRemoteAsAnIslandMember(general_configuration_, aspath_get_rightmost(attr->aspath));
+  // if we originated the advert, then we do not want it filtered
+  if(aspath_size(attr->aspath) == 0){
+    zlog_debug("pathlets::pathlets_output_filter: don't do anything to an advert we originated");
+    return DBGP_NOT_FILTERED;
+  }
 
   if(!peer_apart_of_island && originated_in_island)
     {
       zlog("pathlets::pathlets_output_filter: Peer %i not in island and aspath %s originated in island filtered", peer->as, attr->aspath->str);
       return DBGP_FILTERED;
     }
-  dbgp_update_control_info(attr, peer);
+  dbgp_update_control_info(attr, peer, prefix);
   return DBGP_NOT_FILTERED;
 }
 

@@ -38,7 +38,7 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new,
  * @param attr: The attributes associated with this adv
  * @param peer: Informatoin about the neighbor that sent the adv.
  */
-void dbgp_update_control_info(struct attr *attr, struct peer *peer);
+void dbgp_update_control_info(struct attr *attr, struct peer *peer, struct prefix* prefix);
 
 /**
  * Calls protocol-specific code to see if the incoming advertisement
