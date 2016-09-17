@@ -7,13 +7,15 @@
 #include "bgpd/dbgp.h"
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/wiser.h"
+#include "bgpd/wiser_config_interface.h"
 #include "bgpd/pathlets.h"
 #include "bgpd/bgp_common.h"
 #include "bgpd/bgp_aspath.h"
 
 /* ********************* Global vars ************************** */
-
+extern GeneralConfigurationHandle general_configuration_;
 /* ********************* Private functions ********************* */
+
 /* Function that gets control information to be updated. If it already exists in
    the lookup service (as a key in the transitive attribute), then it will
    retrieve it. If it does not exist, this function creates a spot for the
@@ -94,7 +96,7 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer)
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      pathlets_update_control_info(control_info, peer);
+      pathlets_update_control_info(control_info, peer, attr);
       break;
 
     default:
@@ -147,6 +149,7 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new,
 
 dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
 {
+
   zlog_debug("dbgp::dbgp_input_filter: aspath of attr: %s", attr->aspath->str);
   dbgp_control_info_t *control_info;
   struct attr_extra *extra;

@@ -14,8 +14,18 @@
  *
  * @param control_info: D-BGP's extra control information
  * @param peer: Information about the neighbor that sent the adv.
+ * @param attr: the attribute information (used for determining if this is an
+ * internal advert0)
  */
-void pathlets_update_control_info(dbgp_control_info_t *control_info, struct peer *peer);
+void pathlets_update_control_info(dbgp_control_info_t *control_info, struct peer *peer, struct attr* attr);
+
+
+/* Announces a static route prefix
+
+   ip_and_prefix: the ip address in cidr notation to announce.
+   bgp: the router bgp information
+ */
+void AnounceStaticRoute(char* ip_and_prefix, struct bgp* bgp);
 
 /**
  * Applies pathlets-protocol-specific input filters
