@@ -142,6 +142,15 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info, 
 
 dbgp_filtered_status_t pathlets_output_filter(dbgp_control_info_t* control_info, struct attr* attr, struct peer* peer) {
 
+  int peer_apart_of_island = IsRemoteAsAnIslandMember(general_configuration_, peer->as);
+  int originated_in_island = IsRemoteAsAnIslandMember(general_configuration_, aspath_get_rightmost(attr->aspath));
+
+  if(!peer_apart_of_island && originated_in_island)
+    {
+      zlog("pathlets::pathlets_output_filter: Peer %i not in island and aspath %s originated in island filtered", peer->as, attr->aspath->str);
+      return DBGP_FILTERED;
+    }
+  dbgp_update_control_info(attr, peer);
   return DBGP_NOT_FILTERED;
 }
 

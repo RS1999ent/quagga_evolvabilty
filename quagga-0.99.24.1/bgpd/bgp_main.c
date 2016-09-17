@@ -348,10 +348,10 @@ main (int argc, char **argv)
   zlog_debug("HERE 3");
   wiser_config_ = GetWiserConfig(general_configuration_);
   zlog_debug("HERE 4");
-  /* pathlet_config_ = CreatePathletConfig(general_configuration_); */
-  /* zlog_debug("HERE 5"); */
-  /* pathlet_internal_state_ = CreatePathletInternalState(pathlet_config_); */
-  /* zlog_debug("HERE 6"); */
+  pathlet_config_ = CreatePathletConfig(general_configuration_);
+  zlog_debug("HERE 5");
+  pathlet_internal_state_ = CreatePathletInternalState(pathlet_config_);
+  zlog_debug("HERE 6");
 
   /* Preserve name of myself. */
   progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);

@@ -689,7 +689,7 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
     }
 
   /* D-BGP-specific filtering */
-  if(dbgp_output_filter(riattr, peer) == DBGP_FILTERED) {
+  if(dbgp_output_filter(riattr, peer, p) == DBGP_FILTERED) {
     return 0;
   }
   

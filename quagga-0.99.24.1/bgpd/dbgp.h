@@ -59,6 +59,6 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer);
  *
  * @return Whether or not the advertisement should be filtered
  */
-dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer);
+dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer, struct prefix* prefix);
 
 #endif /* _QUAGGA_DBGP_H */

@@ -192,7 +192,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
   return retval;
 }
 
-dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer) 
+dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer, struct prefix* prefix) 
 {
   zlog_debug("dbgp::dbgp_output_filter: aspath of attr: %s", attr->aspath->str);
   dbgp_control_info_t *control_info;
