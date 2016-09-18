@@ -38,7 +38,7 @@ void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
                             char* pathlet, int size);
 // INSERT PATHLET, takes 3 ints, and an ip address.
 void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state,
-                         char* associated_ip, int fid, int as1, int as2);
+                         char* associated_ip, int fid, int as1, int as2, char* dest_ip);
 char* GetPathletAssociatedWithIp(
     PathletInternalStateHandle pathlet_internal_state,
     const char* associated_ip, int* return_size);

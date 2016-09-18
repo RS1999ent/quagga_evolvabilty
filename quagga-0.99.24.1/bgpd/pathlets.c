@@ -274,12 +274,12 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
 
   // if there is pathlet info in it, we don't want to do any filtering, let it
   // pass onto the pathlets_update_control_info
+  char* prefix_buf = malloc(256);
+  prefix2str(prefix, prefix_buf, 256);
   if (has_pathlet_info == 1) {
     zlog_debug(
         "pathlets:pathlets_input_filter: Advert has control info. aspath: %s",
         attr->aspath->str);
-    char* prefix_buf = malloc(256);
-    prefix2str(prefix, prefix_buf, 256);
     zlog_debug(
         "pathlets:pathlets_input_filter: Advert has control info. prefix: %s",
         prefix_buf);
@@ -312,9 +312,9 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
   int as2 = peer->as;
   zlog_debug(
       "pathlets::pathlets_input_filter: creating pathlet for ip (%s) fid (%i) "
-      "as1(%i) as2(%i)",
-      new_ip, free_fid, as1, as2);
-  InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2);
+      "as1(%i) as2(%i) with dest (%s)",
+      new_ip, free_fid, as1, as2, prefix_buf);
+  InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2, prefix_buf);
   zlog_debug("pathlets::pathlets_input_filter: ip_to_pathlets_to_send:\n %s",
              GetPathletsToSendString(pathlet_internal_state_));
 

@@ -164,9 +164,10 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Pathlets));
   Pathlet_descriptor_ = file->message_type(7);
-  static const int Pathlet_offsets_[2] = {
+  static const int Pathlet_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, fid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, vnodes_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, destination_),
   };
   Pathlet_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -250,9 +251,10 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
     "\n\005value\030\002 \001(\t\"\035\n\010PathCost\022\021\n\tpath_cost\030\001"
     " \001(\r\"#\n\rLastWiserNode\022\022\n\nlast_wiser\030\001 \003("
     "\r\"&\n\010Pathlets\022\032\n\010pathlets\030\001 \003(\0132\010.Pathle"
-    "t\"&\n\007Pathlet\022\013\n\003fid\030\001 \001(\r\022\016\n\006vnodes\030\002 \003("
-    "\r*F\n\010Protocol\022\r\n\tP_UNKNOWN\020\000\022\013\n\007P_WISER\020"
-    "\001\022\016\n\nP_PATHLETS\020\002\022\016\n\nP_BASELINE\020\003", 593);
+    "t\";\n\007Pathlet\022\013\n\003fid\030\001 \001(\r\022\016\n\006vnodes\030\002 \003("
+    "\r\022\023\n\013destination\030\003 \001(\t*F\n\010Protocol\022\r\n\tP_"
+    "UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020\002\022\016"
+    "\n\nP_BASELINE\020\003", 614);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "integrated_advertisement.proto", &protobuf_RegisterTypes);
   IntegratedAdvertisement::default_instance_ = new IntegratedAdvertisement();
@@ -2116,6 +2118,7 @@ void Pathlets::Swap(Pathlets* other) {
 #ifndef _MSC_VER
 const int Pathlet::kFidFieldNumber;
 const int Pathlet::kVnodesFieldNumber;
+const int Pathlet::kDestinationFieldNumber;
 #endif  // !_MSC_VER
 
 Pathlet::Pathlet()
@@ -2135,8 +2138,10 @@ Pathlet::Pathlet(const Pathlet& from)
 }
 
 void Pathlet::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   fid_ = 0u;
+  destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2146,6 +2151,9 @@ Pathlet::~Pathlet() {
 }
 
 void Pathlet::SharedDtor() {
+  if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete destination_;
+  }
   if (this != default_instance_) {
   }
 }
@@ -2172,7 +2180,14 @@ Pathlet* Pathlet::New() const {
 }
 
 void Pathlet::Clear() {
-  fid_ = 0u;
+  if (_has_bits_[0 / 32] & 5) {
+    fid_ = 0u;
+    if (has_destination()) {
+      if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        destination_->clear();
+      }
+    }
+  }
   vnodes_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -2217,6 +2232,23 @@ bool Pathlet::MergePartialFromCodedStream(
           goto handle_unusual;
         }
         if (input->ExpectTag(16)) goto parse_vnodes;
+        if (input->ExpectTag(26)) goto parse_destination;
+        break;
+      }
+
+      // optional string destination = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_destination:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_destination()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->destination().data(), this->destination().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "destination");
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -2257,6 +2289,16 @@ void Pathlet::SerializeWithCachedSizes(
       2, this->vnodes(i), output);
   }
 
+  // optional string destination = 3;
+  if (has_destination()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->destination().data(), this->destination().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "destination");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->destination(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2278,6 +2320,17 @@ void Pathlet::SerializeWithCachedSizes(
       WriteUInt32ToArray(2, this->vnodes(i), target);
   }
 
+  // optional string destination = 3;
+  if (has_destination()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->destination().data(), this->destination().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "destination");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->destination(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -2295,6 +2348,13 @@ int Pathlet::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->fid());
+    }
+
+    // optional string destination = 3;
+    if (has_destination()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->destination());
     }
 
   }
@@ -2338,6 +2398,9 @@ void Pathlet::MergeFrom(const Pathlet& from) {
     if (from.has_fid()) {
       set_fid(from.fid());
     }
+    if (from.has_destination()) {
+      set_destination(from.destination());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -2363,6 +2426,7 @@ void Pathlet::Swap(Pathlet* other) {
   if (other != this) {
     std::swap(fid_, other->fid_);
     vnodes_.Swap(&other->vnodes_);
+    std::swap(destination_, other->destination_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

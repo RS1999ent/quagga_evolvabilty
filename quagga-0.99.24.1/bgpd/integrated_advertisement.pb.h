@@ -767,16 +767,31 @@ class Pathlet : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_vnodes();
 
+  // optional string destination = 3;
+  inline bool has_destination() const;
+  inline void clear_destination();
+  static const int kDestinationFieldNumber = 3;
+  inline const ::std::string& destination() const;
+  inline void set_destination(const ::std::string& value);
+  inline void set_destination(const char* value);
+  inline void set_destination(const char* value, size_t size);
+  inline ::std::string* mutable_destination();
+  inline ::std::string* release_destination();
+  inline void set_allocated_destination(::std::string* destination);
+
   // @@protoc_insertion_point(class_scope:Pathlet)
  private:
   inline void set_has_fid();
   inline void clear_has_fid();
+  inline void set_has_destination();
+  inline void clear_has_destination();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > vnodes_;
+  ::std::string* destination_;
   ::google::protobuf::uint32 fid_;
   friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
@@ -1302,6 +1317,82 @@ inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
 Pathlet::mutable_vnodes() {
   // @@protoc_insertion_point(field_mutable_list:Pathlet.vnodes)
   return &vnodes_;
+}
+
+// optional string destination = 3;
+inline bool Pathlet::has_destination() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Pathlet::set_has_destination() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Pathlet::clear_has_destination() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Pathlet::clear_destination() {
+  if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_->clear();
+  }
+  clear_has_destination();
+}
+inline const ::std::string& Pathlet::destination() const {
+  // @@protoc_insertion_point(field_get:Pathlet.destination)
+  return *destination_;
+}
+inline void Pathlet::set_destination(const ::std::string& value) {
+  set_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_ = new ::std::string;
+  }
+  destination_->assign(value);
+  // @@protoc_insertion_point(field_set:Pathlet.destination)
+}
+inline void Pathlet::set_destination(const char* value) {
+  set_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_ = new ::std::string;
+  }
+  destination_->assign(value);
+  // @@protoc_insertion_point(field_set_char:Pathlet.destination)
+}
+inline void Pathlet::set_destination(const char* value, size_t size) {
+  set_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_ = new ::std::string;
+  }
+  destination_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:Pathlet.destination)
+}
+inline ::std::string* Pathlet::mutable_destination() {
+  set_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:Pathlet.destination)
+  return destination_;
+}
+inline ::std::string* Pathlet::release_destination() {
+  clear_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = destination_;
+    destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Pathlet::set_allocated_destination(::std::string* destination) {
+  if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete destination_;
+  }
+  if (destination) {
+    set_has_destination();
+    destination_ = destination;
+  } else {
+    clear_has_destination();
+    destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:Pathlet.destination)
 }
 
 

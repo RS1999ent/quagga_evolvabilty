@@ -111,13 +111,14 @@ void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
 }
 
 void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state,
-                         char* associated_ip, int fid, int as1, int as2) {
+                         char* associated_ip, int fid, int as1, int as2, char* dest_ip) {
   internal_state_mutex.lock();
   // parse serialized
   Pathlet pathlet;
   pathlet.set_fid(fid);
   pathlet.add_vnodes(as1);
   pathlet.add_vnodes(as2);
+  pathlet.set_destination(dest_ip);
   pathlet_internal_state->InsertPathletToSend(string(associated_ip), pathlet);
   internal_state_mutex.unlock();
 }
