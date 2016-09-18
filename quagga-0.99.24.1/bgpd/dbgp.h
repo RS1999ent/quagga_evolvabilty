@@ -49,7 +49,7 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer, struct prefi
  *
  * @return Whehter or not the adv should be filtered 
  */
-dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer);
+dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer, struct prefix* prefix);
 
 /**
  * Calls protocol-specific code to see if hte outgoing advertisement

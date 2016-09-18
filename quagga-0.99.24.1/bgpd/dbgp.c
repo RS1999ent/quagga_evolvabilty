@@ -147,7 +147,7 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new,
   return retval;
 }
 
-dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
+dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer, struct prefix* prefix)
 {
 
   zlog_debug("dbgp::dbgp_input_filter: aspath of attr: %s", attr->aspath->str);
@@ -181,7 +181,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer)
 
       /* Replacement protocols */
     case dbgp_replacement_pathlets: 
-      return(pathlets_input_filter(control_info, attr, peer));
+      return(pathlets_input_filter(control_info, attr, peer, prefix));
       break;
 
     default:
@@ -201,7 +201,11 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer, 
   int retval = DBGP_NOT_FILTERED;
   
   // debug what protocol the router thinks its running
+  char* prefix_buf = malloc(256);
+  prefix2str(prefix, prefix_buf, 256);
   zlog_debug("dbgp::dbgp_output_filter: protocol type: %i", peer->bgp->dbgp_protocol);
+  zlog_debug("dbgp::dbgp_output_filter: prefix: %s", prefix_buf);
+  free(prefix_buf);
 
   // If aspath is 0, then this the first thing going through, so there will be no extra attributes, return not filtered.
   /* unsigned int aspath_length = aspath_size(attr->aspath); */

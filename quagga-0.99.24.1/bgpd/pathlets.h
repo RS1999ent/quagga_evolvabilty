@@ -36,7 +36,7 @@ void AnounceStaticRoute(char *ip_and_prefix, struct bgp *bgp);
  */
 dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t *control_info,
                                              struct attr *attr,
-                                             struct peer *peer);
+                                             struct peer *peer, struct prefix* prefix);
 
 /**
  * Applies pathlets-protocol-specific output filters

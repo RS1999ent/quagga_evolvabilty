@@ -1965,7 +1965,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
    *  protocol-specific information and a lookup key */
   // BUG: dbgp_input_filter formerly had attr going int, changed to new_attr
   // NO longer assuming this is called before update control info
-  if (dbgp_input_filter(&new_attr, peer) == DBGP_FILTERED) {
+  if (dbgp_input_filter(&new_attr, peer, p) == DBGP_FILTERED) {
     bgp_attr_flush(&new_attr);
     reason = "dbgp_protocol_specific_filtered";
     goto filtered;

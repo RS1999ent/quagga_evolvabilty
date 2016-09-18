@@ -938,9 +938,9 @@ TEST(GenerateInternalPathletControlInfo, IpHasControlInfoAssocaited_GetCorrectAd
         protocol: P_PATHLETS
         key_values {
             key: "PathletGraph"
-            value: "\010\001\020\001\020\002"
+            value: "\n\006\010\001\020\001\020\002"
         }
-    }
+}
     )";
   const map<string, string> kAssociatedIpToPathlet = {
     {
