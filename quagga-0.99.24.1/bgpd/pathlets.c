@@ -195,8 +195,8 @@ void pathlets_update_control_info(dbgp_control_info_t* control_info,
 }
 
 void pathlets_update_control_info_bgpstruct(dbgp_control_info_t* control_info,
-                                  struct bgp* bgp, struct attr* attr,
-                                  struct prefix* prefix) {
+                                            struct bgp* bgp, struct attr* attr,
+                                            struct prefix* prefix) {
   int originating_as = aspath_get_rightmost(attr->aspath);
   // Is the originating as an island member
   int is_originating_island_member =
@@ -369,6 +369,8 @@ dbgp_filtered_status_t pathlets_output_filter(
         "pathlets::pathlets_output_filter: Peer %i not in island and aspath %s "
         "originated in island filtered",
         peer->as, attr->aspath->str);
+    /* char* private_prefix = GetPrivateIp(pathlet_config_); */
+
     return DBGP_FILTERED;
   }
   dbgp_update_control_info(attr, peer, prefix);

@@ -4,17 +4,15 @@
  */
 
 #ifndef _QUAGGA_DBGP_H
-#define _QUAGGA_DBGP_H 
+#define _QUAGGA_DBGP_H
 
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/bgp_common.h"
 
-typedef enum dbgp_filtered_status_s
-  {
-    DBGP_NOT_FILTERED = 0,
-    DBGP_FILTERED = 1
-  } dbgp_filtered_status_t;
-
+typedef enum dbgp_filtered_status_s {
+  DBGP_NOT_FILTERED = 0,
+  DBGP_FILTERED = 1
+} dbgp_filtered_status_t;
 
 /**
  * Calls' appropriate functions best-path selecton routine
@@ -26,31 +24,31 @@ typedef enum dbgp_filtered_status_s
  *
  * @return 1 is hte ?new? path is preferable? 0 otherwise?
  */
-int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, 
-		   struct bgp_info *exist, int *path_eq);
+int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, struct bgp_info *exist,
+                  int *path_eq);
 
-
-/** 
+/**
  * Call protocol-specfic code to update control information for a
  * received advertisement, before the advertisement is used for
- * best-path selection.  
+ * best-path selection.
  *
  * @param attr: The attributes associated with this adv
  * @param peer: Informatoin about the neighbor that sent the adv.
  */
-void dbgp_update_control_info(struct attr *attr, struct peer *peer, struct prefix* prefix);
+void dbgp_update_control_info(struct attr *attr, struct peer *peer,
+                              struct prefix *prefix);
 
-
-/** 
+/**
  * Call protocol-specfic code to update control information for a
  * received advertisement, before the advertisement is used for
- * best-path selection.  
+ * best-path selection.
  *
  * @param attr: The attributes associated with this adv
  * @param bgp: assocaited with this router
  * @param prefix: the prefix being advertised.
  */
-void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp, struct prefix* prefix);
+void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp,
+                                        struct prefix *prefix);
 
 /**
  * Calls protocol-specific code to see if the incoming advertisement
@@ -59,9 +57,10 @@ void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp, stru
  * @param attr: Attributes associated with teh advertisement
  * @param peer: The peer that sent this advertisement
  *
- * @return Whehter or not the adv should be filtered 
+ * @return Whehter or not the adv should be filtered
  */
-dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer, struct prefix* prefix);
+dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
+                                         struct prefix *prefix);
 
 /**
  * Calls protocol-specific code to see if hte outgoing advertisement
@@ -71,6 +70,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer, s
  *
  * @return Whether or not the advertisement should be filtered
  */
-dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer, struct prefix* prefix);
+dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer,
+                                          struct prefix *prefix);
 
 #endif /* _QUAGGA_DBGP_H */

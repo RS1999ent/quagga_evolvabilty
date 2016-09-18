@@ -1101,10 +1101,15 @@ TEST(InsertPathletIntoGraph, InsertOnePathlet_MapIsCorrect){
     vnodes: 2
     )"
   };
-   map<int, map<int,int>> kCorrectMap = {
+   map<int, map<int, string>> kCorrectMap = {
      {
        1, {
-         {2, 1}
+         {2,
+          R"(
+            fid: 1
+            vnodes: 1
+            vnodes: 2)"
+         }
        }
      }
 
@@ -1118,8 +1123,39 @@ TEST(InsertPathletIntoGraph, InsertOnePathlet_MapIsCorrect){
     pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
   }
 
-  map<int, map<int,int>> result_map = pathlet_internal_state.GetPathletGraph();
-  EXPECT_EQ(result_map, kCorrectMap);
+  map<int, map<int, Pathlet>> correct_map;
+  for(auto kv : kCorrectMap){
+
+    map<int, Pathlet> entry;
+    for(auto kv2: kv.second){
+      Pathlet correct_pathlet;
+      google::protobuf::TextFormat::ParseFromString(kv2.second, &correct_pathlet);
+      entry[kv2.first] = correct_pathlet;
+    }
+    correct_map[kv.first] = entry;
+  }
+
+  map<int, map<int,Pathlet>> result_map = pathlet_internal_state.GetPathletGraph();
+  map<int, map<int, string>> result_map_pathletstrings;
+  for(auto kv : result_map){
+    map<int, string> entry;
+    for(auto kv2: kv.second){
+      Pathlet result_pathlet = kv2.second;
+      entry[kv2.first] = result_pathlet.DebugString();
+    }
+    result_map_pathletstrings[kv.first] = entry;
+  }
+
+  map<int, map<int, string>> correct_map_pathletstrings;
+  for(auto kv : correct_map){
+    map<int, string> entry;
+    for(auto kv2: kv.second){
+      Pathlet correct_pathlet = kv2.second;
+      entry[kv2.first] = correct_pathlet.DebugString();
+    }
+    correct_map_pathletstrings[kv.first] = entry;
+  }
+  EXPECT_EQ(result_map_pathletstrings, correct_map_pathletstrings);
 
 }
 
@@ -1147,17 +1183,41 @@ TEST(InsertPathletIntoGraph, InsertFourPathlet_MapIsCorrect){
     vnodes: 5
     )"
   };
-  map<int, map<int,int>> kCorrectMap = {
+  map<int, map<int,string>> kCorrectMap = {
     {
       1, {
-        {2, 1},
-        {3, 2}
+        {2,
+         R"(
+            fid: 1
+            vnodes: 1
+            vnodes: 2
+            )"
+         },
+        {3,
+         R"(
+            fid: 2
+            vnodes: 1
+            vnodes: 3
+            )"
+         }
       }
     },
     {
       2, {
-        {4, 3},
-        {5, 4}
+        {4,
+         R"(
+            fid: 3
+            vnodes: 2
+            vnodes: 4
+            )"
+         },
+        {5,
+         R"(
+            fid: 4
+            vnodes: 2
+            vnodes: 5
+            )"
+         }
       }
     }
   };
@@ -1170,8 +1230,39 @@ TEST(InsertPathletIntoGraph, InsertFourPathlet_MapIsCorrect){
     pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
   }
 
-  map<int, map<int,int>> result_map = pathlet_internal_state.GetPathletGraph();
-  EXPECT_EQ(result_map, kCorrectMap);
+  map<int, map<int, Pathlet>> correct_map;
+  for(auto kv : kCorrectMap){
+
+    map<int, Pathlet> entry;
+    for(auto kv2: kv.second){
+      Pathlet correct_pathlet;
+      google::protobuf::TextFormat::ParseFromString(kv2.second, &correct_pathlet);
+      entry[kv2.first] = correct_pathlet;
+    }
+    correct_map[kv.first] = entry;
+  }
+
+  map<int, map<int,Pathlet>> result_map = pathlet_internal_state.GetPathletGraph();
+  map<int, map<int, string>> result_map_pathletstrings;
+  for(auto kv : result_map){
+    map<int, string> entry;
+    for(auto kv2: kv.second){
+      Pathlet result_pathlet = kv2.second;
+      entry[kv2.first] = result_pathlet.DebugString();
+    }
+    result_map_pathletstrings[kv.first] = entry;
+  }
+
+  map<int, map<int, string>> correct_map_pathletstrings;
+  for(auto kv : correct_map){
+    map<int, string> entry;
+    for(auto kv2: kv.second){
+      Pathlet correct_pathlet = kv2.second;
+      entry[kv2.first] = correct_pathlet.DebugString();
+    }
+    correct_map_pathletstrings[kv.first] = entry;
+  }
+  EXPECT_EQ(result_map_pathletstrings, correct_map_pathletstrings);
 
 }
 

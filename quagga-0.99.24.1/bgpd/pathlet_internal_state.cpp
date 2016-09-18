@@ -19,14 +19,16 @@ Pathlets PathletInternalState::ConvertGraphToPathlets() {
   Pathlets return_pathlets;
   for (auto primarynode_and_map : pathlet_graph_) {
     int primarynode = primarynode_and_map.first;
-    for (auto adjacent_and_fid : primarynode_and_map.second) {
+    for (auto adjacent_and_pathlet : primarynode_and_map.second) {
       // create a pathlet and insert it into return_pathlets
       Pathlet *new_pathlet = return_pathlets.add_pathlets();
-      int adjacent_node = adjacent_and_fid.first;
-      int fid = adjacent_and_fid.second;
-      new_pathlet->set_fid(fid);
-      new_pathlet->add_vnodes(primarynode);
-      new_pathlet->add_vnodes(adjacent_node);
+      *new_pathlet = adjacent_and_pathlet.second;
+      // int adjacent_node = adjacent_and_pathlet.first;
+      // Pathlet adjcent_pathlet = adjacent_and_pathlet.second;
+      // int fid = adjacent_pathlet.;
+      // new_pathlet->set_fid(fid);
+      // new_pathlet->add_vnodes(primarynode);
+      // new_pathlet->add_vnodes(adjacent_node);
     }
   }
   return return_pathlets;
@@ -34,17 +36,17 @@ Pathlets PathletInternalState::ConvertGraphToPathlets() {
 
 void PathletInternalState::InsertPathletIntoGraph(Pathlet pathlet) {
   // Get the fields to describe the adjacency entry
-  int fid = pathlet.fid();
+  // int fid = pathlet.fid();
   int primary_node = pathlet.vnodes(0);
   int adjacent_node = pathlet.vnodes(1);
 
   // Create primary node entry if it doesn't exist
   if (pathlet_graph_.count(primary_node) != 1) {
-    pathlet_graph_[primary_node] = map<int, int>();
+    pathlet_graph_[primary_node] = map<int, Pathlet>();
   }
 
   // Simply insert it into the graph
-  pathlet_graph_[primary_node][adjacent_node] = fid;
+  pathlet_graph_[primary_node][adjacent_node] = pathlet;
 }
 
 int PathletInternalState::GetNextFid() {
@@ -80,18 +82,18 @@ PathletInternalState::PathletInternalState(string ip_slash_24) {
   next_fid_ = 1;
 }
 
-const map<int, map<int, int>> PathletInternalState::GetPathletGraph() {
+const map<int, map<int, Pathlet>> PathletInternalState::GetPathletGraph() {
   return pathlet_graph_;
 }
 
 string PathletInternalState::GraphToString() {
   string return_string;
 
-  for (auto node_and_adjnodeAndFid : pathlet_graph_) {
-    int primary_node = node_and_adjnodeAndFid.first;
-    for (auto adjnode_and_fid : node_and_adjnodeAndFid.second) {
-      int adjacent_node = adjnode_and_fid.first;
-      int fid = adjnode_and_fid.second;
+  for (auto node_and_adjnodeAndPathlet : pathlet_graph_) {
+    int primary_node = node_and_adjnodeAndPathlet.first;
+    for (auto adjnode_and_pathlet : node_and_adjnodeAndPathlet.second) {
+      int adjacent_node = adjnode_and_pathlet.first;
+      int fid = adjnode_and_pathlet.second.fid();
       return_string += std::to_string(primary_node) + " " +
                        std::to_string(adjacent_node) + " " +
                        std::to_string(fid) + "\n";

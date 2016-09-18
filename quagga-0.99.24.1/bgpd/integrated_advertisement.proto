@@ -68,4 +68,6 @@ message Pathlet {
   optional uint32 fid = 1; // The fid associated with the link
   repeated uint32 vnodes = 2; //This will contain two entries only that denote a
                               //link that the FID is associated with
+  // Ip assocated with the end of the pathlet
+  optional string destination = 3;
 }

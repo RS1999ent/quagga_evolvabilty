@@ -82,7 +82,7 @@ class PathletInternalState {
   */
   void InsertPathletToSend(string associated_ip, Pathlet pathlet_to_send);
 
-  const map<int, map<int, int>> GetPathletGraph();
+  const map<int, map<int, Pathlet>> GetPathletGraph();
 
   /* Return a string representation of the pathlet_graph_ */
   string GraphToString();
@@ -93,7 +93,7 @@ class PathletInternalState {
  private:
   /* The pathlet graph where the key is the primary vnode mapping to an adjacent
      vnode mapping with the value being the FID to traverse that vnode */
-  map<int, map<int, int>> pathlet_graph_;
+  map<int, map<int, Pathlet>> pathlet_graph_;
 
   /* The next fid that hasn't been used for edges out of this node */
   int next_fid_;
