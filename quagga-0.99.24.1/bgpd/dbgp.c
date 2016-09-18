@@ -109,6 +109,46 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer, struct prefi
   assert(success == DBGP_SUCCESS);
 }
 
+void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp, struct prefix* prefix) 
+{
+  zlog_debug("dbgp::dbgp_update_control_info: aspath of attr: %s", attr->aspath->str);
+  dbgp_control_info_t *control_info;
+  struct transit *transit;
+
+  // Precondition asserts
+  assert(bgp != NULL);
+  assert(attr != NULL);
+
+  control_info = GetControlInformation(attr, &transit);
+  assert(transit != NULL);
+
+  if (is_lookup_service_path(transit)) {
+    return;
+  }
+
+  zlog_debug("dbgp::dbgp_update_control_info: protocol type: %i", bgp->dbgp_protocol);
+
+  switch(bgp->dbgp_protocol) 
+    { 
+      /* Just BGP */
+    case dbgp_protocol_baseline: 
+      return;
+      break;
+      /* Replacement protocols */
+    case dbgp_replacement_pathlets: 
+      pathlets_update_control_info_bgpstruct(control_info, bgp, attr, prefix);
+      break;
+
+    default:
+      assert(0);
+    }
+
+  // Insert the updated control information into the lookup service and insert
+  // the key into the the transitive attribute.
+  dbgp_result_status_t success = set_control_info(transit, control_info);
+  assert(success == DBGP_SUCCESS);
+}
+
 int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, 
 		   struct bgp_info *exist, int *path_eq)
 {

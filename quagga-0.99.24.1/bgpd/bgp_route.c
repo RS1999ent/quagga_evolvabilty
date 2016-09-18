@@ -3246,6 +3246,9 @@ bgp_static_update_rsclient (struct peer *rsclient, struct prefix *p,
  *  there is control infromation attached to a prefix, it should be
  *  added here.
  */
+
+// hack global variable to announce first thing in peace.
+static int skipped_first = 0;
 static void
 bgp_static_update_main (struct bgp *bgp, struct prefix *p,
 		   struct bgp_static *bgp_static, afi_t afi, safi_t safi)
@@ -3272,7 +3275,13 @@ bgp_static_update_main (struct bgp *bgp, struct prefix *p,
 
   if (bgp_static->atomic)
     attr.flag |= ATTR_FLAG_BIT (BGP_ATTR_ATOMIC_AGGREGATE);
+  // UPDATE CONTROL INFO HERE.
+  /* dbgp_update_control_info(attr, peer, p); */
 
+  if(bgp->dbgp_protocol == dbgp_replacement_pathlets && skipped_first == 1){
+    dbgp_update_control_info_bgpstruct(&attr, bgp, p);
+  }
+  skipped_first++;
   /* Apply route-map. */
   if (bgp_static->rmap.name)
     {

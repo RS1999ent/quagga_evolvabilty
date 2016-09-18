@@ -21,6 +21,19 @@ void pathlets_update_control_info(dbgp_control_info_t *control_info,
                                   struct peer *peer, struct attr *attr,
                                   struct prefix *prefix);
 
+
+/**
+ * Updates pathlet-specific D-BGP control info without needing a peer struct
+ *
+ * @param control_info: D-BGP's extra control information
+ * @param bgp: info about ourselfs
+ * @param attr: the attribute information (used for determining if this is an
+ * internal advert0)
+ */
+void pathlets_update_control_info_bgpstruct(dbgp_control_info_t* control_info,
+                                  struct bgp* bgp, struct attr* attr,
+                                  struct prefix* prefix);
+
 /* Announces a static route prefix
 
    ip_and_prefix: the ip address in cidr notation to announce.

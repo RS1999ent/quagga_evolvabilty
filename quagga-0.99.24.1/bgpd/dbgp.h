@@ -40,6 +40,18 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new,
  */
 void dbgp_update_control_info(struct attr *attr, struct peer *peer, struct prefix* prefix);
 
+
+/** 
+ * Call protocol-specfic code to update control information for a
+ * received advertisement, before the advertisement is used for
+ * best-path selection.  
+ *
+ * @param attr: The attributes associated with this adv
+ * @param bgp: assocaited with this router
+ * @param prefix: the prefix being advertised.
+ */
+void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp, struct prefix* prefix);
+
 /**
  * Calls protocol-specific code to see if the incoming advertisement
  * should be filtered before best-path selection.

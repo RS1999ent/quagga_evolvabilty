@@ -215,6 +215,7 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   }
 
   control_info = unpack_redis_reply(reply->str, reply->len);
+  zlog_debug("dbgp_lookup::retrieve_control_info: Key retrieving %i", *(dbgp_lookup_key_t *) transit->val);
 
   free(reply);
   free(c);
@@ -268,6 +269,7 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   /* Add key to advertisement */
   transit->length = sizeof(dbgp_lookup_key_t);
   transit->val = (u_char *)key;
+  zlog_debug("dbgp_lookup::set_control_info: Key set in lookup service: %i", *key);
 
   free(reply); 
   free(c);
