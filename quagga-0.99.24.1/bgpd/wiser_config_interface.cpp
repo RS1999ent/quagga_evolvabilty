@@ -178,3 +178,10 @@ char* GetPrivateIp(PathletConfigHandle pathlet_config){
   strcpy(return_buffer, pathlet_config->GetPrivateIp().c_str());
   return return_buffer;
 }
+
+char* GetPathletGraphString(PathletInternalStateHandle pathlet_internal_state){
+  string graph_string = pathlet_internal_state->GraphToString();
+  char* return_buffer = (char*) malloc(graph_string.size() + 1);
+  strcpy(return_buffer, graph_string.c_str());
+  return return_buffer;
+}

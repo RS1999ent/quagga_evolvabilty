@@ -85,6 +85,9 @@ class PathletInternalState{
 
   const map<int,map<int, int>> GetPathletGraph();
 
+  /* Return a string representation of the pathlet_graph_ */
+  string GraphToString();
+
  private:
 
   /* The pathlet graph where the key is the primary vnode mapping to an adjacent

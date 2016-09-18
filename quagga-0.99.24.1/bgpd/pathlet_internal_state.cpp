@@ -87,3 +87,18 @@ PathletInternalState::PathletInternalState(string ip_slash_24) {
 const map<int,map<int, int>> PathletInternalState::GetPathletGraph() {
   return pathlet_graph_;
 }
+
+string PathletInternalState::GraphToString(){
+  string return_string;
+
+  for(auto node_and_adjnodeAndFid : pathlet_graph_){
+    int primary_node = node_and_adjnodeAndFid.first;
+    for(auto adjnode_and_fid : node_and_adjnodeAndFid.second){
+      int adjacent_node = adjnode_and_fid.first;
+      int fid = adjnode_and_fid.second;
+      return_string += std::to_string(primary_node) + " " + std::to_string(adjacent_node) + " " + std::to_string(fid) + "\n";
+    }
+  }
+  return return_string; 
+
+}
