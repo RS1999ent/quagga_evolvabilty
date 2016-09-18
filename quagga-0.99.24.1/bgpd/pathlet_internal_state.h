@@ -2,8 +2,8 @@
 #define BGPD_PATHLETS_H
 
 #include <map>
-#include <vector>
 #include <tuple>
+#include <vector>
 
 #include "integrated_advertisement.pb.h"
 
@@ -17,10 +17,8 @@ using namespace std;
    pathlet associated with it.
 
 */
-class PathletInternalState{
-
+class PathletInternalState {
  public:
-
   /* Constructs the class with the only initial input state is the /24 range
      where it can announce its individual pathlets. */
   PathletInternalState(string ip_slash_24);
@@ -69,7 +67,8 @@ class PathletInternalState{
      Arguments:
         associated_ip: the ip address to get the pathlet for.
 
-     Returns: The value in the 'ip_to_pathlet_to_send' associated with the passed
+     Returns: The value in the 'ip_to_pathlet_to_send' associated with the
+     passed
      value
   */
   Pathlet GetPathletToSend(string associated_ip);
@@ -83,13 +82,15 @@ class PathletInternalState{
   */
   void InsertPathletToSend(string associated_ip, Pathlet pathlet_to_send);
 
-  const map<int,map<int, int>> GetPathletGraph();
+  const map<int, map<int, int>> GetPathletGraph();
 
   /* Return a string representation of the pathlet_graph_ */
   string GraphToString();
 
- private:
+  /* Return a string representation of ip_to_pathlet_to_send */
+  string PathletsToSendToString();
 
+ private:
   /* The pathlet graph where the key is the primary vnode mapping to an adjacent
      vnode mapping with the value being the FID to traverse that vnode */
   map<int, map<int, int>> pathlet_graph_;
@@ -105,11 +106,6 @@ class PathletInternalState{
      the control information that needs to be attached to an advertisement with
      this ip address. */
   map<string, Pathlet> ip_to_pathlet_to_send;
- 
-
-
-
 };
 
 #endif
-

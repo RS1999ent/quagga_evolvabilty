@@ -178,3 +178,10 @@ char* GetPathletGraphString(PathletInternalStateHandle pathlet_internal_state) {
   strcpy(return_buffer, graph_string.c_str());
   return return_buffer;
 }
+
+char* GetPathletsToSendString(PathletInternalStateHandle pathlet_internal_state) {
+  string pathlets_to_send_string = pathlet_internal_state->PathletsToSendToString();
+  char* return_buffer = (char*)malloc(pathlets_to_send_string.size() + 1);
+  strcpy(return_buffer, pathlets_to_send_string.c_str());
+  return return_buffer;
+}

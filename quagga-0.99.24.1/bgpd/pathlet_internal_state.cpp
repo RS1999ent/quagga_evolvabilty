@@ -1,8 +1,8 @@
 #include "pathlet_internal_state.h"
 #include <arpa/inet.h>
 
-
-void PathletInternalState::InsertPathletToSend(string associated_ip, Pathlet pathlet_to_send) {
+void PathletInternalState::InsertPathletToSend(string associated_ip,
+                                               Pathlet pathlet_to_send) {
   ip_to_pathlet_to_send[associated_ip] = pathlet_to_send;
 }
 
@@ -11,16 +11,15 @@ Pathlet PathletInternalState::GetPathletToSend(string associated_ip) {
   Pathlet return_pathlet;
 
   return ip_to_pathlet_to_send[associated_ip];
-
 }
 
 Pathlets PathletInternalState::ConvertGraphToPathlets() {
   // for each entry in each map, create a pathlet and add it to the return
   // pathlets
   Pathlets return_pathlets;
-  for(auto primarynode_and_map : pathlet_graph_){
+  for (auto primarynode_and_map : pathlet_graph_) {
     int primarynode = primarynode_and_map.first;
-    for(auto adjacent_and_fid : primarynode_and_map.second){
+    for (auto adjacent_and_fid : primarynode_and_map.second) {
       // create a pathlet and insert it into return_pathlets
       Pathlet *new_pathlet = return_pathlets.add_pathlets();
       int adjacent_node = adjacent_and_fid.first;
@@ -29,7 +28,6 @@ Pathlets PathletInternalState::ConvertGraphToPathlets() {
       new_pathlet->add_vnodes(primarynode);
       new_pathlet->add_vnodes(adjacent_node);
     }
-
   }
   return return_pathlets;
 }
@@ -40,14 +38,13 @@ void PathletInternalState::InsertPathletIntoGraph(Pathlet pathlet) {
   int primary_node = pathlet.vnodes(0);
   int adjacent_node = pathlet.vnodes(1);
 
-  //Create primary node entry if it doesn't exist
-  if(pathlet_graph_.count(primary_node) != 1){
-    pathlet_graph_[primary_node] = map<int,int>();
+  // Create primary node entry if it doesn't exist
+  if (pathlet_graph_.count(primary_node) != 1) {
+    pathlet_graph_[primary_node] = map<int, int>();
   }
 
   // Simply insert it into the graph
   pathlet_graph_[primary_node][adjacent_node] = fid;
-
 }
 
 int PathletInternalState::GetNextFid() {
@@ -83,22 +80,34 @@ PathletInternalState::PathletInternalState(string ip_slash_24) {
   next_fid_ = 1;
 }
 
-
-const map<int,map<int, int>> PathletInternalState::GetPathletGraph() {
+const map<int, map<int, int>> PathletInternalState::GetPathletGraph() {
   return pathlet_graph_;
 }
 
-string PathletInternalState::GraphToString(){
+string PathletInternalState::GraphToString() {
   string return_string;
 
-  for(auto node_and_adjnodeAndFid : pathlet_graph_){
+  for (auto node_and_adjnodeAndFid : pathlet_graph_) {
     int primary_node = node_and_adjnodeAndFid.first;
-    for(auto adjnode_and_fid : node_and_adjnodeAndFid.second){
+    for (auto adjnode_and_fid : node_and_adjnodeAndFid.second) {
       int adjacent_node = adjnode_and_fid.first;
       int fid = adjnode_and_fid.second;
-      return_string += std::to_string(primary_node) + " " + std::to_string(adjacent_node) + " " + std::to_string(fid) + "\n";
+      return_string += std::to_string(primary_node) + " " +
+                       std::to_string(adjacent_node) + " " +
+                       std::to_string(fid) + "\n";
     }
   }
-  return return_string; 
+  return return_string;
+}
+
+string PathletInternalState::PathletsToSendToString() {
+  string return_string;
+
+  for (auto ip_and_pathlet : ip_to_pathlet_to_send) {
+    string ip = ip_and_pathlet.first;
+    string pathlet = ip_and_pathlet.second.DebugString();
+    return_string += ip + " pathlet {" + pathlet + "}\n";
+  }
+  return return_string;
 
 }
