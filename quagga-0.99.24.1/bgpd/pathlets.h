@@ -17,24 +17,26 @@
  * @param attr: the attribute information (used for determining if this is an
  * internal advert0)
  */
-void pathlets_update_control_info(dbgp_control_info_t *control_info, struct peer *peer, struct attr* attr, struct prefix* prefix);
-
+void pathlets_update_control_info(dbgp_control_info_t *control_info,
+                                  struct peer *peer, struct attr *attr,
+                                  struct prefix *prefix);
 
 /* Announces a static route prefix
 
    ip_and_prefix: the ip address in cidr notation to announce.
    bgp: the router bgp information
  */
-void AnounceStaticRoute(char* ip_and_prefix, struct bgp* bgp);
+void AnounceStaticRoute(char *ip_and_prefix, struct bgp *bgp);
 
 /**
  * Applies pathlets-protocol-specific input filters
- * 
+ *
  * @param control_info: D-BGP's extra control info
  * @param peer: Informatoin about the neighbor that sent the adv.
  */
-dbgp_filtered_status_t
-pathlets_input_filter(dbgp_control_info_t *control_info, struct attr *attr, struct peer *peer);
+dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t *control_info,
+                                             struct attr *attr,
+                                             struct peer *peer);
 
 /**
  * Applies pathlets-protocol-specific output filters
@@ -42,8 +44,9 @@ pathlets_input_filter(dbgp_control_info_t *control_info, struct attr *attr, stru
  * @param control_info: D-BGP's extra control info
  * @param peer: Informatoin about the neighbor that sent the adv.
  */
-dbgp_filtered_status_t
-pathlets_output_filter(/* dbgp_control_info_t *control_info, */ struct attr *attr, struct peer *peer, struct prefix* prefix);
+dbgp_filtered_status_t pathlets_output_filter(
+    /* dbgp_control_info_t *control_info, */ struct attr *attr,
+    struct peer *peer, struct prefix *prefix);
 
 /* /\** */
 /*  * Applies pathlets's best-path selection algorithm */
@@ -55,6 +58,6 @@ pathlets_output_filter(/* dbgp_control_info_t *control_info, */ struct attr *att
 /**
  * Applies pathlet's path selection code specifically */
 
-int pathlets_info_cmp (struct bgp *bgp, struct bgp_info *new, struct bgp_info *exist,
-		    int *paths_eq);
+int pathlets_info_cmp(struct bgp *bgp, struct bgp_info *new,
+                      struct bgp_info *exist, int *paths_eq);
 #endif

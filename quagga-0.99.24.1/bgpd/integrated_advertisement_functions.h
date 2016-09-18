@@ -8,7 +8,7 @@
 
    Returns: A ptr to the serialized empty protobuf.
 */
-extern "C" char* CreateEmptyIntegratedAdvertisement(int *size);
+extern "C" char* CreateEmptyIntegratedAdvertisement(int* size);
 
 /* Adds a wiser link cost to the integrated advertisement. If the advertisement
    doesn't exist (i.e. has a size of 0) then this function creates it and puts
@@ -19,19 +19,21 @@ extern "C" char* CreateEmptyIntegratedAdvertisement(int *size);
       retained by caller.
       advert_size: the size of the serialized_advert. Expected >=0
       additive_path_cost: the cost to add to the advertisement.
-      additive_path_cost: the cost to add on to the 'PathCost' attribute of wiser.
+      additive_path_cost: the cost to add on to the 'PathCost' attribute of
+   wiser.
       modified_advert_size: The size of the advertisement after the cost has
       been added.
       normalization: How much the existing cost should be normalized before
       adding our own cost.
 
-   Returns: A ptr to a new serialized advertisement. Ownership is passed to caller.
+   Returns: A ptr to a new serialized advertisement. Ownership is passed to
+   caller.
 
 */
-extern "C" char* SetWiserControlInfo(char *serialized_advert,
-                                     int advert_size,  int additive_path_cost,
-                                     int *modified_advert_size, float normalization);
-
+extern "C" char* SetWiserControlInfo(char* serialized_advert, int advert_size,
+                                     int additive_path_cost,
+                                     int* modified_advert_size,
+                                     float normalization);
 
 /* Gets the wiser path cost associated with this serialized advert.
 
@@ -61,7 +63,8 @@ extern "C" int GetWiserPathCost(char* serialized_advert, int advert_size);
  */
 extern "C" int GetLastWiserNode(char* serialized_advert, int advert_size);
 
-/* Sets a new LastWiserNode key value.  If it doesn't exist, it creates one and sets it
+/* Sets a new LastWiserNode key value.  If it doesn't exist, it creates one and
+   sets it
 
    Arguments:
       serialized_advert: The IA proto in serialized form that we are updateing.
@@ -71,10 +74,15 @@ extern "C" int GetLastWiserNode(char* serialized_advert, int advert_size);
 
    Returns: A serialized advert with the new information set
  */
-extern "C" char* SetLastWiserNode(char* serialized_advert, int advert_size, int new_last_node, int *return_advert_size);
+extern "C" char* SetLastWiserNode(char* serialized_advert, int advert_size,
+                                  int new_last_node, int* return_advert_size);
 
-extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_size);
+extern "C" char* SerializedAdverToString(char* serialized_advert,
+                                         int advert_size);
 
+extern "C" char* PrintPathletsFromSerializedAdvert(char* serialized_advert,
+                                                   int advert_size,
+                                                   int island_id);
 
 ////////////////////////////////////
 /// Pathlet specific functions/////
@@ -82,15 +90,20 @@ extern "C" char* SerializedAdverToString(char* serialized_advert, int advert_siz
 
 // converts adjacency graph to hop descriptors and creates a new IA from it.
 // (adding to the existing IA)
-extern "C" char* GenerateExternalPathletControlInfo(PathletInternalStateHandle pathlet_internal_state, int island_id, char *serialized_advert, int advert_size, int *new_advert_size);
+extern "C" char* GenerateExternalPathletControlInfo(
+    PathletInternalStateHandle pathlet_internal_state, int island_id,
+    char* serialized_advert, int advert_size, int* new_advert_size);
 
 // Given an serialized advert, will return 1 if it has pathlet control
 // information in it.
-extern "C" int HasPathletInformation(char* serialized_advert, int advert_size, int island_id);
+extern "C" int HasPathletInformation(char* serialized_advert, int advert_size,
+                                     int island_id);
 
 // Given a serialized advert, will merge any pathlet information into the
 // internal pathlet state maintained by PathletInternalState
-extern "C" void MergePathletInformationIntoGraph(PathletInternalStateHandle pathlet_internal_state, char *serialized_advert, int advert_size, int island_id);
+extern "C" void MergePathletInformationIntoGraph(
+    PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
+    int advert_size, int island_id);
 
 // Given an ip address, will get the pathlet information associated with it
 // (that is in the map of ipaddress_to_pathlet information) and return a new
@@ -98,8 +111,6 @@ extern "C" void MergePathletInformationIntoGraph(PathletInternalStateHandle path
 //
 // Returns: The new serialzied advert, NULL if there was no pathlet associated
 // with the ip address
-extern "C" char* GenerateInternalPathletControlInfo(PathletInternalStateHandle pathlet_internal_state, char *serialized_advert, int advert_size, const char* ip_address, int* new_size, int island_id);
-
-
-
-
+extern "C" char* GenerateInternalPathletControlInfo(
+    PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
+    int advert_size, const char* ip_address, int* new_size, int island_id);

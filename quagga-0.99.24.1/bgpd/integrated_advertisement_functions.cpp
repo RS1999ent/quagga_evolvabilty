@@ -2,6 +2,7 @@
 #include "integrated_advertisement.pb.h"
 #include <iostream>
 
+using namespace std;
 // Retrieves a reference for a PathGroupDescriptor for a given protocol if it
 // exists. If it doesn't, returns a null reference.
 //
@@ -263,6 +264,38 @@ char* SerializedAdverToString(char* serialized_advert, int advert_size){
   int num_chars = parsed_advert.DebugString().size();
   char *return_buffer = (char*) malloc( num_chars);
   parsed_advert.DebugString().copy(return_buffer, num_chars, 0);
+  return return_buffer;
+}
+
+char* PrintPathletsFromSerializedAdvert(char* serialized_advert, int advert_size, int island_id){
+  IntegratedAdvertisement parsed_advert;
+  parsed_advert.ParseFromArray(serialized_advert, advert_size);
+
+  HopDescriptor* hop_descriptor = GetProtocolHopDescriptor(&parsed_advert, Protocol::P_PATHLETS, island_id);
+  // if null then there are no pathlets in the advert
+  if (hop_descriptor == NULL)
+    {
+      string no_pathlets = "NO PATHLETS";
+      char* return_char = (char*) malloc(no_pathlets.size() + 1);
+      strcpy(return_char, no_pathlets.c_str());
+      return return_char;
+    }
+
+  KeyValue *pathlets_kv = GetHopDescriptorKeyValue(hop_descriptor, "PathletGraph");
+  // if null there are no pathelts graph in the advert
+  if (pathlets_kv == NULL){
+    string no_pathlets = "NO PATHLETS GRAPH";
+    char* return_char = (char*) malloc(no_pathlets.size() + 1);
+    strcpy(return_char, no_pathlets.c_str());
+    return return_char;
+  }
+
+  Pathlets pathlets;
+  pathlets.ParseFromString(pathlets_kv->value());
+
+  int num_chars = parsed_advert.DebugString().size() + 1;
+  char *return_buffer = (char*) malloc( num_chars);
+  strcpy(return_buffer, pathlets.DebugString().c_str());
   return return_buffer;
 }
 
