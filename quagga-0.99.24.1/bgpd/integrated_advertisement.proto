@@ -70,4 +70,6 @@ message Pathlet {
                               //link that the FID is associated with
   // Ip assocated with the end of the pathlet
   optional string destination = 3;
+  // pathlet path vector
+  repeated uint32 path_vector = 4;
 }

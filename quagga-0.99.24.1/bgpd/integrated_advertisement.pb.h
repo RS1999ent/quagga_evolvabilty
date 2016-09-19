@@ -779,6 +779,18 @@ class Pathlet : public ::google::protobuf::Message {
   inline ::std::string* release_destination();
   inline void set_allocated_destination(::std::string* destination);
 
+  // repeated uint32 path_vector = 4;
+  inline int path_vector_size() const;
+  inline void clear_path_vector();
+  static const int kPathVectorFieldNumber = 4;
+  inline ::google::protobuf::uint32 path_vector(int index) const;
+  inline void set_path_vector(int index, ::google::protobuf::uint32 value);
+  inline void add_path_vector(::google::protobuf::uint32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      path_vector() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_path_vector();
+
   // @@protoc_insertion_point(class_scope:Pathlet)
  private:
   inline void set_has_fid();
@@ -792,6 +804,7 @@ class Pathlet : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > vnodes_;
   ::std::string* destination_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > path_vector_;
   ::google::protobuf::uint32 fid_;
   friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
@@ -1393,6 +1406,36 @@ inline void Pathlet::set_allocated_destination(::std::string* destination) {
     destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:Pathlet.destination)
+}
+
+// repeated uint32 path_vector = 4;
+inline int Pathlet::path_vector_size() const {
+  return path_vector_.size();
+}
+inline void Pathlet::clear_path_vector() {
+  path_vector_.Clear();
+}
+inline ::google::protobuf::uint32 Pathlet::path_vector(int index) const {
+  // @@protoc_insertion_point(field_get:Pathlet.path_vector)
+  return path_vector_.Get(index);
+}
+inline void Pathlet::set_path_vector(int index, ::google::protobuf::uint32 value) {
+  path_vector_.Set(index, value);
+  // @@protoc_insertion_point(field_set:Pathlet.path_vector)
+}
+inline void Pathlet::add_path_vector(::google::protobuf::uint32 value) {
+  path_vector_.Add(value);
+  // @@protoc_insertion_point(field_add:Pathlet.path_vector)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+Pathlet::path_vector() const {
+  // @@protoc_insertion_point(field_list:Pathlet.path_vector)
+  return path_vector_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+Pathlet::mutable_path_vector() {
+  // @@protoc_insertion_point(field_mutable_list:Pathlet.path_vector)
+  return &path_vector_;
 }
 
 

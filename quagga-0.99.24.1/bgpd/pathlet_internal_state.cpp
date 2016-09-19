@@ -1,5 +1,6 @@
 #include "pathlet_internal_state.h"
 #include <arpa/inet.h>
+#include <unordered_set>
 
 void PathletInternalState::InsertPathletToSend(string associated_ip,
                                                Pathlet pathlet_to_send) {
@@ -111,5 +112,91 @@ string PathletInternalState::PathletsToSendToString() {
     return_string += ip + " pathlet {" + pathlet + "}\n";
   }
   return return_string;
-
 }
+
+Pathlets PathletInternalState::GetPathletsForDestination(string destination,
+                                                         int island_id,
+                                                         int as_num) {
+  // create predecessor list, find the node that has the pathlet that has the
+  // destination we are looking for
+  map<int, unordered_set<int>> predecessors = GetPredecessors(as_num);
+
+  int dest_node;
+  for(auto primary_and_map : pathlet_graph_)
+    {
+      for(auto adjacent_and_pathlet : primary_and_map.second){
+        if(destination.compare(adjacent_and_pathlet.second.destination()) == 0)
+          {
+            dest_node = adjacent_and_pathlet.first;
+            break;
+          }
+      }
+    }
+
+  vector<Pathlet> pathlet_vector = GetAllPrecedingPathlets(dest_node, predecessors);
+  Pathlets return_pathlets;
+  for(Pathlet pathlet : pathlet_vector){
+    pathlet.add_path_vector(island_id);
+    *return_pathlets.add_pathlets() = pathlet;
+  }
+  return return_pathlets;
+}
+// private methods under here
+map<int, unordered_set<int>> PathletInternalState::GetPredecessors(int as_num){
+
+  // Mark all the vertices as not visited and initialized all predecessors
+  map<int, bool> visited;
+  map<int, unordered_set<int>> predecessors;
+  for (auto primary_and_map : pathlet_graph_) {
+    int primary = primary_and_map.first;
+    visited[primary] = false;
+    predecessors[primary] = unordered_set<int>();
+    for (auto adjacent_and_pathlet : primary_and_map.second) {
+      visited[adjacent_and_pathlet.first] = false;
+      predecessors[adjacent_and_pathlet.first] = unordered_set<int>();
+    }
+  }
+
+  // Create a stack for BFS
+  vector<int> stack;
+
+  // Mark the current node as visited and push it
+  visited[as_num] = true;
+  stack.push_back(as_num);
+
+  while (!stack.empty()) {
+    // pop a vertex from stack
+    int working_as = stack.back();
+    stack.pop_back();
+    // Get all adjacent vertices of the dequeued vertex working_as
+    // If a adjacent has not been visited, then mark it visited
+    // and enqueue it
+    for (auto adjacent_and_pathlet : pathlet_graph_[working_as]) {
+      int adjacent_node = adjacent_and_pathlet.first;
+      if (!visited[adjacent_node]) {
+        visited[adjacent_node] = true;
+        stack.push_back(adjacent_node);
+      }
+      // we don't want the root as having any predcessors otherwise we'll run
+      // into an infinite loop
+      if(predecessors[adjacent_node].count(working_as) == 0 && adjacent_node != as_num){
+        predecessors[adjacent_node].insert(working_as);
+      }
+    }
+  }
+  return predecessors;
+}
+
+vector<Pathlet> PathletInternalState::GetAllPrecedingPathlets(int starting_pt, map<int, unordered_set<int>> predecessors)
+{
+  vector<Pathlet> return_vector;
+  for(int predecessor : predecessors[starting_pt]){
+    Pathlet predecessor_pathlet = pathlet_graph_[predecessor][starting_pt];
+    return_vector.push_back(predecessor_pathlet);
+    vector<Pathlet> append_pathlet = GetAllPrecedingPathlets(predecessor, predecessors);
+    return_vector.insert(append_pathlet.begin(), append_pathlet.end(), return_vector.end());
+  }
+  return return_vector;
+}
+
+

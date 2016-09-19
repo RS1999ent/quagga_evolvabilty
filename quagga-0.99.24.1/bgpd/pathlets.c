@@ -124,6 +124,25 @@ int aspath_get_rightmost(struct aspath* aspath) {
   // Here, return AS should be the rightmost segment
   return return_as;
 }
+
+int HandlePublicPrefix(dbgp_control_info_t* control_info, struct peer* peer,
+                       struct attr* attr, struct prefix* prefix) {
+  // if it is a private ip, then we don't want to do anything with it.
+  char* private_ip = GetPrivateIp(pathlet_config_);
+  if (IpInSameSubnetOneIsInt(prefix->u.prefix4.s_addr, private_ip, CLASS_B_NETMASK)){
+    return 0;
+  }
+  // here if it is a public ip
+  // if the peer is an internal peer, return 1 (we don't want to mess with
+  //control info)
+  if(!IsRemoteAsAnIslandMember(general_configuration_, peer->as)){
+    return 1;
+  }
+
+  return 1;
+
+}
+
 /* ********************* Public functions ********************* */
 
 void pathlets_update_control_info(dbgp_control_info_t* control_info,
@@ -314,7 +333,8 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
       "pathlets::pathlets_input_filter: creating pathlet for ip (%s) fid (%i) "
       "as1(%i) as2(%i) with dest (%s)",
       new_ip, free_fid, as1, as2, prefix_buf);
-  InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2, prefix_buf);
+  InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2,
+                      prefix_buf);
   zlog_debug("pathlets::pathlets_input_filter: ip_to_pathlets_to_send:\n %s",
              GetPathletsToSendString(pathlet_internal_state_));
 
@@ -330,7 +350,10 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
   free(new_ip);
   free(announce_ip);
   // filter it because it is the first instance of a 1 hop pathlet
-  return DBGP_FILTERED;
+  /* return DBGP_FILTERED; */
+  // not filtering anymore, we just won't do anything with it until it reaches a
+  // border router
+  return DBGP_NOT_FILTERED;
 }
 
 dbgp_filtered_status_t pathlets_output_filter(

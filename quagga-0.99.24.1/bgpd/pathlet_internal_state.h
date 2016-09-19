@@ -4,6 +4,7 @@
 #include <map>
 #include <tuple>
 #include <vector>
+#include <unordered_set>
 
 #include "integrated_advertisement.pb.h"
 
@@ -82,6 +83,18 @@ class PathletInternalState {
   */
   void InsertPathletToSend(string associated_ip, Pathlet pathlet_to_send);
 
+  /* Given a destination address, returns a subgraph of all pathlets that can be
+     used to reach that destination
+
+     Arguments:
+        destination: the destination ip to construct the subgraph to
+        island_id: the island id to put as the pathlet path vecto
+        as_num: the as number where we are starting the subgraph from
+
+     Returns: a Pathlets protobuf containing the subgraph
+  */
+  Pathlets GetPathletsForDestination(string destination, int island_id, int as_num);
+
   const map<int, map<int, Pathlet>> GetPathletGraph();
 
   /* Return a string representation of the pathlet_graph_ */
@@ -91,6 +104,32 @@ class PathletInternalState {
   string PathletsToSendToString();
 
  private:
+
+  /* Returns a predecessor map of the graph from some starting point
+
+     arguments:
+        as_num: the asnumber to start from.
+
+     returns: a prdecessor list, key is AS, value is the set of ases that
+     precede it
+   */
+  map<int, unordered_set<int>> GetPredecessors(int as_num);
+
+  /* Returns a list of pathlets that make up the subgraph from a root to some
+     destination
+
+     arguments:
+        destination: the destination ip address to get the subgraph from
+
+     returns a list of pathlets
+   */
+  vector<Pathlet> GetPathletsFromDestination(string destination);
+
+  // given a starting point and predecessor list, recursivly get all pathlets
+  // that precede it to a root. NOTE root must not have any predecessors
+  vector<Pathlet> GetAllPrecedingPathlets(int starting_pt, map<int, unordered_set<int>> predecessors);
+  
+
   /* The pathlet graph where the key is the primary vnode mapping to an adjacent
      vnode mapping with the value being the FID to traverse that vnode */
   map<int, map<int, Pathlet>> pathlet_graph_;

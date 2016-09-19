@@ -8,6 +8,16 @@
 
 /* ********************* Private functions ********************* */
 
+/* Handle a public facing prefix (a prefix that isn't in the /16 private
+   subnet)
+
+   Returns: 1 if this was a public facing prefix. There is special logic we want
+   to do for these as opposed to the private prefixes
+*/
+int HandlePublicPrefix(dbgp_control_info_t* control_info,
+                       struct peer* peer, struct attr* attr,
+                       struct prefix* prefix);
+
 /* ********************* Public functions ********************* */
 /**
  * Updates pathlet-specific D-BGP control info
