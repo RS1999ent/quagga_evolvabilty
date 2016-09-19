@@ -236,7 +236,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
         return DBGP_NOT_FILTERED;
         break;
       case dbgp_protocol_baseline_sleeper:
-        return;
+        return DBGP_NOT_FILTERED;
         break;
 
       /* Critical fixes */

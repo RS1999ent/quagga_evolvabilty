@@ -622,7 +622,8 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
       }
 
   /* Output filter check. */
-  if (bgp_output_filter (peer, p, riattr, afi, safi) == FILTER_DENY)
+  /* if (bgp_output_filter (peer, p, riattr, afi, safi) == FILTER_DENY) */
+  if (dbgp_output_filter (riattr, peer, p) == DBGP_FILTERED)
     {
       if (BGP_DEBUG (filter, FILTER))
 	zlog (peer->log, LOG_DEBUG,
