@@ -164,7 +164,7 @@ void AddExternalPathletControlInfoForAll(int island_id,
   control_info->integrated_advertisement_size = new_size;
 }
 
-void AnounceStaticRoute(char* ip_and_prefix, struct bgp* bgp) {
+void AnnounceStaticRoute(char* ip_and_prefix, struct bgp* bgp) {
   struct bgp_static* bgp_static;
   struct prefix p;
   str2prefix(ip_and_prefix, &p);
@@ -335,6 +335,13 @@ void HandleExternalIslandInput(dbgp_control_info_t* control_info,
             control_info->integrated_advertisement_size, aspath_array,
             array_size, segments->as[i], peer->bgp->as, announced_ips,
             &num_ips_to_announce);
+        zlog_debug(
+            "pathlets::HandleExternalIslandInput: ip_to_pathlet announce:\n%s",
+            GetPathletsToSendString(pathlet_internal_state_));
+        // announce them
+        for (int i = 0; i < num_ips_to_announce; i++) {
+          AnnounceStaticRoute(announced_ips[i], peer->bgp);
+        }
       }
     }
     segments = segments->next;
@@ -553,7 +560,7 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
     // filter because we don't want this stuff to go further into island,
     // handleexternlaislandinput is going to create and announce the proper
     // pathlets
-    return DBGP_NOT_FILTERED;  // there is a problem when filtering this WHY?
+    return DBGP_FILTERED;  // there is a problem when filtering this WHY?
   }
   // If it is a public IP and the aspath is > 1, that means this is a public
   // ip
@@ -592,7 +599,7 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
   snprintf(announce_ip, 256, "%s/%d", new_ip, 32);
 
   // announce it
-  AnounceStaticRoute(announce_ip, peer->bgp);
+  AnnounceStaticRoute(announce_ip, peer->bgp);
   /* zlog_debug("pathlets::pathlets_input_filter: sleep after announcing"); */
   /* sleep(5); */
 
