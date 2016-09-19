@@ -93,6 +93,9 @@ extern "C" char* PrintPathletsFromSerializedAdvert(char* serialized_advert,
 extern "C" char* GenerateExternalPathletControlInfo(
     PathletInternalStateHandle pathlet_internal_state, int island_id,
     char* serialized_advert, int advert_size, int* new_advert_size);
+
+/* Returns an integrated advertisement with the pathlets for a speicfic subgraph
+   based on the destination ip. */
 extern "C" char* GenerateExternalPathletDestinationControlInfo(
     PathletInternalStateHandle pathlet_internal_state, const char* destination,
     int island_id, int as_num, char* serialized_advert, int advert_size,
