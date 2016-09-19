@@ -232,9 +232,10 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
     "nk_cost\030\002 \001(\004\"7\n\014NodeProperty\022\021\n\tnode_na"
     "me\030\001 \001(\t\022\024\n\014interface_ip\030\002 \001(\t\"Q\n\022Pathle"
     "tProtoConfig\022\037\n\027is_island_border_router\030"
-    "\001 \001(\r\022\032\n\022private_slash24_ip\030\002 \001(\t*=\n\014Pro"
+    "\001 \001(\r\022\032\n\022private_slash24_ip\030\002 \001(\t*g\n\014Pro"
     "tocolType\022\016\n\nPT_UNKNOWN\020\000\022\014\n\010PT_WISER\020\001\022"
-    "\017\n\013PT_PATHLETS\020\002", 656);
+    "\017\n\013PT_PATHLETS\020\002\022\027\n\023PT_BASELINE_SLEEPER\020"
+    "\003\022\017\n\013PT_BASELINE\020\004", 698);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "quagga_config.proto", &protobuf_RegisterTypes);
   Configuration::default_instance_ = new Configuration();
@@ -269,6 +270,8 @@ bool ProtocolType_IsValid(int value) {
     case 0:
     case 1:
     case 2:
+    case 3:
+    case 4:
       return true;
     default:
       return false;

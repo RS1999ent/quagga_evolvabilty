@@ -18,6 +18,10 @@ typedef enum dbgp_protocols_s {
   /* Critical fix protocols */
   dbgp_critical_wiser = 1,
 
+  // runs baseline, but sleeps (this is for use for gulfs to wake up later so
+  // pathlets can advertise through them).
+  dbgp_protocol_baseline_sleeper = 2,
+
   /* Replacement protocols */
   dbgp_replacement_none = 1000,
   dbgp_replacement_scion = 1001,

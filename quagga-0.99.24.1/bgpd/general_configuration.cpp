@@ -24,6 +24,8 @@ dbgp_protocol_t GeneralConfiguration::GetProtocolType()
   case PT_PATHLETS:
     return dbgp_replacement_pathlets;
     break;
+  case PT_BASELINE_SLEEPER:
+    return dbgp_protocol_baseline_sleeper;
 
   default :
     return dbgp_protocol_baseline;

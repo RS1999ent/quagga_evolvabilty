@@ -36,13 +36,14 @@ dbgp_control_info_t *GetControlInformation(struct attr *attr,
   dbgp_control_info_t *control_info;
   // If there is a transitive attribute in there, that means we can retrieve a
   // extra control information from the lookupservice.
-  if (attr->extra != NULL && attr->extra->transit != NULL) {
+  if (attr->extra != NULL && attr->extra->transit != NULL && attr->extra->transit->length > 0) {
     zlog_debug(
         "dbgp::GetControlInformation: There was existing control information "
         "in advert");
     struct attr_extra *extra;
     extra = attr->extra;
     *transit = extra->transit;
+    zlog_debug("dbgp::GetControlInformation: Transit length is: %i", (*transit)->length);
     control_info = retrieve_control_info(*transit);
     return control_info;
   }
@@ -77,6 +78,10 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer,
   // Precondition asserts
   assert(peer != NULL);
   assert(attr != NULL);
+  if (peer->bgp->dbgp_protocol == dbgp_protocol_baseline_sleeper ||
+      peer->bgp->dbgp_protocol == dbgp_protocol_baseline) {
+    return;
+  }
 
   control_info = GetControlInformation(attr, &transit);
   assert(transit != NULL);
@@ -91,6 +96,9 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer,
   switch (peer->bgp->dbgp_protocol) {
     /* Just BGP */
     case dbgp_protocol_baseline:
+      return;
+      break;
+    case dbgp_protocol_baseline_sleeper:
       return;
       break;
     /* Critical fixes */
@@ -123,6 +131,10 @@ void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp,
   // Precondition asserts
   assert(bgp != NULL);
   assert(attr != NULL);
+  if (bgp->dbgp_protocol == dbgp_protocol_baseline_sleeper ||
+      bgp->dbgp_protocol == dbgp_protocol_baseline) {
+    return;
+  }
 
   control_info = GetControlInformation(attr, &transit);
   assert(transit != NULL);
@@ -159,7 +171,8 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, struct bgp_info *exist,
   int retval = 0;
 
   // Debug statement
-  zlog_debug("dbgp::dbgp_info_cmp: protocol type: %i", bgp->dbgp_protocol);
+  /* zlog_debug("dbgp::dbgp_info_cmp: protocol type: %i", bgp->dbgp_protocol);
+   */
 
   // TODO: add back
   /* Always use BGP for paths connecting the lookup service */
@@ -169,6 +182,9 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, struct bgp_info *exist,
 
   switch (bgp->dbgp_protocol) {
     case dbgp_protocol_baseline:
+      return (bgp_info_cmp(bgp, new, exist, path_eq));
+      break;
+    case dbgp_protocol_baseline_sleeper:
       return (bgp_info_cmp(bgp, new, exist, path_eq));
       break;
 
@@ -200,6 +216,10 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
   // Precondition asserts
   assert(peer != NULL);
   assert(attr != NULL);
+  if (peer->bgp->dbgp_protocol == dbgp_protocol_baseline_sleeper ||
+      peer->bgp->dbgp_protocol == dbgp_protocol_baseline) {
+    return;
+  }
 
   control_info = GetControlInformation(attr, &transit);
   assert(transit != NULL);
@@ -214,6 +234,9 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
       /* Just BGP */
       case dbgp_protocol_baseline:
         return DBGP_NOT_FILTERED;
+        break;
+      case dbgp_protocol_baseline_sleeper:
+        return;
         break;
 
       /* Critical fixes */
@@ -280,6 +303,9 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer,
       /* Just BGP */
       case dbgp_protocol_baseline:
         return DBGP_NOT_FILTERED;
+        break;
+      case dbgp_protocol_baseline_sleeper:
+        return;
         break;
 
       /* Critical fixes */

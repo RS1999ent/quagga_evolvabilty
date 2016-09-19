@@ -342,16 +342,11 @@ main (int argc, char **argv)
   /* Set umask before anything for security */
   umask (0027);
 
-  zlog_debug("HERE 1");
-  zlog_debug("HERE 2");
   general_configuration_ = CreateGeneralConfig(protocol_config_default);
-  zlog_debug("HERE 3");
   wiser_config_ = GetWiserConfig(general_configuration_);
-  zlog_debug("HERE 4");
   pathlet_config_ = CreatePathletConfig(general_configuration_);
-  zlog_debug("HERE 5");
   pathlet_internal_state_ = CreatePathletInternalState(pathlet_config_);
-  zlog_debug("HERE 6");
+
 
   /* Preserve name of myself. */
   progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);
@@ -470,6 +465,11 @@ main (int argc, char **argv)
 
   /* Process ID file creation. */
   pid_output (pid_file);
+
+  if(GetProtocolType(general_configuration_) == dbgp_protocol_baseline_sleeper){
+    zlog_debug("bgp_main::main: bgp sleeper, sleeping");
+    sleep(60);
+  }
 
   /* Make bgp vty socket. */
   vty_serv_sock (vty_addr, vty_port, BGP_VTYSH_PATH);

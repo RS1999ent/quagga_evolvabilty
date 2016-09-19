@@ -59,17 +59,14 @@ int IpInSameSubnet(char* ip1_str, char* ip2_str, uint32_t netmask) {
   }
 }
 
-unsigned int
-aspath_size_custom (struct aspath *aspath)
-{
+unsigned int aspath_size_custom(struct aspath* aspath) {
   int size = 0;
-  struct assegment *seg = aspath->segments;
-  
-  while (seg)
-    {
-      size += seg->length;
-      seg = seg->next;
-    }
+  struct assegment* seg = aspath->segments;
+
+  while (seg) {
+    size += seg->length;
+    seg = seg->next;
+  }
   return size;
 }
 
@@ -186,10 +183,60 @@ int HandlePublicPrefix(dbgp_control_info_t* control_info, struct peer* peer,
     return 1;
   }
 
+  char* prefix_buf = malloc(256);
+  prefix2str(prefix, prefix_buf, 256);
+  /* zlog_debug( */
+  /*     "pathlets::HandlePublicPrefix: Going to advertise into the gulf, " */
+  /*     "sleeping, ip %s", */
+  /*     prefix_buf); */
+  /* sleep(20); */
+  /* zlog_debug( */
+  /*     "pathlets::HandlePublicPrefix: Going to advertise into the gulf,
+   * waking, " */
+  /*     "ip %s", */
+  /*     prefix_buf); */
+  zlog_debug(
+      "pathlets::HandlePublicPrefix: Going to advertise into the gulf: "
+      "ip %s",
+      prefix_buf);
   AddExternalPathletControlInfoForDest(prefix, peer->bgp->island_id,
                                        peer->bgp->as, control_info);
 
   return 1;
+}
+
+// handles the input for outside the island. This will involve searching for
+// pathlet information
+void HandleExternalIslandInput(dbgp_control_info_t* control_info,
+                               struct peer* peer, struct attr* attr,
+                               struct prefix* prefix) {
+  // go through each number in aspath and see if that has pathlet info.
+  struct assegment* segments = attr->aspath->segments;
+  while (segments) {
+    int has_pathlet_info = HasPathletInformation(
+        control_info->integrated_advertisement,
+        control_info->integrated_advertisement_size, *segments->as);
+    if (has_pathlet_info) {
+      zlog_debug(
+          "pathlets:HandleExternalIslandInput: Advert has control info for "
+          "island %i.",
+          *segments->as);
+      /* zlog_debug( */
+      /*     "pathlets:HandleExternalIslandInput: Advert has control info. " */
+      /*     "prefix: %s", */
+      /*     prefix_buf); */
+      zlog_debug(
+          "pathlets::HandleExternalIslandInput: IA control info: \n %s",
+          SerializedAdverToString(control_info->integrated_advertisement,
+                                  control_info->integrated_advertisement_size));
+      zlog_debug("pathlets::HandleExternalIslandInput: IA control info: \n %s",
+                 PrintPathletsFromSerializedAdvert(
+                     control_info->integrated_advertisement,
+                     control_info->integrated_advertisement_size,
+                     peer->bgp->island_id));
+    }
+    segments = segments->next;
+  }
 }
 
 /* ********************* Public functions ********************* */
@@ -382,6 +429,7 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
   // If the as is not a part of our island, then there is no specific pathlet
   // stuff we need to do with it.
   if (IsRemoteAsAnIslandMember(general_configuration_, originating_as) == 0) {
+    HandleExternalIslandInput(control_info, peer, attr, prefix);
     return DBGP_NOT_FILTERED;
   }
   // If it is a public IP and the aspath is > 1, that means this is a public ip
@@ -463,7 +511,7 @@ dbgp_filtered_status_t pathlets_output_filter(
   /* free(compare_ip); */
 
   if (!peer_apart_of_island && originated_in_island) {
-    zlog(
+    zlog_debug(
         "pathlets::pathlets_output_filter: Peer %i not in island and aspath %s "
         "originated in island filtered",
         peer->as, attr->aspath->str);

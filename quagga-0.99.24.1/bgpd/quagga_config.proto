@@ -4,6 +4,8 @@ enum ProtocolType {
   PT_UNKNOWN = 0;
   PT_WISER = 1;
   PT_PATHLETS = 2;
+  PT_BASELINE_SLEEPER = 3;
+  PT_BASELINE = 4;
 }
 
 // Toplevel message the holds the configuration information for Quagga and
