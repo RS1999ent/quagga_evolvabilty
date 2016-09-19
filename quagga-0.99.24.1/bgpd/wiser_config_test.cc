@@ -1104,19 +1104,19 @@ TEST(CreatePathletsFromIA,
   const string kInputAdvert = R"(
     hop_descriptors{
         protocol: P_PATHLETS
-        island_id: 1
+        island_id: 5
         key_values{
             key : 'PathletGraph'
             value: ''
         }
     }
 )";
-  const int kInputIslandid = 1;
+  const int kInputIslandid = 5;
   const int kAsNum = 1;
   const int kAsPathSize = 5;
   int kAsPathArray[kAsPathSize] = {1, 2, 3, 4, 5};
-  const string kCorrectAnnounceIps[256] = {"192.168.1.1/32"};
-  const int kCorrectNumIps = 1;
+  const string kCorrectAnnounceIps[256] = {"192.168.1.1/32","192.168.1.2/32"};
+  const int kCorrectNumIps = 2;
   const map<string, string> kCorrectIpToPathlet = {
     {"192.168.1.1",
      R"(
@@ -1128,19 +1128,21 @@ TEST(CreatePathletsFromIA,
     path_vector : 3
     path_vector : 4
     path_vector : 5
+    )"},
+    {"192.168.1.2",
+     R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 4
+    path_vector : 1
+    path_vector : 2
+    path_vector : 3
+    path_vector : 4
+    path_vector : 5
     )"}
   };
 
   PathletInternalState pathlet_internal_state("192.168.1.1");
-
-  char* correct_announce_ips[256];
-  int arraypos = 0;
-  for(string astring : kCorrectAnnounceIps){
-    char* buf = (char*) malloc(astring.size() + 1);
-    memset(buf, 0, astring.size() + 1);
-    strcpy(buf, astring.c_str());
-    correct_announce_ips[arraypos] = buf;
-  }
 
   map<string, string> correct_ip_to_pathlet;
   for (auto kv : kCorrectIpToPathlet) {
@@ -1176,8 +1178,145 @@ TEST(CreatePathletsFromIA,
 
   // Assert
   EXPECT_EQ(result_ip_to_pathlet_string, correct_ip_to_pathlet);
+  EXPECT_EQ(num_ips, kCorrectNumIps);
   for (int i = 0; i < num_ips; i++) {
-    EXPECT_STREQ(correct_announce_ips[i], result_announce_ips[i]);
+    EXPECT_STREQ(kCorrectAnnounceIps[i].c_str(), result_announce_ips[i]);
+  }
+}
+
+TEST(CreatePathletsFromIA,
+     IaWithPathletsInIt2_GetCorrectIpsBackAndCorrectIpsToSendMap) {
+  // Arrange
+  const string kInputPathlets =
+    R"(
+        pathlets {
+        fid : 1
+        vnodes : 1
+        vnodes : 2
+        }
+        pathlets {
+        fid : 1
+        vnodes : 2
+        vnodes : 3
+        destination: '10.0.1.1/24'
+        }
+        pathlets {
+        fid : 1
+        vnodes : 3
+        vnodes : 4
+        path_vector: 6
+        path_vector: 7
+        }
+
+)";
+  const string kInputAdvert = R"(
+    hop_descriptors{
+        protocol: P_PATHLETS
+        island_id: 5
+        key_values{
+            key : 'PathletGraph'
+            value: ''
+        }
+    }
+)";
+  const int kInputIslandid = 5;
+  const int kAsNum = 1;
+  const int kAsPathSize = 5;
+  int kAsPathArray[kAsPathSize] = {1, 2, 3, 4, 5};
+  const string kCorrectAnnounceIps[256] = {"192.168.1.1/32", "192.168.1.2/32", "192.168.1.3/32", "192.168.1.4/32"};
+  const int kCorrectNumIps = 4;
+  const map<string, string> kCorrectIpToPathlet = {
+    {"192.168.1.1",
+     R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    path_vector : 1
+    path_vector : 2
+    path_vector : 3
+    path_vector : 4
+    path_vector : 5
+    )"},
+    {"192.168.1.2",
+     R"(
+    fid: 1
+    vnodes: 2
+    vnodes: 3
+    path_vector : 1
+    path_vector : 2
+    path_vector : 3
+    path_vector : 4
+    path_vector : 5
+    destination: '10.0.1.1/24'
+    )"},
+    {"192.168.1.3",
+     R"(
+    fid: 1
+    vnodes: 3
+    vnodes: 4
+    path_vector: 6
+    path_vector: 7
+    path_vector : 1
+    path_vector : 2
+    path_vector : 3
+    path_vector : 4
+    path_vector : 5
+    )"},
+    {"192.168.1.4",
+     R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 4
+    path_vector : 1
+    path_vector : 2
+    path_vector : 3
+    path_vector : 4
+    path_vector : 5
+    )"}
+  };
+
+  PathletInternalState pathlet_internal_state("192.168.1.1");
+
+  map<string, string> correct_ip_to_pathlet;
+  for (auto kv : kCorrectIpToPathlet) {
+    Pathlet pathlet;
+    google::protobuf::TextFormat::ParseFromString(kv.second, &pathlet);
+    correct_ip_to_pathlet[kv.first] = pathlet.DebugString();
+    // cout << kv.first << pathlet.DebugString() << endl;
+  }
+  // cout << "ENDCORRECT" << endl;
+
+  IntegratedAdvertisement input_advert;
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+  Pathlets pathlets;
+  google::protobuf::TextFormat::ParseFromString(kInputPathlets, &pathlets);
+  input_advert.mutable_hop_descriptors(0)->mutable_key_values(0)->set_value(
+      pathlets.SerializeAsString());
+
+  int size = input_advert.ByteSize();
+  int num_ips;
+  char* serialized_input = (char*)malloc(size);
+  input_advert.SerializeToArray(serialized_input, size);
+  char* result_announce_ips[256];
+
+  // Act
+  CreatePathletsFromIA(&pathlet_internal_state, serialized_input, size,
+                       kAsPathArray, kAsPathSize, kInputIslandid, kAsNum,
+                       result_announce_ips, &num_ips);
+
+  map<string, Pathlet> result_ip_to_pathlet =
+      pathlet_internal_state.GetIpToPathletToSend();
+  map<string, string> result_ip_to_pathlet_string;
+  for (auto kv : result_ip_to_pathlet) {
+    result_ip_to_pathlet_string[kv.first] = kv.second.DebugString();
+    // cout << kv.first << kv.second.DebugString() << endl;
+  }
+
+  // Assert
+  EXPECT_EQ(result_ip_to_pathlet_string, correct_ip_to_pathlet);
+  EXPECT_EQ(num_ips, kCorrectNumIps);
+  for (int i = 0; i < num_ips; i++) {
+    EXPECT_STREQ(kCorrectAnnounceIps[i].c_str(), result_announce_ips[i]);
   }
 }
 

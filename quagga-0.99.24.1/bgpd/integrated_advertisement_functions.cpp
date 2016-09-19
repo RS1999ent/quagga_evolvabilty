@@ -524,7 +524,7 @@ void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
     snprintf(announce_ip, 256, "%s/%d", new_ip, 32);
     announce_ips[array_position] = announce_ip;
     array_position++;
-    *num_ips++;
+    *num_ips = *num_ips+1;
   }
   // create a pathlet to the as that originated it.
   Pathlet cross_gulf_pathlet;
@@ -545,5 +545,5 @@ void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
   char* announce_ip = (char*)malloc(256);
   snprintf(announce_ip, 256, "%s/%d", new_ip, 32);
   announce_ips[array_position] = announce_ip;
-  *num_ips++;
+  *num_ips = *num_ips+1;
 }
