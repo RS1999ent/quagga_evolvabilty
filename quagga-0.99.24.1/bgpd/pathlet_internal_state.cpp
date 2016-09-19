@@ -7,6 +7,7 @@ using namespace std;
 void PathletInternalState::InsertPathletToSend(string associated_ip,
                                                Pathlet pathlet_to_send) {
   ip_to_pathlet_to_send[associated_ip] = pathlet_to_send;
+  InsertPathletIntoGraph(pathlet_to_send);
 }
 
 

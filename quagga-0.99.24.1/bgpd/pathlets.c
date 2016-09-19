@@ -338,6 +338,9 @@ void HandleExternalIslandInput(dbgp_control_info_t* control_info,
         zlog_debug(
             "pathlets::HandleExternalIslandInput: ip_to_pathlet announce:\n%s",
             GetPathletsToSendString(pathlet_internal_state_));
+        zlog_debug(
+                   "pathlets::HandleExternalIslandInput: graph Is:\n%s",
+                   GetPathletGraphString(pathlet_internal_state_));
         // announce them
         for (int i = 0; i < num_ips_to_announce; i++) {
           AnnounceStaticRoute(announced_ips[i], peer->bgp);
