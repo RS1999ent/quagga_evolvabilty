@@ -277,37 +277,43 @@ void HandleExternalIslandInput(dbgp_control_info_t* control_info,
                                struct prefix* prefix) {
   // go through each number in aspath and see if that has pathlet info.
   struct assegment* segments = attr->aspath->segments;
+  zlog_debug("pathlets::HandleExternalIslandInput: aspath: %s",
+             attr->aspath->str);
   zlog_debug(
       "pathlets::HandleExternalIslandInput: External island input tostring %s",
       SerializedAdverToString(control_info->integrated_advertisement,
                               control_info->integrated_advertisement_size));
   while (segments) {
-    zlog_debug(
-        "pathlets::HandleExternalIslandInput: Check if island_id/as %i has "
-        "pathlet info",
-        *segments->as);
-    int has_pathlet_info = HasPathletInformation(
-        control_info->integrated_advertisement,
-        control_info->integrated_advertisement_size, *segments->as);
-    if (has_pathlet_info) {
+    for (int i = 0; i < segments->length; i++) {
       zlog_debug(
-          "pathlets:HandleExternalIslandInput: Advert has control info for "
-          "island %i.",
-          *segments->as);
-      /* zlog_debug( */
-      /*     "pathlets:HandleExternalIslandInput: Advert has control info. "
-       */
-      /*     "prefix: %s", */
-      /*     prefix_buf); */
-      zlog_debug(
-          "pathlets::HandleExternalIslandInput: IA control info: \n %s",
-          SerializedAdverToString(control_info->integrated_advertisement,
-                                  control_info->integrated_advertisement_size));
-      zlog_debug("pathlets::HandleExternalIslandInput: IA control info: \n %s",
-                 PrintPathletsFromSerializedAdvert(
-                     control_info->integrated_advertisement,
-                     control_info->integrated_advertisement_size,
-                     peer->bgp->island_id));
+          "pathlets::HandleExternalIslandInput: Check if island_id/as %i has "
+          "pathlet info",
+          segments->as[i]);
+      int has_pathlet_info = HasPathletInformation(
+          control_info->integrated_advertisement,
+          control_info->integrated_advertisement_size, segments->as[i]);
+      if (has_pathlet_info) {
+        zlog_debug(
+            "pathlets:HandleExternalIslandInput: Advert has control info for "
+            "island %i.",
+            segments->as[i]);
+        /* zlog_debug( */
+        /*     "pathlets:HandleExternalIslandInput: Advert has control info. "
+         */
+        /*     "prefix: %s", */
+        /*     prefix_buf); */
+        /* zlog_debug( */
+        /*     "pathlets::HandleExternalIslandInput: IA control info: \n %s", */
+        /*     SerializedAdverToString( */
+        /*         control_info->integrated_advertisement, */
+        /*         control_info->integrated_advertisement_size)); */
+        zlog_debug(
+            "pathlets::HandleExternalIslandInput: IA control info: \n %s",
+            PrintPathletsFromSerializedAdvert(
+                control_info->integrated_advertisement,
+                control_info->integrated_advertisement_size,
+                segments->as[i]));
+      }
     }
     segments = segments->next;
   }
@@ -334,8 +340,10 @@ void pathlets_update_control_info(dbgp_control_info_t* control_info,
     // prefix
     if (!IsRemoteAsAnIslandMember(general_configuration_, peer->as)) {
       // the prefix is public and the peer is external, handle it (i.e. add
-      // control info)
-      HandlePublicPrefixForExternal(control_info, peer, attr, prefix);
+      // control info) And it originated within our island or ourselves.
+      if(is_originating_island_member || originating_as == peer->bgp->as){
+        HandlePublicPrefixForExternal(control_info, peer, attr, prefix);
+      }
       return;
     }
   }
