@@ -124,6 +124,16 @@ void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state,
   internal_state_mutex.unlock();
 }
 
+void InsertRawPathletToSend(PathletInternalStateHandle pathlet_internal_state,
+                            char* associated_ip, char* serialized_pathlet,
+                            int pathlet_size) {
+  internal_state_mutex.lock();
+  Pathlet pathlet;
+  pathlet.ParseFromArray(serialized_pathlet, pathlet_size);
+  pathlet_internal_state->InsertPathletToSend(string(associated_ip), pathlet);
+  internal_state_mutex.unlock();
+}
+
 char* GetPathletAssociatedWithIp(
     PathletInternalStateHandle pathlet_internal_state,
     const char* associated_ip, int* return_size) {

@@ -348,8 +348,8 @@ char* GenerateExternalPathletControlInfo(
 
 char* GenerateExternalPathletDestinationControlInfo(
     PathletInternalStateHandle pathlet_internal_state, const char* destination,
-    int island_id, int as_num,  char* serialized_advert,
-    int advert_size, int* new_advert_size) {
+    int island_id, int as_num, char* serialized_advert, int advert_size,
+    int* new_advert_size) {
   // parse advert
   IntegratedAdvertisement parsed_advert;
   parsed_advert.ParseFromArray(serialized_advert, advert_size);
@@ -478,4 +478,72 @@ char* GenerateInternalPathletControlInfo(
   parsed_advert.PrintDebugString();
 
   return return_serialized;
+}
+
+// untested
+void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
+                          char* serialized_advert, int advert_size, int* aspath,
+                          int aspath_size, int island_id, int as_num,
+                          char* announce_ips[], int* num_ips) {
+  *num_ips = 0;
+  int array_position = 0;  // current position in announce_ips where we can
+                           // assign an ip
+  // parse advert
+  IntegratedAdvertisement parsed_advert;
+  parsed_advert.ParseFromArray(serialized_advert, advert_size);
+
+  HopDescriptor* pathlet_hop_descriptor =
+      GetProtocolHopDescriptor(&parsed_advert, Protocol::P_PATHLETS, island_id);
+  // if null, there is no existing pathlet hop descriptor, generate one
+  if (pathlet_hop_descriptor == NULL) {
+    return;
+  }
+
+  // get the pathlets that came from this advert
+  Pathlets pathlets;
+  KeyValue* pathlet_kv =
+      GetHopDescriptorKeyValue(pathlet_hop_descriptor, "PathletGraph");
+  if (pathlet_kv == NULL) {
+    return;
+  }
+
+  pathlets.ParseFromString(pathlet_kv->value());
+  for (Pathlet a_pathlet : pathlets.pathlets()) {
+    // append pathvector
+    for (int i = 0; i < aspath_size; i++) {
+      a_pathlet.add_path_vector(aspath[i]);
+    }
+    char* new_ip = GetNextIp(pathlet_internal_state);
+    int pathlet_size = a_pathlet.ByteSize();
+    char* serialized_pathlet = (char*)malloc(pathlet_size);
+    a_pathlet.SerializeToArray(serialized_pathlet, pathlet_size);
+    InsertRawPathletToSend(pathlet_internal_state, new_ip, serialized_pathlet,
+                           pathlet_size);
+
+    char* announce_ip = (char*)malloc(256);
+    snprintf(announce_ip, 256, "%s/%d", new_ip, 32);
+    announce_ips[array_position] = announce_ip;
+    array_position++;
+    *num_ips++;
+  }
+  // create a pathlet to the as that originated it.
+  Pathlet cross_gulf_pathlet;
+  int new_fid = GetNextFid(pathlet_internal_state);
+  char* new_ip = GetNextIp(pathlet_internal_state);
+  cross_gulf_pathlet.add_vnodes(as_num);
+  // the as that sent this to us will be in the second to last position
+  cross_gulf_pathlet.add_vnodes(aspath[aspath_size - 2]);
+  cross_gulf_pathlet.set_fid(new_fid);
+  for (int i = 0; i < aspath_size; i++) {
+    cross_gulf_pathlet.add_path_vector(aspath[i]);
+  }
+  int pathlet_size = cross_gulf_pathlet.ByteSize();
+  char* serialized_pathlet = (char*)malloc(pathlet_size);
+  cross_gulf_pathlet.SerializeToArray(serialized_pathlet, pathlet_size);
+  InsertRawPathletToSend(pathlet_internal_state, new_ip, serialized_pathlet,
+                         pathlet_size);
+  char* announce_ip = (char*)malloc(256);
+  snprintf(announce_ip, 256, "%s/%d", new_ip, 32);
+  announce_ips[array_position] = announce_ip;
+  *num_ips++;
 }

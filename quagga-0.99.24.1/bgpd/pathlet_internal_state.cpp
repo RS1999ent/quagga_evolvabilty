@@ -12,8 +12,9 @@ void PathletInternalState::InsertPathletToSend(string associated_ip,
 // untested
 Pathlet PathletInternalState::GetPathletToSend(string associated_ip) {
   Pathlet return_pathlet;
-
-  return ip_to_pathlet_to_send[associated_ip];
+  return_pathlet = ip_to_pathlet_to_send[associated_ip];
+  // ip_to_pathlet_to_send.erase(associated_ip);
+  return return_pathlet;
 }
 
 Pathlets PathletInternalState::ConvertGraphToPathlets() {

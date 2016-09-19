@@ -121,3 +121,11 @@ extern "C" void MergePathletInformationIntoGraph(
 extern "C" char* GenerateInternalPathletControlInfo(
     PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
     int advert_size, const char* ip_address, int* new_size, int island_id);
+
+// given IA, island id, path vector, modifiy pathlets, create and add a cross
+// gulf pathlet, add them to pathlets to send, mutates a list of ips. Assume
+// that announceips has enough space
+extern "C" void CreatePathletsFromIA(
+    PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
+    int advert_size, int* aspath, int aspath_size, int island_id, int as_num,
+    char* announce_ips[], int* num_ips);

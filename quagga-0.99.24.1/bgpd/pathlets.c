@@ -528,7 +528,10 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
         "pathlets::pathlets_input_filter: Control info from outside the "
         "island");
     HandleExternalIslandInput(control_info, peer, attr, prefix);
-    return DBGP_NOT_FILTERED;
+    // filter because we don't want this stuff to go further into island,
+    // handleexternlaislandinput is going to create and announce the proper
+    // pathlets
+    return DBGP_NOT_FILTERED; //there is a problem when filtering this WHY?
   }
   // If it is a public IP and the aspath is > 1, that means this is a public
   // ip
