@@ -41,6 +41,11 @@ char* GenerateExternalPathletDestinationControlInfo(
 char* GenerateExternalPathletControlInfo(
     PathletInternalStateHandle pathlet_internal_state, int island_id,
     char* serialized_advert, int advert_size, int* new_advert_size);
+
+void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
+                          char* serialized_advert, int advert_size, int* aspath,
+                          int aspath_size, int island_id, int as_num,
+                          char* announce_ips[], int* num_ips);
 /* Determines if two ips are on the same subnet. It is assumed that both ips
    are
    valid and allocated */
@@ -270,6 +275,23 @@ void HandlePublicPrefixForExternal(dbgp_control_info_t* control_info,
   /* return 1; */
 }
 
+// converts an aspath to an array of ints. array size will have the number of
+// elements in the array
+int* aspath_to_array(struct aspath* aspath, int* array_size) {
+  *array_size = aspath_size_custom(aspath);
+  int* return_array = malloc(*array_size * sizeof(int));
+
+  struct assegment* segments = aspath->segments;
+  int array_pos = 0;
+  while (segments) {
+    for (int i = 0; i < segments->length; i++) {
+      return_array[array_pos] = segments->as[i];
+      array_pos++;
+    }
+    segments = segments->next;
+  }
+  return return_array;
+}
 // handles the input for outside the island. This will involve searching for
 // pathlet information
 void HandleExternalIslandInput(dbgp_control_info_t* control_info,
@@ -283,6 +305,11 @@ void HandleExternalIslandInput(dbgp_control_info_t* control_info,
       "pathlets::HandleExternalIslandInput: External island input tostring %s",
       SerializedAdverToString(control_info->integrated_advertisement,
                               control_info->integrated_advertisement_size));
+  char* announced_ips[256];
+  int num_ips_to_announce;
+  int* aspath_array;
+  int array_size;
+  aspath_array = aspath_to_array(attr->aspath, &array_size);
   while (segments) {
     for (int i = 0; i < segments->length; i++) {
       zlog_debug(
@@ -297,22 +324,16 @@ void HandleExternalIslandInput(dbgp_control_info_t* control_info,
             "pathlets:HandleExternalIslandInput: Advert has control info for "
             "island %i.",
             segments->as[i]);
-        /* zlog_debug( */
-        /*     "pathlets:HandleExternalIslandInput: Advert has control info. "
-         */
-        /*     "prefix: %s", */
-        /*     prefix_buf); */
-        /* zlog_debug( */
-        /*     "pathlets::HandleExternalIslandInput: IA control info: \n %s", */
-        /*     SerializedAdverToString( */
-        /*         control_info->integrated_advertisement, */
-        /*         control_info->integrated_advertisement_size)); */
         zlog_debug(
             "pathlets::HandleExternalIslandInput: IA control info: \n %s",
             PrintPathletsFromSerializedAdvert(
                 control_info->integrated_advertisement,
-                control_info->integrated_advertisement_size,
-                segments->as[i]));
+                control_info->integrated_advertisement_size, segments->as[i]));
+        CreatePathletsFromIA(
+            pathlet_internal_state_, control_info->integrated_advertisement,
+            control_info->integrated_advertisement_size, aspath_array,
+            array_size, segments->as[i], peer->bgp->as, announced_ips,
+            &num_ips_to_announce);
       }
     }
     segments = segments->next;
@@ -341,7 +362,7 @@ void pathlets_update_control_info(dbgp_control_info_t* control_info,
     if (!IsRemoteAsAnIslandMember(general_configuration_, peer->as)) {
       // the prefix is public and the peer is external, handle it (i.e. add
       // control info) And it originated within our island or ourselves.
-      if(is_originating_island_member || originating_as == peer->bgp->as){
+      if (is_originating_island_member || originating_as == peer->bgp->as) {
         HandlePublicPrefixForExternal(control_info, peer, attr, prefix);
       }
       return;
@@ -531,7 +552,7 @@ dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
     // filter because we don't want this stuff to go further into island,
     // handleexternlaislandinput is going to create and announce the proper
     // pathlets
-    return DBGP_NOT_FILTERED; //there is a problem when filtering this WHY?
+    return DBGP_NOT_FILTERED;  // there is a problem when filtering this WHY?
   }
   // If it is a public IP and the aspath is > 1, that means this is a public
   // ip

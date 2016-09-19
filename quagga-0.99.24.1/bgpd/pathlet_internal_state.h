@@ -3,8 +3,8 @@
 
 #include <map>
 #include <tuple>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 #include "integrated_advertisement.pb.h"
 
@@ -93,9 +93,14 @@ class PathletInternalState {
 
      Returns: a Pathlets protobuf containing the subgraph
   */
-  Pathlets GetPathletsForDestination(string destination, int island_id, int as_num);
+  Pathlets GetPathletsForDestination(string destination, int island_id,
+                                     int as_num);
 
   const map<int, map<int, Pathlet>> GetPathletGraph();
+
+  map<string, Pathlet> GetIpToPathletToSend(){
+    return ip_to_pathlet_to_send;
+  }
 
   /* Return a string representation of the pathlet_graph_ */
   string GraphToString();
@@ -104,7 +109,6 @@ class PathletInternalState {
   string PathletsToSendToString();
 
  private:
-
   /* Returns a predecessor map of the graph from some starting point
 
      arguments:
@@ -127,8 +131,8 @@ class PathletInternalState {
 
   // given a starting point and predecessor list, recursivly get all pathlets
   // that precede it to a root. NOTE root must not have any predecessors
-  vector<Pathlet> GetAllPrecedingPathlets(int starting_pt, map<int, unordered_set<int>> predecessors);
-  
+  vector<Pathlet> GetAllPrecedingPathlets(
+      int starting_pt, map<int, unordered_set<int>> predecessors);
 
   /* The pathlet graph where the key is the primary vnode mapping to an adjacent
      vnode mapping with the value being the FID to traverse that vnode */
