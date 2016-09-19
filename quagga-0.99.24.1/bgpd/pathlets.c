@@ -277,14 +277,14 @@ void HandlePublicPrefixForExternal(dbgp_control_info_t* control_info,
 
 // converts an aspath to an array of ints. array size will have the number of
 // elements in the array
-int* aspath_to_array(struct aspath* aspath, int* array_size) {
+uint32_t* aspath_to_array(struct aspath* aspath, uint32_t* array_size) {
   *array_size = aspath_size_custom(aspath);
-  int* return_array = malloc(*array_size * sizeof(int));
+  uint32_t* return_array = malloc(*array_size * sizeof(uint32_t));
 
   struct assegment* segments = aspath->segments;
-  int array_pos = 0;
+  uint32_t array_pos = 0;
   while (segments) {
-    for (int i = 0; i < segments->length; i++) {
+    for (uint32_t i = 0; i < segments->length; i++) {
       return_array[array_pos] = segments->as[i];
       array_pos++;
     }
@@ -307,9 +307,10 @@ void HandleExternalIslandInput(dbgp_control_info_t* control_info,
                               control_info->integrated_advertisement_size));
   char* announced_ips[256];
   int num_ips_to_announce;
-  int* aspath_array;
-  int array_size;
+  uint32_t* aspath_array;
+  uint32_t array_size;
   aspath_array = aspath_to_array(attr->aspath, &array_size);
+  assert(array_size == aspath_size_custom(attr->aspath));
   while (segments) {
     for (int i = 0; i < segments->length; i++) {
       zlog_debug(

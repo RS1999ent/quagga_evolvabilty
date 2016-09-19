@@ -482,7 +482,7 @@ char* GenerateInternalPathletControlInfo(
 
 // untested
 void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
-                          char* serialized_advert, int advert_size, int* aspath,
+                          char* serialized_advert, int advert_size, uint32_t* aspath,
                           int aspath_size, int island_id, int as_num,
                           char* announce_ips[], int* num_ips) {
   *num_ips = 0;

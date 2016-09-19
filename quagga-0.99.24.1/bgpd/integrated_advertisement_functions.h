@@ -127,5 +127,5 @@ extern "C" char* GenerateInternalPathletControlInfo(
 // that announceips has enough space
 extern "C" void CreatePathletsFromIA(
     PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
-    int advert_size, int* aspath, int aspath_size, int island_id, int as_num,
+    int advert_size, uint32_t* aspath, int aspath_size, int island_id, int as_num,
     char* announce_ips[], int* num_ips);

@@ -1114,7 +1114,7 @@ TEST(CreatePathletsFromIA,
   const int kInputIslandid = 5;
   const int kAsNum = 1;
   const int kAsPathSize = 5;
-  int kAsPathArray[kAsPathSize] = {1, 2, 3, 4, 5};
+  uint32_t kAsPathArray[kAsPathSize] = {1, 2, 3, 4, 5};
   const string kCorrectAnnounceIps[256] = {"192.168.1.1/32","192.168.1.2/32"};
   const int kCorrectNumIps = 2;
   const map<string, string> kCorrectIpToPathlet = {
@@ -1222,7 +1222,7 @@ TEST(CreatePathletsFromIA,
   const int kInputIslandid = 5;
   const int kAsNum = 1;
   const int kAsPathSize = 5;
-  int kAsPathArray[kAsPathSize] = {1, 2, 3, 4, 5};
+  uint32_t kAsPathArray[kAsPathSize] = {1, 2, 3, 4, 5};
   const string kCorrectAnnounceIps[256] = {"192.168.1.1/32", "192.168.1.2/32", "192.168.1.3/32", "192.168.1.4/32"};
   const int kCorrectNumIps = 4;
   const map<string, string> kCorrectIpToPathlet = {
