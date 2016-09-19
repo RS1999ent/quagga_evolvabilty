@@ -93,6 +93,10 @@ extern "C" char* PrintPathletsFromSerializedAdvert(char* serialized_advert,
 extern "C" char* GenerateExternalPathletControlInfo(
     PathletInternalStateHandle pathlet_internal_state, int island_id,
     char* serialized_advert, int advert_size, int* new_advert_size);
+extern "C" char* GenerateExternalPathletDestinationControlInfo(
+    PathletInternalStateHandle pathlet_internal_state, const char* destination,
+    int island_id, int as_num, char* serialized_advert, int advert_size,
+    int* new_advert_size);
 
 // Given an serialized advert, will return 1 if it has pathlet control
 // information in it.

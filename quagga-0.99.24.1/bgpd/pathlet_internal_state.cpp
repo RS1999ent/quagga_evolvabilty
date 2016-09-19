@@ -1,6 +1,8 @@
 #include "pathlet_internal_state.h"
 #include <arpa/inet.h>
 #include <unordered_set>
+#include <iostream>
+using namespace std;
 
 void PathletInternalState::InsertPathletToSend(string associated_ip,
                                                Pathlet pathlet_to_send) {
@@ -137,7 +139,8 @@ Pathlets PathletInternalState::GetPathletsForDestination(string destination,
   Pathlets return_pathlets;
   for(Pathlet pathlet : pathlet_vector){
     pathlet.add_path_vector(island_id);
-    *return_pathlets.add_pathlets() = pathlet;
+    Pathlet *insert_pathlet = return_pathlets.add_pathlets();
+    *insert_pathlet = pathlet;
   }
   return return_pathlets;
 }
@@ -194,7 +197,9 @@ vector<Pathlet> PathletInternalState::GetAllPrecedingPathlets(int starting_pt, m
     Pathlet predecessor_pathlet = pathlet_graph_[predecessor][starting_pt];
     return_vector.push_back(predecessor_pathlet);
     vector<Pathlet> append_pathlet = GetAllPrecedingPathlets(predecessor, predecessors);
-    return_vector.insert(append_pathlet.begin(), append_pathlet.end(), return_vector.end());
+    for(Pathlet pathlet : append_pathlet){
+      return_vector.push_back(pathlet);
+    }
   }
   return return_vector;
 }

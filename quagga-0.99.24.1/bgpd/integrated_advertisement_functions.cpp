@@ -346,6 +346,44 @@ char* GenerateExternalPathletControlInfo(
   return return_advert;
 }
 
+char* GenerateExternalPathletDestinationControlInfo(
+    PathletInternalStateHandle pathlet_internal_state, const char* destination,
+    int island_id, int as_num,  char* serialized_advert,
+    int advert_size, int* new_advert_size) {
+  // parse advert
+  IntegratedAdvertisement parsed_advert;
+  parsed_advert.ParseFromArray(serialized_advert, advert_size);
+
+  // Get a pathlets graph.
+  int size;
+  char* pathlet_graph_serialized = GetPathletsForDestination(
+      pathlet_internal_state, destination, island_id, as_num, &size);
+  Pathlets pathlet_graph;
+  pathlet_graph.ParseFromArray(pathlet_graph_serialized, size);
+
+  HopDescriptor* pathlet_hop_descriptor =
+      GetProtocolHopDescriptor(&parsed_advert, Protocol::P_PATHLETS, island_id);
+  // if pathlethop descriptor null, that means we need to create one.
+  if (pathlet_hop_descriptor == NULL) {
+    pathlet_hop_descriptor = parsed_advert.add_hop_descriptors();
+    pathlet_hop_descriptor->set_protocol(Protocol::P_PATHLETS);
+    pathlet_hop_descriptor->set_island_id(island_id);
+  }
+  // add the pathlet graph as the value to a keyuvalue of "PathletGraph"
+  KeyValue* pathlet_kv =
+      GetCreateKeyValueFromHopDesc(pathlet_hop_descriptor, "PathletGraph");
+
+  pathlet_kv->set_value(pathlet_graph.SerializeAsString());
+  // pathlet_graph.PrintDebugString();
+  // parsed_advert.PrintDebugString();
+
+  *new_advert_size = parsed_advert.ByteSize();
+  char* return_advert = (char*)malloc(*new_advert_size);
+  parsed_advert.SerializeToArray(return_advert, *new_advert_size);
+
+  return return_advert;
+}
+
 int HasPathletInformation(char* serialized_advert, int advert_size,
                           int island_id) {
   // parse advert

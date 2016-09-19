@@ -111,7 +111,8 @@ void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
 }
 
 void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state,
-                         char* associated_ip, int fid, int as1, int as2, char* dest_ip) {
+                         char* associated_ip, int fid, int as1, int as2,
+                         char* dest_ip) {
   internal_state_mutex.lock();
   // parse serialized
   Pathlet pathlet;
@@ -155,6 +156,19 @@ int GetNextFid(PathletInternalStateHandle pathlet_internal_state) {
   return next_fid;
 }
 
+char* GetPathletsForDestination(
+    PathletInternalStateHandle pathlet_internal_state, const char* destination,
+    int island_id, int as_num, int* pathlets_size) {
+  Pathlets pathlets;
+  pathlets = pathlet_internal_state->GetPathletsForDestination(
+      string(destination), island_id, as_num);
+  *pathlets_size = pathlets.ByteSize();
+  char* return_buffer = (char*)malloc(*pathlets_size);
+  pathlets.SerializeToArray(return_buffer, *pathlets_size);
+  return return_buffer;
+}
+
+// pathlet config methods below here
 PathletConfigHandle CreatePathletConfig(
     GeneralConfigurationHandle general_config) {
   return general_config->GetPathletConfig();
@@ -180,8 +194,10 @@ char* GetPathletGraphString(PathletInternalStateHandle pathlet_internal_state) {
   return return_buffer;
 }
 
-char* GetPathletsToSendString(PathletInternalStateHandle pathlet_internal_state) {
-  string pathlets_to_send_string = pathlet_internal_state->PathletsToSendToString();
+char* GetPathletsToSendString(
+    PathletInternalStateHandle pathlet_internal_state) {
+  string pathlets_to_send_string =
+      pathlet_internal_state->PathletsToSendToString();
   char* return_buffer = (char*)malloc(pathlets_to_send_string.size() + 1);
   strcpy(return_buffer, pathlets_to_send_string.c_str());
   return return_buffer;

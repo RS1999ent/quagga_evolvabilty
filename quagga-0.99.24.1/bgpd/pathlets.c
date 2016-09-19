@@ -91,6 +91,28 @@ void AddAssociatedPathlet(char* associated_ip, int island_id,
   control_info->integrated_advertisement_size = new_size;
 }
 
+void AddExternalPathletControlInfoForDest(struct prefix* prefix, int island_id,
+                                          int as_num,
+                                          dbgp_control_info_t* control_info) {
+  char* old_integrated_advertisement = control_info->integrated_advertisement;
+  int old_integrated_advertisement_size =
+      control_info->integrated_advertisement_size;
+  int new_size;
+  char* new_integrated_advertisement_info = GenerateInternalPathletControlInfo(
+      pathlet_internal_state_, old_integrated_advertisement,
+      old_integrated_advertisement_size, associated_ip, &new_size, island_id);
+  assert(new_integrated_advertisement_info != NULL);
+
+  zlog_debug(
+      "pathlets::AddAssociatedPathlet: Pathlets in outgoing advert:\n %s",
+      PrintPathletsFromSerializedAdvert(new_integrated_advertisement_info,
+                                        new_size, island_id));
+
+  free(old_integrated_advertisement);
+  control_info->integrated_advertisement = new_integrated_advertisement_info;
+  control_info->integrated_advertisement_size = new_size;
+}
+
 void AnounceStaticRoute(char* ip_and_prefix, struct bgp* bgp) {
   struct bgp_static* bgp_static;
   struct prefix p;
@@ -129,18 +151,18 @@ int HandlePublicPrefix(dbgp_control_info_t* control_info, struct peer* peer,
                        struct attr* attr, struct prefix* prefix) {
   // if it is a private ip, then we don't want to do anything with it.
   char* private_ip = GetPrivateIp(pathlet_config_);
-  if (IpInSameSubnetOneIsInt(prefix->u.prefix4.s_addr, private_ip, CLASS_B_NETMASK)){
+  if (IpInSameSubnetOneIsInt(prefix->u.prefix4.s_addr, private_ip,
+                             CLASS_B_NETMASK)) {
     return 0;
   }
   // here if it is a public ip
   // if the peer is an internal peer, return 1 (we don't want to mess with
-  //control info)
-  if(!IsRemoteAsAnIslandMember(general_configuration_, peer->as)){
+  // control info)
+  if (!IsRemoteAsAnIslandMember(general_configuration_, peer->as)) {
     return 1;
   }
 
   return 1;
-
 }
 
 /* ********************* Public functions ********************* */

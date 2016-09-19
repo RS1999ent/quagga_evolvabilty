@@ -1016,6 +1016,81 @@ TEST(GenerateInternalPathletControlInfo, IpHasNoControlInfoAssocaited_GetNull){
   EXPECT_TRUE(result == NULL);
 }
 
+TEST(GenerateExternalPathletDestinationControlInfo, InsertSomePathletsIn_GetCorrectAdvertBack){
+  // Arrange
+  const string kInputAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+)";
+  const int kInputIslandid = 1;
+  const int kAsNum = 1;
+  const string kDest = "192.168.1.1/24";
+  const vector<string> kInsertPathlets = {
+    R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    )",
+    R"(
+    fid: 2
+    vnodes: 1
+    vnodes: 3
+    destination: '192.168.1.1/24'
+    )",
+    R"(
+    fid: 3
+    vnodes: 2
+    vnodes: 4
+    )",
+    R"(
+    fid: 4
+    vnodes: 2
+    vnodes: 5
+    )"
+} ;
+
+  const string kCorrectAdvert = R"(
+    path_group_descriptors {
+        protocol : P_WISER
+    }
+    hop_descriptors{
+        protocol: P_PATHLETS
+        island_id: 1
+        key_values{
+            key : 'PathletGraph'
+            value: "\n\030\010\002\020\001\020\003\032\016192.168.1.1/24 \001"
+        }
+    }
+    )";
+
+  PathletInternalState pathlet_internal_state("");
+
+  IntegratedAdvertisement correct_advert, input_advert, result_advert;
+  google::protobuf::TextFormat::ParseFromString(kCorrectAdvert, &correct_advert);
+  google::protobuf::TextFormat::ParseFromString(kInputAdvert, &input_advert);
+
+  for(const string& pathlet_string : kInsertPathlets){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  int size = input_advert.ByteSize();
+  int newsize;
+  char* serialized_input = (char*) malloc(size);
+  input_advert.SerializeToArray(serialized_input, size);
+
+  // act
+  char* result = GenerateExternalPathletDestinationControlInfo(&pathlet_internal_state, kDest.c_str(), kInputIslandid, kAsNum,  serialized_input, size, &newsize);
+
+  result_advert.ParseFromArray(result, newsize);
+
+  // Assert
+  EXPECT_STREQ(result_advert.DebugString().c_str(), correct_advert.DebugString().c_str());
+
+}
+
 
 
 ////////////////////////////////
@@ -1366,6 +1441,144 @@ TEST(ConvertGraphToPathlets, Insert4Pathlet_GetCorrectPathletsBack){
   }
 
   Pathlets result = pathlet_internal_state.ConvertGraphToPathlets();
+
+  EXPECT_STREQ(result.DebugString().c_str(),
+               correct_pathlets.DebugString().c_str());
+
+}
+
+TEST(GetPathletsForDestination, Insert4Pathlet_GetCorrectPathletsBack){
+
+  // Arrange
+  const vector<string> kInsertPathlets = {
+    R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    )",
+    R"(
+    fid: 2
+    vnodes: 1
+    vnodes: 3
+    )",
+    R"(
+    fid: 3
+    vnodes: 2
+    vnodes: 4
+    destination: '192.168.1.1/24'
+    )",
+    R"(
+    fid: 4
+    vnodes: 3
+    vnodes: 4
+    destination: '192.168.1.1/24'
+    )",
+    R"(
+    fid: 5
+    vnodes: 5
+    vnodes: 4
+    destination: '192.168.1.1/24'
+    )"
+  };
+
+  const int kStartPt = 1;
+  const int kIslandId = 1;
+  const string kDest = "192.168.1.1/24";
+
+  const string kCorrectPathlets =
+    R"(
+    pathlets {
+      fid: 3
+      vnodes: 2
+      vnodes: 4
+      path_vector: 1
+      destination: '192.168.1.1/24'
+    }
+    pathlets {
+      fid: 1
+      vnodes: 1
+      vnodes: 2
+      path_vector: 1
+    }
+    pathlets {
+      fid: 4
+      vnodes: 3
+      vnodes: 4
+      path_vector: 1
+      destination: '192.168.1.1/24'
+    }
+    pathlets {
+      fid: 2
+      vnodes: 1
+      vnodes: 3
+      path_vector: 1
+    }
+    )";
+
+  PathletInternalState pathlet_internal_state("");
+
+  Pathlets correct_pathlets;
+  google::protobuf::TextFormat::ParseFromString(kCorrectPathlets, &correct_pathlets);
+  // Act
+  for(const string& pathlet_string : kInsertPathlets){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  Pathlets result = pathlet_internal_state.GetPathletsForDestination(kDest, kIslandId, kStartPt);
+  // cout << "result" << endl;
+  // result.PrintDebugString();
+  // cout << "correct" << endl;
+  // correct_pathlets.PrintDebugString();
+
+  EXPECT_STREQ(result.DebugString().c_str(),
+               correct_pathlets.DebugString().c_str());
+
+}
+
+TEST(GetPathletsForDestination, Insert1Pathlet_GetCorrectPathletsBack){
+
+  // Arrange
+  const vector<string> kInsertPathlets = {
+    R"(
+    fid: 1
+    vnodes: 1
+    vnodes: 2
+    destination : '192.168.1.1/24'
+    )"  };
+
+  const int kStartPt = 1;
+  const int kIslandId = 1;
+  const string kDest = "192.168.1.1/24";
+
+  const string kCorrectPathlets =
+    R"(
+    pathlets{
+        fid: 1
+        vnodes: 1
+        vnodes: 2
+        destination : '192.168.1.1/24'
+        path_vector: 1
+    }
+    )";
+
+  PathletInternalState pathlet_internal_state("");
+
+  Pathlets correct_pathlets;
+  google::protobuf::TextFormat::ParseFromString(kCorrectPathlets, &correct_pathlets);
+  // Act
+  for(const string& pathlet_string : kInsertPathlets){
+    Pathlet insert_pathlet;
+    google::protobuf::TextFormat::ParseFromString(pathlet_string, &insert_pathlet);
+    pathlet_internal_state.InsertPathletIntoGraph(insert_pathlet);
+  }
+
+  Pathlets result = pathlet_internal_state.GetPathletsForDestination(kDest, kIslandId, kStartPt);
+  // cout << "result" << endl;
+  // result.PrintDebugString();
+  // cout << "correct" << endl;
+  // correct_pathlets.PrintDebugString();
 
   EXPECT_STREQ(result.DebugString().c_str(),
                correct_pathlets.DebugString().c_str());
