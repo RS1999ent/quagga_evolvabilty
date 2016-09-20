@@ -620,9 +620,8 @@ dbgp_filtered_status_t new_pathlets_input_filter(
 
       // announce it
       AnnounceStaticRoute(announce_ip, peer->bgp);
-      /* zlog_debug("pathlets::pathlets_input_filter: sleep after announcing");
-       */
-      /* sleep(5); */
+      zlog_debug("pathlets::pathlets_input_filter: sleep after announcing");
+      sleep(5);
 
       free(new_ip);
       free(announce_ip);
