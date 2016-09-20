@@ -205,8 +205,12 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   assert(transit->length == sizeof(dbgp_lookup_key_t));
 
   /* Get D-BGP control info from lookup service */
+  clock_t start_lookup_latency, end_lookup_latency;
+  start_lookup_latency = clock();
   c = connect_to_redis();
   reply = redisCommand(c, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
+  end_lookup_latency = clock();
+  zlog_debug("dbgp_lookup::retrieve_control_info: took ticks: %ld", end_lookup_latency - start_lookup_latency);
 
   if(reply->type == REDIS_REPLY_ERROR) {
     zlog_err("%s:, failed to retrieve D-BGP control info. Key=%"PRIu32"",
@@ -257,8 +261,12 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   assert(pack_dbgp_control_info(control_info, packed_val) == DBGP_SUCCESS);
 
   /* Store control info in lookup service */
+  clock_t start_lookup_latency, end_lookup_latency;
+  start_lookup_latency = clock();
   c = connect_to_redis();
   reply = redisCommand(c, "SET %"PRIu32" %s", *key, packed_val);
+  end_lookup_latency = clock();
+  zlog_debug("dbgp_lookup::set_control_info: took ticks: %ld", end_lookup_latency - start_lookup_latency);
 
   if (reply->type == REDIS_REPLY_ERROR) {
     zlog_err("%s: failed to store control info.  Key=%"PRIu32", control info=%s", 

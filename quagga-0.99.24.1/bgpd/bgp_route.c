@@ -65,6 +65,10 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 extern const char *bgp_origin_str[];
 extern const char *bgp_origin_long_str[];
 
+// end to end clock
+clock_t start_end_to_end, end_end_to_end;
+int clock_lock = 0;
+
 static struct bgp_node *
 bgp_afi_node_get (struct bgp_table *table, afi_t afi, safi_t safi, struct prefix *p,
 		  struct prefix_rd *prd)
@@ -693,7 +697,11 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
   if(dbgp_output_filter(riattr, peer, p) == DBGP_FILTERED) {
     return 0;
   }
-  
+
+  if(clock_lock != 0){
+    end_end_to_end = clock();
+    zlog_info("bgp_route::CLOCK inputclock %ld, outputclock %ld, diff: %ld", start_end_to_end, end_end_to_end, end_end_to_end - start_end_to_end );
+  }
   /* For modify attribute, copy it to temporary structure. */
   bgp_attr_dup (attr, riattr);
   
@@ -1833,6 +1841,7 @@ bgp_withdraw_rsclient (struct peer *rsclient, afi_t afi, safi_t safi,
   bgp_unlock_node (rn);
 }
 
+
 static int
 bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	    afi_t afi, safi_t safi, int type, int sub_type,
@@ -1966,6 +1975,11 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
    *  protocol-specific information and a lookup key */
   // BUG: dbgp_input_filter formerly had attr going int, changed to new_attr
   // NO longer assuming this is called before update control info
+  if(clock_lock == 0){
+    zlog_debug("bgp_route: starting end to end clock");
+    start_end_to_end=clock();
+    clock_lock = clock_lock + 1;
+  }
   if (dbgp_input_filter(&new_attr, peer, p) == DBGP_FILTERED) {
     bgp_attr_flush(&new_attr);
     reason = "dbgp_protocol_specific_filtered";
