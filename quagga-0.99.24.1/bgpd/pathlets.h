@@ -31,6 +31,10 @@ void pathlets_update_control_info(dbgp_control_info_t *control_info,
                                   struct peer *peer, struct attr *attr,
                                   struct prefix *prefix);
 
+void new_pathlets_update_control_info(dbgp_control_info_t* control_info,
+                                      struct peer* peer, struct attr* attr,
+                                      struct prefix* prefix);
+
 
 /**
  * Updates pathlet-specific D-BGP control info without needing a peer struct
@@ -43,6 +47,9 @@ void pathlets_update_control_info(dbgp_control_info_t *control_info,
 void pathlets_update_control_info_bgpstruct(dbgp_control_info_t* control_info,
                                   struct bgp* bgp, struct attr* attr,
                                   struct prefix* prefix);
+void new_pathlets_update_control_info_bgpstruct(dbgp_control_info_t* control_info,
+                                            struct bgp* bgp, struct attr* attr,
+                                            struct prefix* prefix);
 
 /* Announces a static route prefix
 
@@ -58,6 +65,9 @@ void AnounceStaticRoute(char *ip_and_prefix, struct bgp *bgp);
  * @param peer: Informatoin about the neighbor that sent the adv.
  */
 dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t *control_info,
+                                             struct attr *attr,
+                                             struct peer *peer, struct prefix* prefix);
+dbgp_filtered_status_t new_pathlets_input_filter(dbgp_control_info_t *control_info,
                                              struct attr *attr,
                                              struct peer *peer, struct prefix* prefix);
 

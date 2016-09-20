@@ -108,7 +108,7 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer,
 
     /* Replacement protocols */
     case dbgp_replacement_pathlets:
-      pathlets_update_control_info(control_info, peer, attr, prefix);
+      new_pathlets_update_control_info(control_info, peer, attr, prefix);
       break;
 
     default:
@@ -153,7 +153,7 @@ void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp,
       break;
     /* Replacement protocols */
     case dbgp_replacement_pathlets:
-      pathlets_update_control_info_bgpstruct(control_info, bgp, attr, prefix);
+      new_pathlets_update_control_info_bgpstruct(control_info, bgp, attr, prefix);
       break;
 
     default:
@@ -246,7 +246,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
 
       /* Replacement protocols */
       case dbgp_replacement_pathlets:
-        return (pathlets_input_filter(control_info, attr, peer, prefix));
+        return (new_pathlets_input_filter(control_info, attr, peer, prefix));
         break;
 
       default:
