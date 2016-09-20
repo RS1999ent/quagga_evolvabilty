@@ -39,6 +39,8 @@ class NodeLink;
 class Link;
 class NodeProperty;
 class PathletProtoConfig;
+class Filter;
+class ManualPathlet;
 
 enum ProtocolType {
   PT_UNKNOWN = 0,
@@ -709,6 +711,18 @@ class PathletProtoConfig : public ::google::protobuf::Message {
   inline ::std::string* release_private_slash24_ip();
   inline void set_allocated_private_slash24_ip(::std::string* private_slash24_ip);
 
+  // repeated .Filter filters = 3;
+  inline int filters_size() const;
+  inline void clear_filters();
+  static const int kFiltersFieldNumber = 3;
+  inline const ::Filter& filters(int index) const;
+  inline ::Filter* mutable_filters(int index);
+  inline ::Filter* add_filters();
+  inline const ::google::protobuf::RepeatedPtrField< ::Filter >&
+      filters() const;
+  inline ::google::protobuf::RepeatedPtrField< ::Filter >*
+      mutable_filters();
+
   // @@protoc_insertion_point(class_scope:PathletProtoConfig)
  private:
   inline void set_has_is_island_border_router();
@@ -721,6 +735,7 @@ class PathletProtoConfig : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* private_slash24_ip_;
+  ::google::protobuf::RepeatedPtrField< ::Filter > filters_;
   ::google::protobuf::uint32 is_island_border_router_;
   friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
   friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
@@ -728,6 +743,206 @@ class PathletProtoConfig : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static PathletProtoConfig* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Filter : public ::google::protobuf::Message {
+ public:
+  Filter();
+  virtual ~Filter();
+
+  Filter(const Filter& from);
+
+  inline Filter& operator=(const Filter& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Filter& default_instance();
+
+  void Swap(Filter* other);
+
+  // implements Message ----------------------------------------------
+
+  Filter* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Filter& from);
+  void MergeFrom(const Filter& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string one_hop_ip = 1;
+  inline bool has_one_hop_ip() const;
+  inline void clear_one_hop_ip();
+  static const int kOneHopIpFieldNumber = 1;
+  inline const ::std::string& one_hop_ip() const;
+  inline void set_one_hop_ip(const ::std::string& value);
+  inline void set_one_hop_ip(const char* value);
+  inline void set_one_hop_ip(const char* value, size_t size);
+  inline ::std::string* mutable_one_hop_ip();
+  inline ::std::string* release_one_hop_ip();
+  inline void set_allocated_one_hop_ip(::std::string* one_hop_ip);
+
+  // optional .ManualPathlet pathlet_to_advertise = 2;
+  inline bool has_pathlet_to_advertise() const;
+  inline void clear_pathlet_to_advertise();
+  static const int kPathletToAdvertiseFieldNumber = 2;
+  inline const ::ManualPathlet& pathlet_to_advertise() const;
+  inline ::ManualPathlet* mutable_pathlet_to_advertise();
+  inline ::ManualPathlet* release_pathlet_to_advertise();
+  inline void set_allocated_pathlet_to_advertise(::ManualPathlet* pathlet_to_advertise);
+
+  // @@protoc_insertion_point(class_scope:Filter)
+ private:
+  inline void set_has_one_hop_ip();
+  inline void clear_has_one_hop_ip();
+  inline void set_has_pathlet_to_advertise();
+  inline void clear_has_pathlet_to_advertise();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* one_hop_ip_;
+  ::ManualPathlet* pathlet_to_advertise_;
+  friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
+  friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
+  friend void protobuf_ShutdownFile_quagga_5fconfig_2eproto();
+
+  void InitAsDefaultInstance();
+  static Filter* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ManualPathlet : public ::google::protobuf::Message {
+ public:
+  ManualPathlet();
+  virtual ~ManualPathlet();
+
+  ManualPathlet(const ManualPathlet& from);
+
+  inline ManualPathlet& operator=(const ManualPathlet& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ManualPathlet& default_instance();
+
+  void Swap(ManualPathlet* other);
+
+  // implements Message ----------------------------------------------
+
+  ManualPathlet* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ManualPathlet& from);
+  void MergeFrom(const ManualPathlet& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional uint32 vnode1 = 1;
+  inline bool has_vnode1() const;
+  inline void clear_vnode1();
+  static const int kVnode1FieldNumber = 1;
+  inline ::google::protobuf::uint32 vnode1() const;
+  inline void set_vnode1(::google::protobuf::uint32 value);
+
+  // optional uint32 vnode2 = 2;
+  inline bool has_vnode2() const;
+  inline void clear_vnode2();
+  static const int kVnode2FieldNumber = 2;
+  inline ::google::protobuf::uint32 vnode2() const;
+  inline void set_vnode2(::google::protobuf::uint32 value);
+
+  // optional string destination = 3;
+  inline bool has_destination() const;
+  inline void clear_destination();
+  static const int kDestinationFieldNumber = 3;
+  inline const ::std::string& destination() const;
+  inline void set_destination(const ::std::string& value);
+  inline void set_destination(const char* value);
+  inline void set_destination(const char* value, size_t size);
+  inline ::std::string* mutable_destination();
+  inline ::std::string* release_destination();
+  inline void set_allocated_destination(::std::string* destination);
+
+  // @@protoc_insertion_point(class_scope:ManualPathlet)
+ private:
+  inline void set_has_vnode1();
+  inline void clear_has_vnode1();
+  inline void set_has_vnode2();
+  inline void clear_has_vnode2();
+  inline void set_has_destination();
+  inline void clear_has_destination();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 vnode1_;
+  ::google::protobuf::uint32 vnode2_;
+  ::std::string* destination_;
+  friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
+  friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
+  friend void protobuf_ShutdownFile_quagga_5fconfig_2eproto();
+
+  void InitAsDefaultInstance();
+  static ManualPathlet* default_instance_;
 };
 // ===================================================================
 
@@ -1378,6 +1593,285 @@ inline void PathletProtoConfig::set_allocated_private_slash24_ip(::std::string* 
     private_slash24_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:PathletProtoConfig.private_slash24_ip)
+}
+
+// repeated .Filter filters = 3;
+inline int PathletProtoConfig::filters_size() const {
+  return filters_.size();
+}
+inline void PathletProtoConfig::clear_filters() {
+  filters_.Clear();
+}
+inline const ::Filter& PathletProtoConfig::filters(int index) const {
+  // @@protoc_insertion_point(field_get:PathletProtoConfig.filters)
+  return filters_.Get(index);
+}
+inline ::Filter* PathletProtoConfig::mutable_filters(int index) {
+  // @@protoc_insertion_point(field_mutable:PathletProtoConfig.filters)
+  return filters_.Mutable(index);
+}
+inline ::Filter* PathletProtoConfig::add_filters() {
+  // @@protoc_insertion_point(field_add:PathletProtoConfig.filters)
+  return filters_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::Filter >&
+PathletProtoConfig::filters() const {
+  // @@protoc_insertion_point(field_list:PathletProtoConfig.filters)
+  return filters_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::Filter >*
+PathletProtoConfig::mutable_filters() {
+  // @@protoc_insertion_point(field_mutable_list:PathletProtoConfig.filters)
+  return &filters_;
+}
+
+// -------------------------------------------------------------------
+
+// Filter
+
+// optional string one_hop_ip = 1;
+inline bool Filter::has_one_hop_ip() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Filter::set_has_one_hop_ip() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Filter::clear_has_one_hop_ip() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Filter::clear_one_hop_ip() {
+  if (one_hop_ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    one_hop_ip_->clear();
+  }
+  clear_has_one_hop_ip();
+}
+inline const ::std::string& Filter::one_hop_ip() const {
+  // @@protoc_insertion_point(field_get:Filter.one_hop_ip)
+  return *one_hop_ip_;
+}
+inline void Filter::set_one_hop_ip(const ::std::string& value) {
+  set_has_one_hop_ip();
+  if (one_hop_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    one_hop_ip_ = new ::std::string;
+  }
+  one_hop_ip_->assign(value);
+  // @@protoc_insertion_point(field_set:Filter.one_hop_ip)
+}
+inline void Filter::set_one_hop_ip(const char* value) {
+  set_has_one_hop_ip();
+  if (one_hop_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    one_hop_ip_ = new ::std::string;
+  }
+  one_hop_ip_->assign(value);
+  // @@protoc_insertion_point(field_set_char:Filter.one_hop_ip)
+}
+inline void Filter::set_one_hop_ip(const char* value, size_t size) {
+  set_has_one_hop_ip();
+  if (one_hop_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    one_hop_ip_ = new ::std::string;
+  }
+  one_hop_ip_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:Filter.one_hop_ip)
+}
+inline ::std::string* Filter::mutable_one_hop_ip() {
+  set_has_one_hop_ip();
+  if (one_hop_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    one_hop_ip_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:Filter.one_hop_ip)
+  return one_hop_ip_;
+}
+inline ::std::string* Filter::release_one_hop_ip() {
+  clear_has_one_hop_ip();
+  if (one_hop_ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = one_hop_ip_;
+    one_hop_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Filter::set_allocated_one_hop_ip(::std::string* one_hop_ip) {
+  if (one_hop_ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete one_hop_ip_;
+  }
+  if (one_hop_ip) {
+    set_has_one_hop_ip();
+    one_hop_ip_ = one_hop_ip;
+  } else {
+    clear_has_one_hop_ip();
+    one_hop_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:Filter.one_hop_ip)
+}
+
+// optional .ManualPathlet pathlet_to_advertise = 2;
+inline bool Filter::has_pathlet_to_advertise() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Filter::set_has_pathlet_to_advertise() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Filter::clear_has_pathlet_to_advertise() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Filter::clear_pathlet_to_advertise() {
+  if (pathlet_to_advertise_ != NULL) pathlet_to_advertise_->::ManualPathlet::Clear();
+  clear_has_pathlet_to_advertise();
+}
+inline const ::ManualPathlet& Filter::pathlet_to_advertise() const {
+  // @@protoc_insertion_point(field_get:Filter.pathlet_to_advertise)
+  return pathlet_to_advertise_ != NULL ? *pathlet_to_advertise_ : *default_instance_->pathlet_to_advertise_;
+}
+inline ::ManualPathlet* Filter::mutable_pathlet_to_advertise() {
+  set_has_pathlet_to_advertise();
+  if (pathlet_to_advertise_ == NULL) pathlet_to_advertise_ = new ::ManualPathlet;
+  // @@protoc_insertion_point(field_mutable:Filter.pathlet_to_advertise)
+  return pathlet_to_advertise_;
+}
+inline ::ManualPathlet* Filter::release_pathlet_to_advertise() {
+  clear_has_pathlet_to_advertise();
+  ::ManualPathlet* temp = pathlet_to_advertise_;
+  pathlet_to_advertise_ = NULL;
+  return temp;
+}
+inline void Filter::set_allocated_pathlet_to_advertise(::ManualPathlet* pathlet_to_advertise) {
+  delete pathlet_to_advertise_;
+  pathlet_to_advertise_ = pathlet_to_advertise;
+  if (pathlet_to_advertise) {
+    set_has_pathlet_to_advertise();
+  } else {
+    clear_has_pathlet_to_advertise();
+  }
+  // @@protoc_insertion_point(field_set_allocated:Filter.pathlet_to_advertise)
+}
+
+// -------------------------------------------------------------------
+
+// ManualPathlet
+
+// optional uint32 vnode1 = 1;
+inline bool ManualPathlet::has_vnode1() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ManualPathlet::set_has_vnode1() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ManualPathlet::clear_has_vnode1() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ManualPathlet::clear_vnode1() {
+  vnode1_ = 0u;
+  clear_has_vnode1();
+}
+inline ::google::protobuf::uint32 ManualPathlet::vnode1() const {
+  // @@protoc_insertion_point(field_get:ManualPathlet.vnode1)
+  return vnode1_;
+}
+inline void ManualPathlet::set_vnode1(::google::protobuf::uint32 value) {
+  set_has_vnode1();
+  vnode1_ = value;
+  // @@protoc_insertion_point(field_set:ManualPathlet.vnode1)
+}
+
+// optional uint32 vnode2 = 2;
+inline bool ManualPathlet::has_vnode2() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ManualPathlet::set_has_vnode2() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ManualPathlet::clear_has_vnode2() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ManualPathlet::clear_vnode2() {
+  vnode2_ = 0u;
+  clear_has_vnode2();
+}
+inline ::google::protobuf::uint32 ManualPathlet::vnode2() const {
+  // @@protoc_insertion_point(field_get:ManualPathlet.vnode2)
+  return vnode2_;
+}
+inline void ManualPathlet::set_vnode2(::google::protobuf::uint32 value) {
+  set_has_vnode2();
+  vnode2_ = value;
+  // @@protoc_insertion_point(field_set:ManualPathlet.vnode2)
+}
+
+// optional string destination = 3;
+inline bool ManualPathlet::has_destination() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ManualPathlet::set_has_destination() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ManualPathlet::clear_has_destination() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ManualPathlet::clear_destination() {
+  if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_->clear();
+  }
+  clear_has_destination();
+}
+inline const ::std::string& ManualPathlet::destination() const {
+  // @@protoc_insertion_point(field_get:ManualPathlet.destination)
+  return *destination_;
+}
+inline void ManualPathlet::set_destination(const ::std::string& value) {
+  set_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_ = new ::std::string;
+  }
+  destination_->assign(value);
+  // @@protoc_insertion_point(field_set:ManualPathlet.destination)
+}
+inline void ManualPathlet::set_destination(const char* value) {
+  set_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_ = new ::std::string;
+  }
+  destination_->assign(value);
+  // @@protoc_insertion_point(field_set_char:ManualPathlet.destination)
+}
+inline void ManualPathlet::set_destination(const char* value, size_t size) {
+  set_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_ = new ::std::string;
+  }
+  destination_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:ManualPathlet.destination)
+}
+inline ::std::string* ManualPathlet::mutable_destination() {
+  set_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    destination_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:ManualPathlet.destination)
+  return destination_;
+}
+inline ::std::string* ManualPathlet::release_destination() {
+  clear_has_destination();
+  if (destination_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = destination_;
+    destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void ManualPathlet::set_allocated_destination(::std::string* destination) {
+  if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete destination_;
+  }
+  if (destination) {
+    set_has_destination();
+    destination_ = destination;
+  } else {
+    clear_has_destination();
+    destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:ManualPathlet.destination)
 }
 
 

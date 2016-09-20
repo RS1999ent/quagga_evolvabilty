@@ -433,6 +433,10 @@ void MergePathletInformationIntoGraph(
   }
 }
 
+// int* GetPathVectorForOutgoingPathlet(
+//     PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
+//     int advert_size, const char* ip_address, int* path_vector-size) {}
+
 char* GenerateInternalPathletControlInfo(
     PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
     int advert_size, const char* ip_address, int* new_size, int island_id) {
@@ -548,8 +552,9 @@ void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
   *num_ips = *num_ips + 1;
 }
 
-uint32_t* GetPathletPathVectorForAssociatedIp(PathletInternalStateHandle pathlet_internal_state,
-                          const char* ip_address, uint32_t* path_vector_size) {
+uint32_t* GetPathletPathVectorForAssociatedIp(
+    PathletInternalStateHandle pathlet_internal_state, const char* ip_address,
+    uint32_t* path_vector_size) {
   int pathlet_size;
   char* serialzied_pathlet = GetPathletAssociatedWithIp(
       pathlet_internal_state, ip_address, &pathlet_size);
@@ -557,9 +562,10 @@ uint32_t* GetPathletPathVectorForAssociatedIp(PathletInternalStateHandle pathlet
   Pathlet pathlet;
   pathlet.ParseFromArray(serialzied_pathlet, pathlet_size);
   *path_vector_size = pathlet.path_vector_size();
-  uint32_t* return_int_arr = (uint32_t*) malloc(*path_vector_size * sizeof(uint32_t));
+  uint32_t* return_int_arr =
+      (uint32_t*)malloc(*path_vector_size * sizeof(uint32_t));
   int pos = 0;
-  for(uint32_t as : pathlet.path_vector()){
+  for (uint32_t as : pathlet.path_vector()) {
     return_int_arr[pos] = as;
     pos++;
   }

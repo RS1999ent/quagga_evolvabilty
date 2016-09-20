@@ -39,6 +39,12 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* PathletProtoConfig_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   PathletProtoConfig_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Filter_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Filter_reflection_ = NULL;
+const ::google::protobuf::Descriptor* ManualPathlet_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ManualPathlet_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* ProtocolType_descriptor_ = NULL;
 
 }  // namespace
@@ -148,9 +154,10 @@ void protobuf_AssignDesc_quagga_5fconfig_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(NodeProperty));
   PathletProtoConfig_descriptor_ = file->message_type(6);
-  static const int PathletProtoConfig_offsets_[2] = {
+  static const int PathletProtoConfig_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathletProtoConfig, is_island_border_router_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathletProtoConfig, private_slash24_ip_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PathletProtoConfig, filters_),
   };
   PathletProtoConfig_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -163,6 +170,39 @@ void protobuf_AssignDesc_quagga_5fconfig_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PathletProtoConfig));
+  Filter_descriptor_ = file->message_type(7);
+  static const int Filter_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Filter, one_hop_ip_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Filter, pathlet_to_advertise_),
+  };
+  Filter_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Filter_descriptor_,
+      Filter::default_instance_,
+      Filter_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Filter, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Filter, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Filter));
+  ManualPathlet_descriptor_ = file->message_type(8);
+  static const int ManualPathlet_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ManualPathlet, vnode1_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ManualPathlet, vnode2_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ManualPathlet, destination_),
+  };
+  ManualPathlet_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ManualPathlet_descriptor_,
+      ManualPathlet::default_instance_,
+      ManualPathlet_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ManualPathlet, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ManualPathlet, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ManualPathlet));
   ProtocolType_descriptor_ = file->enum_type(0);
 }
 
@@ -190,6 +230,10 @@ void protobuf_RegisterTypes(const ::std::string&) {
     NodeProperty_descriptor_, &NodeProperty::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PathletProtoConfig_descriptor_, &PathletProtoConfig::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Filter_descriptor_, &Filter::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ManualPathlet_descriptor_, &ManualPathlet::default_instance());
 }
 
 }  // namespace
@@ -209,6 +253,10 @@ void protobuf_ShutdownFile_quagga_5fconfig_2eproto() {
   delete NodeProperty_reflection_;
   delete PathletProtoConfig::default_instance_;
   delete PathletProtoConfig_reflection_;
+  delete Filter::default_instance_;
+  delete Filter_reflection_;
+  delete ManualPathlet::default_instance_;
+  delete ManualPathlet_reflection_;
 }
 
 void protobuf_AddDesc_quagga_5fconfig_2eproto() {
@@ -230,12 +278,16 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
     "operty\022\024\n\005links\030\002 \003(\0132\005.Link\"\?\n\004Link\022$\n\r"
     "adjacent_node\030\001 \001(\0132\r.NodeProperty\022\021\n\tli"
     "nk_cost\030\002 \001(\004\"7\n\014NodeProperty\022\021\n\tnode_na"
-    "me\030\001 \001(\t\022\024\n\014interface_ip\030\002 \001(\t\"Q\n\022Pathle"
+    "me\030\001 \001(\t\022\024\n\014interface_ip\030\002 \001(\t\"k\n\022Pathle"
     "tProtoConfig\022\037\n\027is_island_border_router\030"
-    "\001 \001(\r\022\032\n\022private_slash24_ip\030\002 \001(\t*g\n\014Pro"
-    "tocolType\022\016\n\nPT_UNKNOWN\020\000\022\014\n\010PT_WISER\020\001\022"
-    "\017\n\013PT_PATHLETS\020\002\022\027\n\023PT_BASELINE_SLEEPER\020"
-    "\003\022\017\n\013PT_BASELINE\020\004", 698);
+    "\001 \001(\r\022\032\n\022private_slash24_ip\030\002 \001(\t\022\030\n\007fil"
+    "ters\030\003 \003(\0132\007.Filter\"J\n\006Filter\022\022\n\none_hop"
+    "_ip\030\001 \001(\t\022,\n\024pathlet_to_advertise\030\002 \001(\0132"
+    "\016.ManualPathlet\"D\n\rManualPathlet\022\016\n\006vnod"
+    "e1\030\001 \001(\r\022\016\n\006vnode2\030\002 \001(\r\022\023\n\013destination\030"
+    "\003 \001(\t*g\n\014ProtocolType\022\016\n\nPT_UNKNOWN\020\000\022\014\n"
+    "\010PT_WISER\020\001\022\017\n\013PT_PATHLETS\020\002\022\027\n\023PT_BASEL"
+    "INE_SLEEPER\020\003\022\017\n\013PT_BASELINE\020\004", 870);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "quagga_config.proto", &protobuf_RegisterTypes);
   Configuration::default_instance_ = new Configuration();
@@ -245,6 +297,8 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
   Link::default_instance_ = new Link();
   NodeProperty::default_instance_ = new NodeProperty();
   PathletProtoConfig::default_instance_ = new PathletProtoConfig();
+  Filter::default_instance_ = new Filter();
+  ManualPathlet::default_instance_ = new ManualPathlet();
   Configuration::default_instance_->InitAsDefaultInstance();
   WiserProtocolConfig::default_instance_->InitAsDefaultInstance();
   Topology::default_instance_->InitAsDefaultInstance();
@@ -252,6 +306,8 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
   Link::default_instance_->InitAsDefaultInstance();
   NodeProperty::default_instance_->InitAsDefaultInstance();
   PathletProtoConfig::default_instance_->InitAsDefaultInstance();
+  Filter::default_instance_->InitAsDefaultInstance();
+  ManualPathlet::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_quagga_5fconfig_2eproto);
 }
 
@@ -1983,6 +2039,7 @@ void NodeProperty::Swap(NodeProperty* other) {
 #ifndef _MSC_VER
 const int PathletProtoConfig::kIsIslandBorderRouterFieldNumber;
 const int PathletProtoConfig::kPrivateSlash24IpFieldNumber;
+const int PathletProtoConfig::kFiltersFieldNumber;
 #endif  // !_MSC_VER
 
 PathletProtoConfig::PathletProtoConfig()
@@ -2052,6 +2109,7 @@ void PathletProtoConfig::Clear() {
       }
     }
   }
+  filters_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -2093,6 +2151,20 @@ bool PathletProtoConfig::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(26)) goto parse_filters;
+        break;
+      }
+
+      // repeated .Filter filters = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_filters:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_filters()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_filters;
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -2137,6 +2209,12 @@ void PathletProtoConfig::SerializeWithCachedSizes(
       2, this->private_slash24_ip(), output);
   }
 
+  // repeated .Filter filters = 3;
+  for (int i = 0; i < this->filters_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->filters(i), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2161,6 +2239,13 @@ void PathletProtoConfig::SerializeWithCachedSizes(
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         2, this->private_slash24_ip(), target);
+  }
+
+  // repeated .Filter filters = 3;
+  for (int i = 0; i < this->filters_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->filters(i), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -2190,6 +2275,14 @@ int PathletProtoConfig::ByteSize() const {
     }
 
   }
+  // repeated .Filter filters = 3;
+  total_size += 1 * this->filters_size();
+  for (int i = 0; i < this->filters_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->filters(i));
+  }
+
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -2215,6 +2308,7 @@ void PathletProtoConfig::MergeFrom(const ::google::protobuf::Message& from) {
 
 void PathletProtoConfig::MergeFrom(const PathletProtoConfig& from) {
   GOOGLE_CHECK_NE(&from, this);
+  filters_.MergeFrom(from.filters_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_is_island_border_router()) {
       set_is_island_border_router(from.is_island_border_router());
@@ -2247,6 +2341,7 @@ void PathletProtoConfig::Swap(PathletProtoConfig* other) {
   if (other != this) {
     std::swap(is_island_border_router_, other->is_island_border_router_);
     std::swap(private_slash24_ip_, other->private_slash24_ip_);
+    filters_.Swap(&other->filters_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -2258,6 +2353,631 @@ void PathletProtoConfig::Swap(PathletProtoConfig* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = PathletProtoConfig_descriptor_;
   metadata.reflection = PathletProtoConfig_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int Filter::kOneHopIpFieldNumber;
+const int Filter::kPathletToAdvertiseFieldNumber;
+#endif  // !_MSC_VER
+
+Filter::Filter()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:Filter)
+}
+
+void Filter::InitAsDefaultInstance() {
+  pathlet_to_advertise_ = const_cast< ::ManualPathlet*>(&::ManualPathlet::default_instance());
+}
+
+Filter::Filter(const Filter& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:Filter)
+}
+
+void Filter::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  one_hop_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  pathlet_to_advertise_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Filter::~Filter() {
+  // @@protoc_insertion_point(destructor:Filter)
+  SharedDtor();
+}
+
+void Filter::SharedDtor() {
+  if (one_hop_ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete one_hop_ip_;
+  }
+  if (this != default_instance_) {
+    delete pathlet_to_advertise_;
+  }
+}
+
+void Filter::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Filter::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Filter_descriptor_;
+}
+
+const Filter& Filter::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_quagga_5fconfig_2eproto();
+  return *default_instance_;
+}
+
+Filter* Filter::default_instance_ = NULL;
+
+Filter* Filter::New() const {
+  return new Filter;
+}
+
+void Filter::Clear() {
+  if (_has_bits_[0 / 32] & 3) {
+    if (has_one_hop_ip()) {
+      if (one_hop_ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        one_hop_ip_->clear();
+      }
+    }
+    if (has_pathlet_to_advertise()) {
+      if (pathlet_to_advertise_ != NULL) pathlet_to_advertise_->::ManualPathlet::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Filter::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:Filter)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string one_hop_ip = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_one_hop_ip()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->one_hop_ip().data(), this->one_hop_ip().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "one_hop_ip");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_pathlet_to_advertise;
+        break;
+      }
+
+      // optional .ManualPathlet pathlet_to_advertise = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_pathlet_to_advertise:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_pathlet_to_advertise()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:Filter)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:Filter)
+  return false;
+#undef DO_
+}
+
+void Filter::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:Filter)
+  // optional string one_hop_ip = 1;
+  if (has_one_hop_ip()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->one_hop_ip().data(), this->one_hop_ip().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "one_hop_ip");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->one_hop_ip(), output);
+  }
+
+  // optional .ManualPathlet pathlet_to_advertise = 2;
+  if (has_pathlet_to_advertise()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->pathlet_to_advertise(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:Filter)
+}
+
+::google::protobuf::uint8* Filter::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Filter)
+  // optional string one_hop_ip = 1;
+  if (has_one_hop_ip()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->one_hop_ip().data(), this->one_hop_ip().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "one_hop_ip");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->one_hop_ip(), target);
+  }
+
+  // optional .ManualPathlet pathlet_to_advertise = 2;
+  if (has_pathlet_to_advertise()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->pathlet_to_advertise(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Filter)
+  return target;
+}
+
+int Filter::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional string one_hop_ip = 1;
+    if (has_one_hop_ip()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->one_hop_ip());
+    }
+
+    // optional .ManualPathlet pathlet_to_advertise = 2;
+    if (has_pathlet_to_advertise()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->pathlet_to_advertise());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Filter::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Filter* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Filter*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Filter::MergeFrom(const Filter& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_one_hop_ip()) {
+      set_one_hop_ip(from.one_hop_ip());
+    }
+    if (from.has_pathlet_to_advertise()) {
+      mutable_pathlet_to_advertise()->::ManualPathlet::MergeFrom(from.pathlet_to_advertise());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Filter::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Filter::CopyFrom(const Filter& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Filter::IsInitialized() const {
+
+  return true;
+}
+
+void Filter::Swap(Filter* other) {
+  if (other != this) {
+    std::swap(one_hop_ip_, other->one_hop_ip_);
+    std::swap(pathlet_to_advertise_, other->pathlet_to_advertise_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Filter::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Filter_descriptor_;
+  metadata.reflection = Filter_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int ManualPathlet::kVnode1FieldNumber;
+const int ManualPathlet::kVnode2FieldNumber;
+const int ManualPathlet::kDestinationFieldNumber;
+#endif  // !_MSC_VER
+
+ManualPathlet::ManualPathlet()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:ManualPathlet)
+}
+
+void ManualPathlet::InitAsDefaultInstance() {
+}
+
+ManualPathlet::ManualPathlet(const ManualPathlet& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:ManualPathlet)
+}
+
+void ManualPathlet::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  vnode1_ = 0u;
+  vnode2_ = 0u;
+  destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ManualPathlet::~ManualPathlet() {
+  // @@protoc_insertion_point(destructor:ManualPathlet)
+  SharedDtor();
+}
+
+void ManualPathlet::SharedDtor() {
+  if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete destination_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void ManualPathlet::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ManualPathlet::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ManualPathlet_descriptor_;
+}
+
+const ManualPathlet& ManualPathlet::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_quagga_5fconfig_2eproto();
+  return *default_instance_;
+}
+
+ManualPathlet* ManualPathlet::default_instance_ = NULL;
+
+ManualPathlet* ManualPathlet::New() const {
+  return new ManualPathlet;
+}
+
+void ManualPathlet::Clear() {
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<ManualPathlet*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  if (_has_bits_[0 / 32] & 7) {
+    ZR_(vnode1_, vnode2_);
+    if (has_destination()) {
+      if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        destination_->clear();
+      }
+    }
+  }
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ManualPathlet::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:ManualPathlet)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional uint32 vnode1 = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &vnode1_)));
+          set_has_vnode1();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_vnode2;
+        break;
+      }
+
+      // optional uint32 vnode2 = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_vnode2:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &vnode2_)));
+          set_has_vnode2();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_destination;
+        break;
+      }
+
+      // optional string destination = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_destination:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_destination()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->destination().data(), this->destination().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "destination");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:ManualPathlet)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:ManualPathlet)
+  return false;
+#undef DO_
+}
+
+void ManualPathlet::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:ManualPathlet)
+  // optional uint32 vnode1 = 1;
+  if (has_vnode1()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->vnode1(), output);
+  }
+
+  // optional uint32 vnode2 = 2;
+  if (has_vnode2()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->vnode2(), output);
+  }
+
+  // optional string destination = 3;
+  if (has_destination()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->destination().data(), this->destination().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "destination");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->destination(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:ManualPathlet)
+}
+
+::google::protobuf::uint8* ManualPathlet::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:ManualPathlet)
+  // optional uint32 vnode1 = 1;
+  if (has_vnode1()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->vnode1(), target);
+  }
+
+  // optional uint32 vnode2 = 2;
+  if (has_vnode2()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->vnode2(), target);
+  }
+
+  // optional string destination = 3;
+  if (has_destination()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->destination().data(), this->destination().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "destination");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->destination(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:ManualPathlet)
+  return target;
+}
+
+int ManualPathlet::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional uint32 vnode1 = 1;
+    if (has_vnode1()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->vnode1());
+    }
+
+    // optional uint32 vnode2 = 2;
+    if (has_vnode2()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->vnode2());
+    }
+
+    // optional string destination = 3;
+    if (has_destination()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->destination());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ManualPathlet::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ManualPathlet* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ManualPathlet*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ManualPathlet::MergeFrom(const ManualPathlet& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_vnode1()) {
+      set_vnode1(from.vnode1());
+    }
+    if (from.has_vnode2()) {
+      set_vnode2(from.vnode2());
+    }
+    if (from.has_destination()) {
+      set_destination(from.destination());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ManualPathlet::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ManualPathlet::CopyFrom(const ManualPathlet& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ManualPathlet::IsInitialized() const {
+
+  return true;
+}
+
+void ManualPathlet::Swap(ManualPathlet* other) {
+  if (other != this) {
+    std::swap(vnode1_, other->vnode1_);
+    std::swap(vnode2_, other->vnode2_);
+    std::swap(destination_, other->destination_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ManualPathlet::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ManualPathlet_descriptor_;
+  metadata.reflection = ManualPathlet_reflection_;
   return metadata;
 }
 

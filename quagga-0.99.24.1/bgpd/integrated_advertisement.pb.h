@@ -791,12 +791,21 @@ class Pathlet : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_path_vector();
 
+  // optional uint32 is_two_hop = 5;
+  inline bool has_is_two_hop() const;
+  inline void clear_is_two_hop();
+  static const int kIsTwoHopFieldNumber = 5;
+  inline ::google::protobuf::uint32 is_two_hop() const;
+  inline void set_is_two_hop(::google::protobuf::uint32 value);
+
   // @@protoc_insertion_point(class_scope:Pathlet)
  private:
   inline void set_has_fid();
   inline void clear_has_fid();
   inline void set_has_destination();
   inline void clear_has_destination();
+  inline void set_has_is_two_hop();
+  inline void clear_has_is_two_hop();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -804,8 +813,9 @@ class Pathlet : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > vnodes_;
   ::std::string* destination_;
-  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > path_vector_;
   ::google::protobuf::uint32 fid_;
+  ::google::protobuf::uint32 is_two_hop_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > path_vector_;
   friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
@@ -1436,6 +1446,30 @@ inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
 Pathlet::mutable_path_vector() {
   // @@protoc_insertion_point(field_mutable_list:Pathlet.path_vector)
   return &path_vector_;
+}
+
+// optional uint32 is_two_hop = 5;
+inline bool Pathlet::has_is_two_hop() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void Pathlet::set_has_is_two_hop() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void Pathlet::clear_has_is_two_hop() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void Pathlet::clear_is_two_hop() {
+  is_two_hop_ = 0u;
+  clear_has_is_two_hop();
+}
+inline ::google::protobuf::uint32 Pathlet::is_two_hop() const {
+  // @@protoc_insertion_point(field_get:Pathlet.is_two_hop)
+  return is_two_hop_;
+}
+inline void Pathlet::set_is_two_hop(::google::protobuf::uint32 value) {
+  set_has_is_two_hop();
+  is_two_hop_ = value;
+  // @@protoc_insertion_point(field_set:Pathlet.is_two_hop)
 }
 
 

@@ -72,4 +72,6 @@ message Pathlet {
   optional string destination = 3;
   // pathlet path vector
   repeated uint32 path_vector = 4;
+  // if this is a two hop, then this will be set to 1
+  optional uint32 is_two_hop = 5;
 }

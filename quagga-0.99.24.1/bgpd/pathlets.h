@@ -64,9 +64,9 @@ void AnounceStaticRoute(char *ip_and_prefix, struct bgp *bgp);
  * @param control_info: D-BGP's extra control info
  * @param peer: Informatoin about the neighbor that sent the adv.
  */
-dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t *control_info,
-                                             struct attr *attr,
-                                             struct peer *peer, struct prefix* prefix);
+/* dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t *control_info, */
+/*                                              struct attr *attr, */
+/*                                              struct peer *peer, struct prefix* prefix); */
 dbgp_filtered_status_t new_pathlets_input_filter(dbgp_control_info_t *control_info,
                                              struct attr *attr,
                                              struct peer *peer, struct prefix* prefix);

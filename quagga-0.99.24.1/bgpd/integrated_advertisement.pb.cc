@@ -164,11 +164,12 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Pathlets));
   Pathlet_descriptor_ = file->message_type(7);
-  static const int Pathlet_offsets_[4] = {
+  static const int Pathlet_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, fid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, vnodes_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, destination_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, path_vector_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pathlet, is_two_hop_),
   };
   Pathlet_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -252,10 +253,11 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
     "\n\005value\030\002 \001(\t\"\035\n\010PathCost\022\021\n\tpath_cost\030\001"
     " \001(\r\"#\n\rLastWiserNode\022\022\n\nlast_wiser\030\001 \003("
     "\r\"&\n\010Pathlets\022\032\n\010pathlets\030\001 \003(\0132\010.Pathle"
-    "t\"P\n\007Pathlet\022\013\n\003fid\030\001 \001(\r\022\016\n\006vnodes\030\002 \003("
+    "t\"d\n\007Pathlet\022\013\n\003fid\030\001 \001(\r\022\016\n\006vnodes\030\002 \003("
     "\r\022\023\n\013destination\030\003 \001(\t\022\023\n\013path_vector\030\004 "
-    "\003(\r*F\n\010Protocol\022\r\n\tP_UNKNOWN\020\000\022\013\n\007P_WISE"
-    "R\020\001\022\016\n\nP_PATHLETS\020\002\022\016\n\nP_BASELINE\020\003", 635);
+    "\003(\r\022\022\n\nis_two_hop\030\005 \001(\r*F\n\010Protocol\022\r\n\tP"
+    "_UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020\002\022"
+    "\016\n\nP_BASELINE\020\003", 655);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "integrated_advertisement.proto", &protobuf_RegisterTypes);
   IntegratedAdvertisement::default_instance_ = new IntegratedAdvertisement();
@@ -2121,6 +2123,7 @@ const int Pathlet::kFidFieldNumber;
 const int Pathlet::kVnodesFieldNumber;
 const int Pathlet::kDestinationFieldNumber;
 const int Pathlet::kPathVectorFieldNumber;
+const int Pathlet::kIsTwoHopFieldNumber;
 #endif  // !_MSC_VER
 
 Pathlet::Pathlet()
@@ -2144,6 +2147,7 @@ void Pathlet::SharedCtor() {
   _cached_size_ = 0;
   fid_ = 0u;
   destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  is_two_hop_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2182,14 +2186,28 @@ Pathlet* Pathlet::New() const {
 }
 
 void Pathlet::Clear() {
-  if (_has_bits_[0 / 32] & 5) {
-    fid_ = 0u;
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<Pathlet*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  if (_has_bits_[0 / 32] & 21) {
+    ZR_(fid_, is_two_hop_);
     if (has_destination()) {
       if (destination_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         destination_->clear();
       }
     }
   }
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
   vnodes_.Clear();
   path_vector_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2271,6 +2289,21 @@ bool Pathlet::MergePartialFromCodedStream(
           goto handle_unusual;
         }
         if (input->ExpectTag(32)) goto parse_path_vector;
+        if (input->ExpectTag(40)) goto parse_is_two_hop;
+        break;
+      }
+
+      // optional uint32 is_two_hop = 5;
+      case 5: {
+        if (tag == 40) {
+         parse_is_two_hop:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &is_two_hop_)));
+          set_has_is_two_hop();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -2327,6 +2360,11 @@ void Pathlet::SerializeWithCachedSizes(
       4, this->path_vector(i), output);
   }
 
+  // optional uint32 is_two_hop = 5;
+  if (has_is_two_hop()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->is_two_hop(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2365,6 +2403,11 @@ void Pathlet::SerializeWithCachedSizes(
       WriteUInt32ToArray(4, this->path_vector(i), target);
   }
 
+  // optional uint32 is_two_hop = 5;
+  if (has_is_two_hop()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->is_two_hop(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -2389,6 +2432,13 @@ int Pathlet::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->destination());
+    }
+
+    // optional uint32 is_two_hop = 5;
+    if (has_is_two_hop()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->is_two_hop());
     }
 
   }
@@ -2446,6 +2496,9 @@ void Pathlet::MergeFrom(const Pathlet& from) {
     if (from.has_destination()) {
       set_destination(from.destination());
     }
+    if (from.has_is_two_hop()) {
+      set_is_two_hop(from.is_two_hop());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -2473,6 +2526,7 @@ void Pathlet::Swap(Pathlet* other) {
     vnodes_.Swap(&other->vnodes_);
     std::swap(destination_, other->destination_);
     path_vector_.Swap(&other->path_vector_);
+    std::swap(is_two_hop_, other->is_two_hop_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

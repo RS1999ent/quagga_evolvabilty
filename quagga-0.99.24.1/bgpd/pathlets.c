@@ -279,10 +279,10 @@ void HandlePublicPrefixForExternal(dbgp_control_info_t* control_info,
   char* new_aspathstring = malloc(256);
   memset(new_aspathstring, 0, 256);
   snprintf(new_aspathstring, 256, "%d", peer->bgp->island_id);
-  struct aspath* aspath = aspath_dup (attr->aspath);
+  struct aspath* aspath = aspath_dup(attr->aspath);
   aspath = aspath_str2aspath(new_aspathstring);
-  aspath_unintern (&attr->aspath);
-  attr->aspath = aspath_intern (aspath);
+  aspath_unintern(&attr->aspath);
+  attr->aspath = aspath_intern(aspath);
   zlog_debug("pathlets::HandlePublicPrefixForExternal: set aspath to %s",
              attr->aspath->str);
 
@@ -622,13 +622,28 @@ dbgp_filtered_status_t new_pathlets_input_filter(
       int free_fid = GetNextFid(pathlet_internal_state_);
       int as1 = peer->bgp->as;
       int as2 = peer->as;
-      zlog_debug(
-          "pathlets::pathlets_input_filter: creating pathlet for ip (%s) fid "
-          "(%i) "
-          "as1(%i) as2(%i) with dest (%s)",
-          new_ip, free_fid, as1, as2, prefix_buf);
-      InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2,
-                          prefix_buf);
+      // See if this is a manual two hop situation
+      int vnode1, vnode2;
+      char* destination = malloc(256);
+      GetManualTwoHop(pathlet_config_, prefix_buf, &vnode1, &vnode2,
+                      destination);
+      if (vnode1 != -1) {
+        zlog_debug(
+            "pathlets::pathlets_input_filter: creating two hop pathlet for ip "
+            "(%s) fid "
+            "(%i) "
+            "as1(%i) as2(%i) with dest (%s)",
+            new_ip, free_fid, as1, as2, destination, 1);
+        
+      } else {
+        zlog_debug(
+            "pathlets::pathlets_input_filter: creating pathlet for ip (%s) fid "
+            "(%i) "
+            "as1(%i) as2(%i) with dest (%s)",
+            new_ip, free_fid, as1, as2, prefix_buf);
+        InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2,
+                            prefix_buf, 0);
+      }
       zlog_debug(
           "pathlets::pathlets_input_filter: ip_to_pathlets_to_send:\n %s",
           GetPathletsToSendString(pathlet_internal_state_));
@@ -639,7 +654,8 @@ dbgp_filtered_status_t new_pathlets_input_filter(
 
       // announce it
       AnnounceStaticRoute(announce_ip, peer->bgp);
-      /* zlog_debug("pathlets::pathlets_input_filter: sleep after announcing"); */
+      /* zlog_debug("pathlets::pathlets_input_filter: sleep after announcing");
+       */
       /* sleep(10); */
 
       free(new_ip);
@@ -655,107 +671,107 @@ dbgp_filtered_status_t new_pathlets_input_filter(
   return DBGP_NOT_FILTERED;
 }
 
-dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info,
-                                             struct attr* attr,
-                                             struct peer* peer,
-                                             struct prefix* prefix) {
-  zlog_debug("pathlets::pathlets_input_filter: in pathlets input filter");
-  zlog_debug("pathlets::pathlets_input_filter: Aspath size: %i",
-             aspath_size_custom(attr->aspath));
-  // if an incoming advertisement has control info
-  int has_pathlet_info = HasPathletInformation(
-      control_info->integrated_advertisement,
-      control_info->integrated_advertisement_size, peer->bgp->island_id);
+/* dbgp_filtered_status_t pathlets_input_filter(dbgp_control_info_t* control_info, */
+/*                                              struct attr* attr, */
+/*                                              struct peer* peer, */
+/*                                              struct prefix* prefix) { */
+/*   zlog_debug("pathlets::pathlets_input_filter: in pathlets input filter"); */
+/*   zlog_debug("pathlets::pathlets_input_filter: Aspath size: %i", */
+/*              aspath_size_custom(attr->aspath)); */
+/*   // if an incoming advertisement has control info */
+/*   int has_pathlet_info = HasPathletInformation( */
+/*       control_info->integrated_advertisement, */
+/*       control_info->integrated_advertisement_size, peer->bgp->island_id); */
 
-  // if there is pathlet info in it, we don't want to do any filtering, let it
-  // pass onto the pathlets_update_control_info
-  char* prefix_buf = malloc(256);
-  prefix2str(prefix, prefix_buf, 256);
-  zlog_debug("pathlets::pathlets_input_filter: Prefix gotten: %s", prefix_buf);
-  if (has_pathlet_info == 1) {
-    zlog_debug(
-        "pathlets:pathlets_input_filter: Advert has control info. aspath: %s",
-        attr->aspath->str);
-    zlog_debug(
-        "pathlets:pathlets_input_filter: Advert has control info. prefix: %s",
-        prefix_buf);
-    zlog_debug(
-        "pathlets::pathlets_input_filter: IA control info: \n %s",
-        SerializedAdverToString(control_info->integrated_advertisement,
-                                control_info->integrated_advertisement_size));
-    zlog_debug(
-        "pathlets::pathlets_input_filter: IA control info: \n %s",
-        PrintPathletsFromSerializedAdvert(
-            control_info->integrated_advertisement,
-            control_info->integrated_advertisement_size, peer->bgp->island_id));
+/*   // if there is pathlet info in it, we don't want to do any filtering, let it */
+/*   // pass onto the pathlets_update_control_info */
+/*   char* prefix_buf = malloc(256); */
+/*   prefix2str(prefix, prefix_buf, 256); */
+/*   zlog_debug("pathlets::pathlets_input_filter: Prefix gotten: %s", prefix_buf); */
+/*   if (has_pathlet_info == 1) { */
+/*     zlog_debug( */
+/*         "pathlets:pathlets_input_filter: Advert has control info. aspath: %s", */
+/*         attr->aspath->str); */
+/*     zlog_debug( */
+/*         "pathlets:pathlets_input_filter: Advert has control info. prefix: %s", */
+/*         prefix_buf); */
+/*     zlog_debug( */
+/*         "pathlets::pathlets_input_filter: IA control info: \n %s", */
+/*         SerializedAdverToString(control_info->integrated_advertisement, */
+/*                                 control_info->integrated_advertisement_size)); */
+/*     zlog_debug( */
+/*         "pathlets::pathlets_input_filter: IA control info: \n %s", */
+/*         PrintPathletsFromSerializedAdvert( */
+/*             control_info->integrated_advertisement, */
+/*             control_info->integrated_advertisement_size, peer->bgp->island_id)); */
 
-    return DBGP_NOT_FILTERED;
-  }
-  // here if the advert had no pathlet control info.
-  // Get the originating as and determine if
-  int originating_as = aspath_get_rightmost(attr->aspath);
-  // If the as is not a part of our island, then there is no specific pathlet
-  // stuff we need to do with it.
-  if (IsRemoteAsAnIslandMember(general_configuration_, originating_as) == 0) {
-    zlog_debug(
-        "pathlets::pathlets_input_filter: Control info from outside the "
-        "island");
-    HandleExternalIslandInput(control_info, peer, attr, prefix);
-    // filter because we don't want this stuff to go further into island,
-    // handleexternlaislandinput is going to create and announce the proper
-    // pathlets
-    return DBGP_FILTERED;  // there is a problem when filtering this WHY?
-  }
-  // If it is a public IP and the aspath is > 1, that means this is a public
-  // ip
-  // that just neeeds to propagate around because the 1 hop for it has already
-  // been announced. This is so it gets to the edge of the island to be pushed
-  // out into the gulf
-  if (IsPublicPrefix(prefix) && aspath_size_custom(attr->aspath) > 1) {
-    zlog_debug(
-        "pathlets::pathlets_input_filter: This is a public IP, don't create "
-        "another pathlet: prefix: %s",
-        prefix_buf);
-    return DBGP_NOT_FILTERED;
-  }
-  // Here if there is no pathlet info and the originating as was a island
-  // member
-  // and the aspath is < 1. This means that this as is advertising a 1 hop
-  // location. We need to create a pathlet and originate a new prefix with
-  // this
-  // pathlet.
-  char* new_ip = GetNextIp(pathlet_internal_state_);
-  int free_fid = GetNextFid(pathlet_internal_state_);
-  int as1 = peer->bgp->as;
-  int as2 = peer->as;
-  zlog_debug(
-      "pathlets::pathlets_input_filter: creating pathlet for ip (%s) fid "
-      "(%i) "
-      "as1(%i) as2(%i) with dest (%s)",
-      new_ip, free_fid, as1, as2, prefix_buf);
-  InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2,
-                      prefix_buf);
-  zlog_debug("pathlets::pathlets_input_filter: ip_to_pathlets_to_send:\n %s",
-             GetPathletsToSendString(pathlet_internal_state_));
+/*     return DBGP_NOT_FILTERED; */
+/*   } */
+/*   // here if the advert had no pathlet control info. */
+/*   // Get the originating as and determine if */
+/*   int originating_as = aspath_get_rightmost(attr->aspath); */
+/*   // If the as is not a part of our island, then there is no specific pathlet */
+/*   // stuff we need to do with it. */
+/*   if (IsRemoteAsAnIslandMember(general_configuration_, originating_as) == 0) { */
+/*     zlog_debug( */
+/*         "pathlets::pathlets_input_filter: Control info from outside the " */
+/*         "island"); */
+/*     HandleExternalIslandInput(control_info, peer, attr, prefix); */
+/*     // filter because we don't want this stuff to go further into island, */
+/*     // handleexternlaislandinput is going to create and announce the proper */
+/*     // pathlets */
+/*     return DBGP_FILTERED;  // there is a problem when filtering this WHY? */
+/*   } */
+/*   // If it is a public IP and the aspath is > 1, that means this is a public */
+/*   // ip */
+/*   // that just neeeds to propagate around because the 1 hop for it has already */
+/*   // been announced. This is so it gets to the edge of the island to be pushed */
+/*   // out into the gulf */
+/*   if (IsPublicPrefix(prefix) && aspath_size_custom(attr->aspath) > 1) { */
+/*     zlog_debug( */
+/*         "pathlets::pathlets_input_filter: This is a public IP, don't create " */
+/*         "another pathlet: prefix: %s", */
+/*         prefix_buf); */
+/*     return DBGP_NOT_FILTERED; */
+/*   } */
+/*   // Here if there is no pathlet info and the originating as was a island */
+/*   // member */
+/*   // and the aspath is < 1. This means that this as is advertising a 1 hop */
+/*   // location. We need to create a pathlet and originate a new prefix with */
+/*   // this */
+/*   // pathlet. */
+/*   char* new_ip = GetNextIp(pathlet_internal_state_); */
+/*   int free_fid = GetNextFid(pathlet_internal_state_); */
+/*   int as1 = peer->bgp->as; */
+/*   int as2 = peer->as; */
+/*   zlog_debug( */
+/*       "pathlets::pathlets_input_filter: creating pathlet for ip (%s) fid " */
+/*       "(%i) " */
+/*       "as1(%i) as2(%i) with dest (%s)", */
+/*       new_ip, free_fid, as1, as2, prefix_buf); */
+/*   InsertPathletToSend(pathlet_internal_state_, new_ip, free_fid, as1, as2, */
+/*                       prefix_buf); */
+/*   zlog_debug("pathlets::pathlets_input_filter: ip_to_pathlets_to_send:\n %s", */
+/*              GetPathletsToSendString(pathlet_internal_state_)); */
 
-  // create ip to announce (/32)
-  char* announce_ip = malloc(256);
-  snprintf(announce_ip, 256, "%s/%d", new_ip, 32);
+/*   // create ip to announce (/32) */
+/*   char* announce_ip = malloc(256); */
+/*   snprintf(announce_ip, 256, "%s/%d", new_ip, 32); */
 
-  // announce it
-  AnnounceStaticRoute(announce_ip, peer->bgp);
-  /* zlog_debug("pathlets::pathlets_input_filter: sleep after announcing"); */
-  /* sleep(5); */
+/*   // announce it */
+/*   AnnounceStaticRoute(announce_ip, peer->bgp); */
+/*   /\* zlog_debug("pathlets::pathlets_input_filter: sleep after announcing"); *\/ */
+/*   /\* sleep(5); *\/ */
 
-  free(new_ip);
-  free(announce_ip);
-  // filter it because it is the first instance of a 1 hop pathlet
-  /* return DBGP_FILTERED; */
-  // not filtering anymore, we just won't do anything with it until it reaches
-  // a
-  // border router
-  return DBGP_NOT_FILTERED;
-}
+/*   free(new_ip); */
+/*   free(announce_ip); */
+/*   // filter it because it is the first instance of a 1 hop pathlet */
+/*   /\* return DBGP_FILTERED; *\/ */
+/*   // not filtering anymore, we just won't do anything with it until it reaches */
+/*   // a */
+/*   // border router */
+/*   return DBGP_NOT_FILTERED; */
+/* } */
 
 dbgp_filtered_status_t pathlets_output_filter(
     /* dbgp_control_info_t* control_info, */ struct attr* attr,

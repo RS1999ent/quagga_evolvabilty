@@ -66,4 +66,16 @@ message NodeProperty {
 message PathletProtoConfig{
   optional uint32 is_island_border_router = 1;
   optional string private_slash24_ip = 2;
+  repeated Filter filters = 3;
+}
+
+message Filter{
+  optional string one_hop_ip = 1;
+  optional ManualPathlet pathlet_to_advertise = 2;
+}
+
+message ManualPathlet{
+  optional uint32 vnode1 = 1;
+  optional uint32 vnode2 = 2;
+  optional string destination = 3;
 }

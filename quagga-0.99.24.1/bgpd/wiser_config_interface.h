@@ -39,7 +39,7 @@ void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
 // INSERT PATHLET, takes 3 ints, and an ip address.
 void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state,
                          char* associated_ip, int fid, int as1, int as2,
-                         char* dest_ip);
+                         char* dest_ip, int is_two_hop);
 void InsertRawPathletToSend(PathletInternalStateHandle pathlet_internal_state,
                             char* assocaited_ip, char* serialized_pathlet,
                             int pathlet_size);
@@ -51,6 +51,9 @@ int GetNextFid(PathletInternalStateHandle pathlet_internal_state);
 char* GetPathletsForDestination(
     PathletInternalStateHandle pathlet_internal_state, const char* destination,
     int island_id, int as_num, int* pathlets_size);
+char* GetPathletGraphString(PathletInternalStateHandle pathlet_internal_state);
+char* GetPathletsToSendString(
+    PathletInternalStateHandle pathlet_internal_state);
 
 // pathlet config functions
 typedef struct PathletConfig* PathletConfigHandle;
@@ -60,9 +63,8 @@ PathletInternalStateHandle CreatePathletInternalState(
     PathletConfigHandle pathlet_config);
 int IsIslandBorderRouter(PathletConfigHandle pathlet_config);
 char* GetPrivateIp(PathletConfigHandle pathlet_config);
-char* GetPathletGraphString(PathletInternalStateHandle pathlet_internal_state);
-char* GetPathletsToSendString(
-    PathletInternalStateHandle pathlet_internal_state);
+void GetManualTwoHop(PathletConfigHandle pathlet_config, char* one_hop_ip,
+                     int* vnode1, int* vnode2, char* destination);
 
 #ifdef __cplusplus
 }

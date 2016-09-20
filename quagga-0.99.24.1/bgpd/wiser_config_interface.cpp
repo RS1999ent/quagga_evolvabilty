@@ -112,7 +112,7 @@ void InsertPathletIntoGraph(PathletInternalStateHandle pathlet_internal_state,
 
 void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state,
                          char* associated_ip, int fid, int as1, int as2,
-                         char* dest_ip) {
+                         char* dest_ip, int is_two_hop) {
   internal_state_mutex.lock();
   // parse serialized
   Pathlet pathlet;
@@ -120,6 +120,7 @@ void InsertPathletToSend(PathletInternalStateHandle pathlet_internal_state,
   pathlet.add_vnodes(as1);
   pathlet.add_vnodes(as2);
   pathlet.set_destination(dest_ip);
+  pathlet.set_is_two_hop(is_two_hop);
   pathlet_internal_state->InsertPathletToSend(string(associated_ip), pathlet);
   internal_state_mutex.unlock();
 }
@@ -211,4 +212,18 @@ char* GetPathletsToSendString(
   char* return_buffer = (char*)malloc(pathlets_to_send_string.size() + 1);
   strcpy(return_buffer, pathlets_to_send_string.c_str());
   return return_buffer;
+}
+
+void GetManualTwoHop(PathletConfigHandle pathlet_config, char* one_hop_ip,
+                     int* vnode1, int* vnode2, char* destination) {
+  int found_one;
+  ManualPathlet man_pathlet =
+      pathlet_config->GetManualTwoHop(one_hop_ip, &found_one);
+  if (found_one == 1) {
+    *vnode1 = man_pathlet.vnode1();
+    *vnode2 = man_pathlet.vnode2();
+    strcpy(destination, man_pathlet.destination().c_str());
+  } else {
+    *vnode1 = -1;
+  }
 }
