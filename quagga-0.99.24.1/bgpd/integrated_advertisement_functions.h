@@ -127,5 +127,12 @@ extern "C" char* GenerateInternalPathletControlInfo(
 // that announceips has enough space
 extern "C" void CreatePathletsFromIA(
     PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
-    int advert_size, uint32_t* aspath, int aspath_size, int island_id, int as_num,
-    char* announce_ips[], int* num_ips);
+    int advert_size, uint32_t* aspath, int aspath_size, int island_id,
+    int as_num, char* announce_ips[], int* num_ips);
+
+// Gets an array of the pathvector assocaited with a pathlet ip that will be
+// announced. This is used for creatting a quagga path vector. Assuming that
+// there is a pathlet assoicated with ip otherwise undefined behavior.
+extern "C" uint32_t* GetPathletPathVectorForAssociatedIp(
+    PathletInternalStateHandle pathlet_internal_state, const char* ip_address,
+    uint32_t* path_vector_size);

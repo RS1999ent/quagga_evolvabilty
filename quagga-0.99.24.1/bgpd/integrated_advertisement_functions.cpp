@@ -482,9 +482,9 @@ char* GenerateInternalPathletControlInfo(
 
 // untested
 void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
-                          char* serialized_advert, int advert_size, uint32_t* aspath,
-                          int aspath_size, int island_id, int as_num,
-                          char* announce_ips[], int* num_ips) {
+                          char* serialized_advert, int advert_size,
+                          uint32_t* aspath, int aspath_size, int island_id,
+                          int as_num, char* announce_ips[], int* num_ips) {
   *num_ips = 0;
   int array_position = 0;  // current position in announce_ips where we can
                            // assign an ip
@@ -524,7 +524,7 @@ void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
     snprintf(announce_ip, 256, "%s/%d", new_ip, 32);
     announce_ips[array_position] = announce_ip;
     array_position++;
-    *num_ips = *num_ips+1;
+    *num_ips = *num_ips + 1;
   }
   // create a pathlet to the as that originated it.
   Pathlet cross_gulf_pathlet;
@@ -545,5 +545,23 @@ void CreatePathletsFromIA(PathletInternalStateHandle pathlet_internal_state,
   char* announce_ip = (char*)malloc(256);
   snprintf(announce_ip, 256, "%s/%d", new_ip, 32);
   announce_ips[array_position] = announce_ip;
-  *num_ips = *num_ips+1;
+  *num_ips = *num_ips + 1;
+}
+
+uint32_t* GetPathletPathVectorForAssociatedIp(PathletInternalStateHandle pathlet_internal_state,
+                          const char* ip_address, uint32_t* path_vector_size) {
+  int pathlet_size;
+  char* serialzied_pathlet = GetPathletAssociatedWithIp(
+      pathlet_internal_state, ip_address, &pathlet_size);
+
+  Pathlet pathlet;
+  pathlet.ParseFromArray(serialzied_pathlet, pathlet_size);
+  *path_vector_size = pathlet.path_vector_size();
+  uint32_t* return_int_arr = (uint32_t*) malloc(*path_vector_size * sizeof(uint32_t));
+  int pos = 0;
+  for(uint32_t as : pathlet.path_vector()){
+    return_int_arr[pos] = as;
+    pos++;
+  }
+  return return_int_arr;
 }

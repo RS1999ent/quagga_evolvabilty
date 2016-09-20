@@ -1115,11 +1115,10 @@ TEST(CreatePathletsFromIA,
   const int kAsNum = 1;
   const int kAsPathSize = 5;
   uint32_t kAsPathArray[kAsPathSize] = {1, 2, 3, 4, 5};
-  const string kCorrectAnnounceIps[256] = {"192.168.1.1/32","192.168.1.2/32"};
+  const string kCorrectAnnounceIps[256] = {"192.168.1.1/32", "192.168.1.2/32"};
   const int kCorrectNumIps = 2;
-  const map<string, string> kCorrectIpToPathlet = {
-    {"192.168.1.1",
-     R"(
+  const map<string, string> kCorrectIpToPathlet = {{"192.168.1.1",
+                                                    R"(
     fid: 1
     vnodes: 1
     vnodes: 2
@@ -1129,8 +1128,8 @@ TEST(CreatePathletsFromIA,
     path_vector : 4
     path_vector : 5
     )"},
-    {"192.168.1.2",
-     R"(
+                                                   {"192.168.1.2",
+                                                    R"(
     fid: 1
     vnodes: 1
     vnodes: 4
@@ -1139,8 +1138,7 @@ TEST(CreatePathletsFromIA,
     path_vector : 3
     path_vector : 4
     path_vector : 5
-    )"}
-  };
+    )"}};
 
   PathletInternalState pathlet_internal_state("192.168.1.1");
 
@@ -1188,7 +1186,7 @@ TEST(CreatePathletsFromIA,
      IaWithPathletsInIt2_GetCorrectIpsBackAndCorrectIpsToSendMap) {
   // Arrange
   const string kInputPathlets =
-    R"(
+      R"(
         pathlets {
         fid : 1
         vnodes : 1
@@ -1223,11 +1221,11 @@ TEST(CreatePathletsFromIA,
   const int kAsNum = 1;
   const int kAsPathSize = 5;
   uint32_t kAsPathArray[kAsPathSize] = {1, 2, 3, 4, 5};
-  const string kCorrectAnnounceIps[256] = {"192.168.1.1/32", "192.168.1.2/32", "192.168.1.3/32", "192.168.1.4/32"};
+  const string kCorrectAnnounceIps[256] = {"192.168.1.1/32", "192.168.1.2/32",
+                                           "192.168.1.3/32", "192.168.1.4/32"};
   const int kCorrectNumIps = 4;
-  const map<string, string> kCorrectIpToPathlet = {
-    {"192.168.1.1",
-     R"(
+  const map<string, string> kCorrectIpToPathlet = {{"192.168.1.1",
+                                                    R"(
     fid: 1
     vnodes: 1
     vnodes: 2
@@ -1237,8 +1235,8 @@ TEST(CreatePathletsFromIA,
     path_vector : 4
     path_vector : 5
     )"},
-    {"192.168.1.2",
-     R"(
+                                                   {"192.168.1.2",
+                                                    R"(
     fid: 1
     vnodes: 2
     vnodes: 3
@@ -1249,8 +1247,8 @@ TEST(CreatePathletsFromIA,
     path_vector : 5
     destination: '10.0.1.1/24'
     )"},
-    {"192.168.1.3",
-     R"(
+                                                   {"192.168.1.3",
+                                                    R"(
     fid: 1
     vnodes: 3
     vnodes: 4
@@ -1262,8 +1260,8 @@ TEST(CreatePathletsFromIA,
     path_vector : 4
     path_vector : 5
     )"},
-    {"192.168.1.4",
-     R"(
+                                                   {"192.168.1.4",
+                                                    R"(
     fid: 1
     vnodes: 1
     vnodes: 4
@@ -1272,8 +1270,7 @@ TEST(CreatePathletsFromIA,
     path_vector : 3
     path_vector : 4
     path_vector : 5
-    )"}
-  };
+    )"}};
 
   PathletInternalState pathlet_internal_state("192.168.1.1");
 
@@ -1317,6 +1314,69 @@ TEST(CreatePathletsFromIA,
   EXPECT_EQ(num_ips, kCorrectNumIps);
   for (int i = 0; i < num_ips; i++) {
     EXPECT_STREQ(kCorrectAnnounceIps[i].c_str(), result_announce_ips[i]);
+  }
+}
+
+TEST(GetPathletPathVectorForAssociatedIp,
+     PathletDoesNothavepathvector_GetCorrectThingBack) {
+  const map<string, string> kAssociatedIpToPathlet = {{"192.168.1.1", R"(
+    fid: 1
+    vnodes : 1
+    vnodes : 2
+    )"}};
+  const string kInputIp = "192.168.1.1";
+  const int kCorrectVectorSize = 0;
+  const int kCorrectPathVector[kCorrectVectorSize] = {};
+
+  PathletInternalState pathlet_internal_state("");
+
+  for (auto kv : kAssociatedIpToPathlet) {
+    Pathlet pathlet;
+    google::protobuf::TextFormat::ParseFromString(kv.second, &pathlet);
+    pathlet_internal_state.InsertPathletToSend(kv.first, pathlet);
+  }
+
+  uint32_t result_size;
+  uint32_t* result = GetPathletPathVectorForAssociatedIp(
+      &pathlet_internal_state, kInputIp.c_str(), &result_size);
+
+  // Assert
+  EXPECT_EQ(result_size, kCorrectVectorSize);
+  for (uint32_t i = 0; i < result_size; i++) {
+    EXPECT_EQ(result[i], kCorrectPathVector[i]);
+  }
+}
+
+TEST(GetPathletPathVectorForAssociatedIp,
+     Pathlethavepathvector_GetCorrectThingBack) {
+  const map<string, string> kAssociatedIpToPathlet = {{"192.168.1.1", R"(
+    fid: 1
+    vnodes : 1
+    vnodes : 2
+    path_vector: 1
+    path_vector: 2
+    path_vector: 3
+    )"}};
+  const string kInputIp = "192.168.1.1";
+  const int kCorrectVectorSize = 3;
+    const int kCorrectPathVector[kCorrectVectorSize] = {1, 2, 3};
+
+  PathletInternalState pathlet_internal_state("");
+
+  for (auto kv : kAssociatedIpToPathlet) {
+    Pathlet pathlet;
+    google::protobuf::TextFormat::ParseFromString(kv.second, &pathlet);
+    pathlet_internal_state.InsertPathletToSend(kv.first, pathlet);
+  }
+
+  uint32_t result_size;
+  uint32_t* result = GetPathletPathVectorForAssociatedIp(
+                                                         &pathlet_internal_state, kInputIp.c_str(), &result_size);
+
+  // Assert
+  EXPECT_EQ(result_size, kCorrectVectorSize);
+  for (uint32_t i = 0; i < result_size; i++) {
+    EXPECT_EQ(result[i], kCorrectPathVector[i]);
   }
 }
 
