@@ -304,7 +304,7 @@ char* PrintPathletsFromSerializedAdvert(char* serialized_advert,
   Pathlets pathlets;
   pathlets.ParseFromString(pathlets_kv->value());
 
-  int num_chars = parsed_advert.DebugString().size() + 1;
+  int num_chars = parsed_advert.DebugString().size() + 256;
   char* return_buffer = (char*)malloc(num_chars);
   strcpy(return_buffer, pathlets.DebugString().c_str());
   return return_buffer;

@@ -218,7 +218,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
   assert(attr != NULL);
   if (peer->bgp->dbgp_protocol == dbgp_protocol_baseline_sleeper ||
       peer->bgp->dbgp_protocol == dbgp_protocol_baseline) {
-    return;
+    return DBGP_NOT_FILTERED;
   }
 
   control_info = GetControlInformation(attr, &transit);
@@ -305,7 +305,7 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer,
         return DBGP_NOT_FILTERED;
         break;
       case dbgp_protocol_baseline_sleeper:
-        return;
+        return DBGP_NOT_FILTERED;
         break;
 
       /* Critical fixes */

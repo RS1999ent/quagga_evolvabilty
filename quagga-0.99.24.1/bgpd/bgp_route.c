@@ -3279,7 +3279,7 @@ bgp_static_update_main (struct bgp *bgp, struct prefix *p,
   // UPDATE CONTROL INFO HERE.
   /* dbgp_update_control_info(attr, peer, p); */
 
-  if(bgp->dbgp_protocol == dbgp_replacement_pathlets && skipped_first == 1){
+  if(bgp->dbgp_protocol == dbgp_replacement_pathlets && skipped_first != 0){
     dbgp_update_control_info_bgpstruct(&attr, bgp, p);
   }
   skipped_first++;
