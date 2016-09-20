@@ -144,24 +144,40 @@ void AddExternalPathletControlInfoForDest(struct prefix* prefix, int island_id,
 
 void AddExternalPathletControlInfoForAll(int island_id,
                                          dbgp_control_info_t* control_info) {
+  zlog_debug("HERE1");
+  zlog_debug("HERE2");
   char* old_integrated_advertisement = control_info->integrated_advertisement;
+  zlog_debug("HERE3");
   int old_integrated_advertisement_size =
       control_info->integrated_advertisement_size;
+  zlog_debug("HERE4");
   int new_size;
+  zlog_debug("HERE5");
   char* new_integrated_advertisement_info = GenerateExternalPathletControlInfo(
       pathlet_internal_state_, island_id, old_integrated_advertisement,
       old_integrated_advertisement_size, &new_size);
+  zlog_debug("HERE6");
   assert(new_integrated_advertisement_info != NULL);
+  zlog_debug("HERE7");
 
+  zlog_debug(
+      "pathlets::AddExternalPathletControlInfoForAll: new_size: %i "
+      "AdvertOutgoing: %s",
+      new_size,
+      SerializedAdverToString(new_integrated_advertisement_info, new_size));
   zlog_debug(
       "pathlets::AddExternalPathletControlInfoForAll: Pathlets in outgoing "
       "advert:\n %s",
       PrintPathletsFromSerializedAdvert(new_integrated_advertisement_info,
                                         new_size, island_id));
+  zlog_debug("HERE8");
 
   free(old_integrated_advertisement);
+  zlog_debug("HERE9");
   control_info->integrated_advertisement = new_integrated_advertisement_info;
+  zlog_debug("HERE10");
   control_info->integrated_advertisement_size = new_size;
+  zlog_debug("HERE11");
 }
 
 void AnnounceStaticRoute(char* ip_and_prefix, struct bgp* bgp) {
@@ -263,7 +279,10 @@ void HandlePublicPrefixForExternal(dbgp_control_info_t* control_info,
   char* new_aspathstring = malloc(256);
   memset(new_aspathstring, 0, 256);
   snprintf(new_aspathstring, 256, "%d", peer->bgp->island_id);
-  attr->aspath = aspath_str2aspath(new_aspathstring);
+  struct aspath* aspath = aspath_dup (attr->aspath);
+  aspath = aspath_str2aspath(new_aspathstring);
+  aspath_unintern (&attr->aspath);
+  attr->aspath = aspath_intern (aspath);
   zlog_debug("pathlets::HandlePublicPrefixForExternal: set aspath to %s",
              attr->aspath->str);
 
@@ -620,8 +639,8 @@ dbgp_filtered_status_t new_pathlets_input_filter(
 
       // announce it
       AnnounceStaticRoute(announce_ip, peer->bgp);
-      zlog_debug("pathlets::pathlets_input_filter: sleep after announcing");
-      sleep(5);
+      /* zlog_debug("pathlets::pathlets_input_filter: sleep after announcing"); */
+      /* sleep(10); */
 
       free(new_ip);
       free(announce_ip);
@@ -793,10 +812,10 @@ dbgp_filtered_status_t pathlets_output_filter(
   if (!is_private_ip || !peer_apart_of_island) {
     dbgp_update_control_info(attr, peer, prefix);
   }
-  if (!peer_apart_of_island) {
-    zlog_debug("pathlets::pathlets_output_filter: sleeping");
-    sleep(20);
-  }
+  /* if (!peer_apart_of_island) { */
+  /*   zlog_debug("pathlets::pathlets_output_filter: sleeping"); */
+  /*   sleep(5); */
+  /* } */
 
   return DBGP_NOT_FILTERED;
 }
