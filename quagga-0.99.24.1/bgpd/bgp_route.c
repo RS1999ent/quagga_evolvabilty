@@ -694,14 +694,14 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
     }
 
   /* D-BGP-specific filtering */
-  if(dbgp_output_filter(riattr, peer, p) == DBGP_FILTERED) {
-    return 0;
-  }
+  /* if(dbgp_output_filter(riattr, peer, p) == DBGP_FILTERED) { */
+  /*   return 0; */
+  /* } */
 
-  if(clock_lock != 0){
-    end_end_to_end = clock();
-    zlog_info("bgp_route::CLOCK inputclock %ld, outputclock %ld, diff: %ld", start_end_to_end, end_end_to_end, end_end_to_end - start_end_to_end );
-  }
+  /* if(clock_lock != 0){ */
+  /*   end_end_to_end = clock(); */
+  /*   zlog_info("bgp_route::CLOCK inputclock %ld, outputclock %ld, diff: %ld", start_end_to_end, end_end_to_end, end_end_to_end - start_end_to_end ); */
+  /* } */
   /* For modify attribute, copy it to temporary structure. */
   bgp_attr_dup (attr, riattr);
   
@@ -876,6 +876,11 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
     // This no longer necessary
     /* bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t)); */
     /* insert_sentinel(attr->extra->transit); */
+  }
+
+  if(clock_lock != 0){
+    end_end_to_end = clock();
+    zlog_info("bgp_route::CLOCK inputclock %ld, outputclock %ld, diff: %ld", start_end_to_end, end_end_to_end, end_end_to_end - start_end_to_end );
   }
 
   return 1;
@@ -1921,12 +1926,24 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
       goto  filtered;
     }
 
+  if(clock_lock == 0){
+    zlog_debug("bgp_route: starting end to end clock");
+    start_end_to_end=clock();
+    clock_lock = clock_lock + 1;
+  }
+
   /* Apply incoming filter.  */
-  if (bgp_input_filter (peer, p, attr, afi, safi) == FILTER_DENY)
-    {
-      reason = "filter;";
-      goto filtered;
-    }
+  /* if (bgp_input_filter (peer, p, attr, afi, safi) == FILTER_DENY) */
+  /*   { */
+  /*     reason = "filter;"; */
+  /*     goto filtered; */
+  /*   } */
+  /* if (dbgp_input_filter (attr, peer, p) == DBGP_FILTERED) */
+  /*   { */
+  /*     bgp_attr_flush(&new_attr); */
+  /*     reason = "dbgp_filtered;"; */
+  /*     goto filtered; */
+  /*   } */
   
   new_attr.extra = &new_extra;
   bgp_attr_dup (&new_attr, attr);
@@ -1975,11 +1992,6 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
    *  protocol-specific information and a lookup key */
   // BUG: dbgp_input_filter formerly had attr going int, changed to new_attr
   // NO longer assuming this is called before update control info
-  if(clock_lock == 0){
-    zlog_debug("bgp_route: starting end to end clock");
-    start_end_to_end=clock();
-    clock_lock = clock_lock + 1;
-  }
   if (dbgp_input_filter(&new_attr, peer, p) == DBGP_FILTERED) {
     bgp_attr_flush(&new_attr);
     reason = "dbgp_protocol_specific_filtered";

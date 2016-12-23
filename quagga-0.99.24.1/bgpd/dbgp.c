@@ -298,6 +298,12 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer,
 
   /* control_info = retrieve_control_info(transit); */
 
+  // not sure why this was here 12-22-16. commenting out
+  /* if(peer->bgp->as == 103) */
+  /*   { */
+  /*     return DBGP_FILTERED; */
+  /*   } */
+
   switch (peer->bgp->dbgp_protocol) {
     {
       /* Just BGP */

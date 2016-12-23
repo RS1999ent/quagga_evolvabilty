@@ -342,10 +342,12 @@ main (int argc, char **argv)
   /* Set umask before anything for security */
   umask (0027);
 
+  printf("CLOCKS PER SEC %ld", CLOCKS_PER_SEC);
   general_configuration_ = CreateGeneralConfig(protocol_config_default);
   wiser_config_ = GetWiserConfig(general_configuration_);
   pathlet_config_ = CreatePathletConfig(general_configuration_);
   pathlet_internal_state_ = CreatePathletInternalState(pathlet_config_);
+
 
 
   /* Preserve name of myself. */
