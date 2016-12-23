@@ -41,13 +41,15 @@ class NodeProperty;
 class PathletProtoConfig;
 class Filter;
 class ManualPathlet;
+class BenchmarkProtolConfig;
 
 enum ProtocolType {
   PT_UNKNOWN = 0,
   PT_WISER = 1,
   PT_PATHLETS = 2,
   PT_BASELINE_SLEEPER = 3,
-  PT_BASELINE = 4
+  PT_BENCHMARK = 4,
+  PT_BASELINE = 5
 };
 bool ProtocolType_IsValid(int value);
 const ProtocolType ProtocolType_MIN = PT_UNKNOWN;
@@ -163,6 +165,15 @@ class Configuration : public ::google::protobuf::Message {
   inline ::PathletProtoConfig* release_pathlet_config();
   inline void set_allocated_pathlet_config(::PathletProtoConfig* pathlet_config);
 
+  // optional .BenchmarkProtolConfig benchmark_protocol_config = 6;
+  inline bool has_benchmark_protocol_config() const;
+  inline void clear_benchmark_protocol_config();
+  static const int kBenchmarkProtocolConfigFieldNumber = 6;
+  inline const ::BenchmarkProtolConfig& benchmark_protocol_config() const;
+  inline ::BenchmarkProtolConfig* mutable_benchmark_protocol_config();
+  inline ::BenchmarkProtolConfig* release_benchmark_protocol_config();
+  inline void set_allocated_benchmark_protocol_config(::BenchmarkProtolConfig* benchmark_protocol_config);
+
   // @@protoc_insertion_point(class_scope:Configuration)
  private:
   inline void set_has_protocol_type();
@@ -173,6 +184,8 @@ class Configuration : public ::google::protobuf::Message {
   inline void clear_has_wiser_protocol_config();
   inline void set_has_pathlet_config();
   inline void clear_has_pathlet_config();
+  inline void set_has_benchmark_protocol_config();
+  inline void clear_has_benchmark_protocol_config();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -183,6 +196,7 @@ class Configuration : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > island_member_ases_;
   ::WiserProtocolConfig* wiser_protocol_config_;
   ::PathletProtoConfig* pathlet_config_;
+  ::BenchmarkProtolConfig* benchmark_protocol_config_;
   friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
   friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
   friend void protobuf_ShutdownFile_quagga_5fconfig_2eproto();
@@ -944,6 +958,85 @@ class ManualPathlet : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static ManualPathlet* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class BenchmarkProtolConfig : public ::google::protobuf::Message {
+ public:
+  BenchmarkProtolConfig();
+  virtual ~BenchmarkProtolConfig();
+
+  BenchmarkProtolConfig(const BenchmarkProtolConfig& from);
+
+  inline BenchmarkProtolConfig& operator=(const BenchmarkProtolConfig& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BenchmarkProtolConfig& default_instance();
+
+  void Swap(BenchmarkProtolConfig* other);
+
+  // implements Message ----------------------------------------------
+
+  BenchmarkProtolConfig* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BenchmarkProtolConfig& from);
+  void MergeFrom(const BenchmarkProtolConfig& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional uint32 num_bytes_to_set = 1;
+  inline bool has_num_bytes_to_set() const;
+  inline void clear_num_bytes_to_set();
+  static const int kNumBytesToSetFieldNumber = 1;
+  inline ::google::protobuf::uint32 num_bytes_to_set() const;
+  inline void set_num_bytes_to_set(::google::protobuf::uint32 value);
+
+  // @@protoc_insertion_point(class_scope:BenchmarkProtolConfig)
+ private:
+  inline void set_has_num_bytes_to_set();
+  inline void clear_has_num_bytes_to_set();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 num_bytes_to_set_;
+  friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
+  friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
+  friend void protobuf_ShutdownFile_quagga_5fconfig_2eproto();
+
+  void InitAsDefaultInstance();
+  static BenchmarkProtolConfig* default_instance_;
+};
 // ===================================================================
 
 
@@ -1110,6 +1203,47 @@ inline void Configuration::set_allocated_pathlet_config(::PathletProtoConfig* pa
     clear_has_pathlet_config();
   }
   // @@protoc_insertion_point(field_set_allocated:Configuration.pathlet_config)
+}
+
+// optional .BenchmarkProtolConfig benchmark_protocol_config = 6;
+inline bool Configuration::has_benchmark_protocol_config() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void Configuration::set_has_benchmark_protocol_config() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void Configuration::clear_has_benchmark_protocol_config() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void Configuration::clear_benchmark_protocol_config() {
+  if (benchmark_protocol_config_ != NULL) benchmark_protocol_config_->::BenchmarkProtolConfig::Clear();
+  clear_has_benchmark_protocol_config();
+}
+inline const ::BenchmarkProtolConfig& Configuration::benchmark_protocol_config() const {
+  // @@protoc_insertion_point(field_get:Configuration.benchmark_protocol_config)
+  return benchmark_protocol_config_ != NULL ? *benchmark_protocol_config_ : *default_instance_->benchmark_protocol_config_;
+}
+inline ::BenchmarkProtolConfig* Configuration::mutable_benchmark_protocol_config() {
+  set_has_benchmark_protocol_config();
+  if (benchmark_protocol_config_ == NULL) benchmark_protocol_config_ = new ::BenchmarkProtolConfig;
+  // @@protoc_insertion_point(field_mutable:Configuration.benchmark_protocol_config)
+  return benchmark_protocol_config_;
+}
+inline ::BenchmarkProtolConfig* Configuration::release_benchmark_protocol_config() {
+  clear_has_benchmark_protocol_config();
+  ::BenchmarkProtolConfig* temp = benchmark_protocol_config_;
+  benchmark_protocol_config_ = NULL;
+  return temp;
+}
+inline void Configuration::set_allocated_benchmark_protocol_config(::BenchmarkProtolConfig* benchmark_protocol_config) {
+  delete benchmark_protocol_config_;
+  benchmark_protocol_config_ = benchmark_protocol_config;
+  if (benchmark_protocol_config) {
+    set_has_benchmark_protocol_config();
+  } else {
+    clear_has_benchmark_protocol_config();
+  }
+  // @@protoc_insertion_point(field_set_allocated:Configuration.benchmark_protocol_config)
 }
 
 // -------------------------------------------------------------------
@@ -1872,6 +2006,34 @@ inline void ManualPathlet::set_allocated_destination(::std::string* destination)
     destination_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:ManualPathlet.destination)
+}
+
+// -------------------------------------------------------------------
+
+// BenchmarkProtolConfig
+
+// optional uint32 num_bytes_to_set = 1;
+inline bool BenchmarkProtolConfig::has_num_bytes_to_set() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void BenchmarkProtolConfig::set_has_num_bytes_to_set() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void BenchmarkProtolConfig::clear_has_num_bytes_to_set() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void BenchmarkProtolConfig::clear_num_bytes_to_set() {
+  num_bytes_to_set_ = 0u;
+  clear_has_num_bytes_to_set();
+}
+inline ::google::protobuf::uint32 BenchmarkProtolConfig::num_bytes_to_set() const {
+  // @@protoc_insertion_point(field_get:BenchmarkProtolConfig.num_bytes_to_set)
+  return num_bytes_to_set_;
+}
+inline void BenchmarkProtolConfig::set_num_bytes_to_set(::google::protobuf::uint32 value) {
+  set_has_num_bytes_to_set();
+  num_bytes_to_set_ = value;
+  // @@protoc_insertion_point(field_set:BenchmarkProtolConfig.num_bytes_to_set)
 }
 
 

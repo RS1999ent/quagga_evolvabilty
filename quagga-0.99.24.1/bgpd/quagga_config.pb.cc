@@ -45,6 +45,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* ManualPathlet_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ManualPathlet_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BenchmarkProtolConfig_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BenchmarkProtolConfig_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* ProtocolType_descriptor_ = NULL;
 
 }  // namespace
@@ -57,12 +60,13 @@ void protobuf_AssignDesc_quagga_5fconfig_2eproto() {
       "quagga_config.proto");
   GOOGLE_CHECK(file != NULL);
   Configuration_descriptor_ = file->message_type(0);
-  static const int Configuration_offsets_[5] = {
+  static const int Configuration_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, protocol_type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, island_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, island_member_ases_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, wiser_protocol_config_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, pathlet_config_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Configuration, benchmark_protocol_config_),
   };
   Configuration_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -203,6 +207,21 @@ void protobuf_AssignDesc_quagga_5fconfig_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ManualPathlet));
+  BenchmarkProtolConfig_descriptor_ = file->message_type(9);
+  static const int BenchmarkProtolConfig_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtolConfig, num_bytes_to_set_),
+  };
+  BenchmarkProtolConfig_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BenchmarkProtolConfig_descriptor_,
+      BenchmarkProtolConfig::default_instance_,
+      BenchmarkProtolConfig_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtolConfig, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtolConfig, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BenchmarkProtolConfig));
   ProtocolType_descriptor_ = file->enum_type(0);
 }
 
@@ -234,6 +253,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     Filter_descriptor_, &Filter::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ManualPathlet_descriptor_, &ManualPathlet::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BenchmarkProtolConfig_descriptor_, &BenchmarkProtolConfig::default_instance());
 }
 
 }  // namespace
@@ -257,6 +278,8 @@ void protobuf_ShutdownFile_quagga_5fconfig_2eproto() {
   delete Filter_reflection_;
   delete ManualPathlet::default_instance_;
   delete ManualPathlet_reflection_;
+  delete BenchmarkProtolConfig::default_instance_;
+  delete BenchmarkProtolConfig_reflection_;
 }
 
 void protobuf_AddDesc_quagga_5fconfig_2eproto() {
@@ -266,28 +289,31 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\023quagga_config.proto\"\306\001\n\rConfiguration\022"
+    "\n\023quagga_config.proto\"\201\002\n\rConfiguration\022"
     "$\n\rprotocol_type\030\001 \001(\0162\r.ProtocolType\022\021\n"
     "\tisland_id\030\002 \001(\r\022\032\n\022island_member_ases\030\003"
     " \003(\r\0223\n\025wiser_protocol_config\030\004 \001(\0132\024.Wi"
     "serProtocolConfig\022+\n\016pathlet_config\030\005 \001("
-    "\0132\023.PathletProtoConfig\"2\n\023WiserProtocolC"
-    "onfig\022\033\n\010topology\030\001 \001(\0132\t.Topology\")\n\010To"
-    "pology\022\035\n\nnode_links\030\001 \003(\0132\t.NodeLink\"E\n"
-    "\010NodeLink\022#\n\014primary_node\030\001 \001(\0132\r.NodePr"
-    "operty\022\024\n\005links\030\002 \003(\0132\005.Link\"\?\n\004Link\022$\n\r"
-    "adjacent_node\030\001 \001(\0132\r.NodeProperty\022\021\n\tli"
-    "nk_cost\030\002 \001(\004\"7\n\014NodeProperty\022\021\n\tnode_na"
-    "me\030\001 \001(\t\022\024\n\014interface_ip\030\002 \001(\t\"k\n\022Pathle"
-    "tProtoConfig\022\037\n\027is_island_border_router\030"
-    "\001 \001(\r\022\032\n\022private_slash24_ip\030\002 \001(\t\022\030\n\007fil"
-    "ters\030\003 \003(\0132\007.Filter\"J\n\006Filter\022\022\n\none_hop"
-    "_ip\030\001 \001(\t\022,\n\024pathlet_to_advertise\030\002 \001(\0132"
-    "\016.ManualPathlet\"D\n\rManualPathlet\022\016\n\006vnod"
-    "e1\030\001 \001(\r\022\016\n\006vnode2\030\002 \001(\r\022\023\n\013destination\030"
-    "\003 \001(\t*g\n\014ProtocolType\022\016\n\nPT_UNKNOWN\020\000\022\014\n"
-    "\010PT_WISER\020\001\022\017\n\013PT_PATHLETS\020\002\022\027\n\023PT_BASEL"
-    "INE_SLEEPER\020\003\022\017\n\013PT_BASELINE\020\004", 870);
+    "\0132\023.PathletProtoConfig\0229\n\031benchmark_prot"
+    "ocol_config\030\006 \001(\0132\026.BenchmarkProtolConfi"
+    "g\"2\n\023WiserProtocolConfig\022\033\n\010topology\030\001 \001"
+    "(\0132\t.Topology\")\n\010Topology\022\035\n\nnode_links\030"
+    "\001 \003(\0132\t.NodeLink\"E\n\010NodeLink\022#\n\014primary_"
+    "node\030\001 \001(\0132\r.NodeProperty\022\024\n\005links\030\002 \003(\013"
+    "2\005.Link\"\?\n\004Link\022$\n\radjacent_node\030\001 \001(\0132\r"
+    ".NodeProperty\022\021\n\tlink_cost\030\002 \001(\004\"7\n\014Node"
+    "Property\022\021\n\tnode_name\030\001 \001(\t\022\024\n\014interface"
+    "_ip\030\002 \001(\t\"k\n\022PathletProtoConfig\022\037\n\027is_is"
+    "land_border_router\030\001 \001(\r\022\032\n\022private_slas"
+    "h24_ip\030\002 \001(\t\022\030\n\007filters\030\003 \003(\0132\007.Filter\"J"
+    "\n\006Filter\022\022\n\none_hop_ip\030\001 \001(\t\022,\n\024pathlet_"
+    "to_advertise\030\002 \001(\0132\016.ManualPathlet\"D\n\rMa"
+    "nualPathlet\022\016\n\006vnode1\030\001 \001(\r\022\016\n\006vnode2\030\002 "
+    "\001(\r\022\023\n\013destination\030\003 \001(\t\"1\n\025BenchmarkPro"
+    "tolConfig\022\030\n\020num_bytes_to_set\030\001 \001(\r*y\n\014P"
+    "rotocolType\022\016\n\nPT_UNKNOWN\020\000\022\014\n\010PT_WISER\020"
+    "\001\022\017\n\013PT_PATHLETS\020\002\022\027\n\023PT_BASELINE_SLEEPE"
+    "R\020\003\022\020\n\014PT_BENCHMARK\020\004\022\017\n\013PT_BASELINE\020\005", 998);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "quagga_config.proto", &protobuf_RegisterTypes);
   Configuration::default_instance_ = new Configuration();
@@ -299,6 +325,7 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
   PathletProtoConfig::default_instance_ = new PathletProtoConfig();
   Filter::default_instance_ = new Filter();
   ManualPathlet::default_instance_ = new ManualPathlet();
+  BenchmarkProtolConfig::default_instance_ = new BenchmarkProtolConfig();
   Configuration::default_instance_->InitAsDefaultInstance();
   WiserProtocolConfig::default_instance_->InitAsDefaultInstance();
   Topology::default_instance_->InitAsDefaultInstance();
@@ -308,6 +335,7 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
   PathletProtoConfig::default_instance_->InitAsDefaultInstance();
   Filter::default_instance_->InitAsDefaultInstance();
   ManualPathlet::default_instance_->InitAsDefaultInstance();
+  BenchmarkProtolConfig::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_quagga_5fconfig_2eproto);
 }
 
@@ -328,6 +356,7 @@ bool ProtocolType_IsValid(int value) {
     case 2:
     case 3:
     case 4:
+    case 5:
       return true;
     default:
       return false;
@@ -343,6 +372,7 @@ const int Configuration::kIslandIdFieldNumber;
 const int Configuration::kIslandMemberAsesFieldNumber;
 const int Configuration::kWiserProtocolConfigFieldNumber;
 const int Configuration::kPathletConfigFieldNumber;
+const int Configuration::kBenchmarkProtocolConfigFieldNumber;
 #endif  // !_MSC_VER
 
 Configuration::Configuration()
@@ -354,6 +384,7 @@ Configuration::Configuration()
 void Configuration::InitAsDefaultInstance() {
   wiser_protocol_config_ = const_cast< ::WiserProtocolConfig*>(&::WiserProtocolConfig::default_instance());
   pathlet_config_ = const_cast< ::PathletProtoConfig*>(&::PathletProtoConfig::default_instance());
+  benchmark_protocol_config_ = const_cast< ::BenchmarkProtolConfig*>(&::BenchmarkProtolConfig::default_instance());
 }
 
 Configuration::Configuration(const Configuration& from)
@@ -369,6 +400,7 @@ void Configuration::SharedCtor() {
   island_id_ = 0u;
   wiser_protocol_config_ = NULL;
   pathlet_config_ = NULL;
+  benchmark_protocol_config_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -381,6 +413,7 @@ void Configuration::SharedDtor() {
   if (this != default_instance_) {
     delete wiser_protocol_config_;
     delete pathlet_config_;
+    delete benchmark_protocol_config_;
   }
 }
 
@@ -416,13 +449,16 @@ void Configuration::Clear() {
     ::memset(&first, 0, n);                                \
   } while (0)
 
-  if (_has_bits_[0 / 32] & 27) {
+  if (_has_bits_[0 / 32] & 59) {
     ZR_(protocol_type_, island_id_);
     if (has_wiser_protocol_config()) {
       if (wiser_protocol_config_ != NULL) wiser_protocol_config_->::WiserProtocolConfig::Clear();
     }
     if (has_pathlet_config()) {
       if (pathlet_config_ != NULL) pathlet_config_->::PathletProtoConfig::Clear();
+    }
+    if (has_benchmark_protocol_config()) {
+      if (benchmark_protocol_config_ != NULL) benchmark_protocol_config_->::BenchmarkProtolConfig::Clear();
     }
   }
 
@@ -519,6 +555,19 @@ bool Configuration::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(50)) goto parse_benchmark_protocol_config;
+        break;
+      }
+
+      // optional .BenchmarkProtolConfig benchmark_protocol_config = 6;
+      case 6: {
+        if (tag == 50) {
+         parse_benchmark_protocol_config:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_benchmark_protocol_config()));
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -577,6 +626,12 @@ void Configuration::SerializeWithCachedSizes(
       5, this->pathlet_config(), output);
   }
 
+  // optional .BenchmarkProtolConfig benchmark_protocol_config = 6;
+  if (has_benchmark_protocol_config()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, this->benchmark_protocol_config(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -618,6 +673,13 @@ void Configuration::SerializeWithCachedSizes(
         5, this->pathlet_config(), target);
   }
 
+  // optional .BenchmarkProtolConfig benchmark_protocol_config = 6;
+  if (has_benchmark_protocol_config()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        6, this->benchmark_protocol_config(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -655,6 +717,13 @@ int Configuration::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->pathlet_config());
+    }
+
+    // optional .BenchmarkProtolConfig benchmark_protocol_config = 6;
+    if (has_benchmark_protocol_config()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->benchmark_protocol_config());
     }
 
   }
@@ -707,6 +776,9 @@ void Configuration::MergeFrom(const Configuration& from) {
     if (from.has_pathlet_config()) {
       mutable_pathlet_config()->::PathletProtoConfig::MergeFrom(from.pathlet_config());
     }
+    if (from.has_benchmark_protocol_config()) {
+      mutable_benchmark_protocol_config()->::BenchmarkProtolConfig::MergeFrom(from.benchmark_protocol_config());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -735,6 +807,7 @@ void Configuration::Swap(Configuration* other) {
     island_member_ases_.Swap(&other->island_member_ases_);
     std::swap(wiser_protocol_config_, other->wiser_protocol_config_);
     std::swap(pathlet_config_, other->pathlet_config_);
+    std::swap(benchmark_protocol_config_, other->benchmark_protocol_config_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -2978,6 +3051,228 @@ void ManualPathlet::Swap(ManualPathlet* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = ManualPathlet_descriptor_;
   metadata.reflection = ManualPathlet_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int BenchmarkProtolConfig::kNumBytesToSetFieldNumber;
+#endif  // !_MSC_VER
+
+BenchmarkProtolConfig::BenchmarkProtolConfig()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:BenchmarkProtolConfig)
+}
+
+void BenchmarkProtolConfig::InitAsDefaultInstance() {
+}
+
+BenchmarkProtolConfig::BenchmarkProtolConfig(const BenchmarkProtolConfig& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:BenchmarkProtolConfig)
+}
+
+void BenchmarkProtolConfig::SharedCtor() {
+  _cached_size_ = 0;
+  num_bytes_to_set_ = 0u;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BenchmarkProtolConfig::~BenchmarkProtolConfig() {
+  // @@protoc_insertion_point(destructor:BenchmarkProtolConfig)
+  SharedDtor();
+}
+
+void BenchmarkProtolConfig::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void BenchmarkProtolConfig::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BenchmarkProtolConfig::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BenchmarkProtolConfig_descriptor_;
+}
+
+const BenchmarkProtolConfig& BenchmarkProtolConfig::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_quagga_5fconfig_2eproto();
+  return *default_instance_;
+}
+
+BenchmarkProtolConfig* BenchmarkProtolConfig::default_instance_ = NULL;
+
+BenchmarkProtolConfig* BenchmarkProtolConfig::New() const {
+  return new BenchmarkProtolConfig;
+}
+
+void BenchmarkProtolConfig::Clear() {
+  num_bytes_to_set_ = 0u;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BenchmarkProtolConfig::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:BenchmarkProtolConfig)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional uint32 num_bytes_to_set = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &num_bytes_to_set_)));
+          set_has_num_bytes_to_set();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:BenchmarkProtolConfig)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:BenchmarkProtolConfig)
+  return false;
+#undef DO_
+}
+
+void BenchmarkProtolConfig::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:BenchmarkProtolConfig)
+  // optional uint32 num_bytes_to_set = 1;
+  if (has_num_bytes_to_set()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->num_bytes_to_set(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:BenchmarkProtolConfig)
+}
+
+::google::protobuf::uint8* BenchmarkProtolConfig::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:BenchmarkProtolConfig)
+  // optional uint32 num_bytes_to_set = 1;
+  if (has_num_bytes_to_set()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->num_bytes_to_set(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:BenchmarkProtolConfig)
+  return target;
+}
+
+int BenchmarkProtolConfig::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional uint32 num_bytes_to_set = 1;
+    if (has_num_bytes_to_set()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->num_bytes_to_set());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BenchmarkProtolConfig::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BenchmarkProtolConfig* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BenchmarkProtolConfig*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BenchmarkProtolConfig::MergeFrom(const BenchmarkProtolConfig& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_num_bytes_to_set()) {
+      set_num_bytes_to_set(from.num_bytes_to_set());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BenchmarkProtolConfig::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BenchmarkProtolConfig::CopyFrom(const BenchmarkProtolConfig& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BenchmarkProtolConfig::IsInitialized() const {
+
+  return true;
+}
+
+void BenchmarkProtolConfig::Swap(BenchmarkProtolConfig* other) {
+  if (other != this) {
+    std::swap(num_bytes_to_set_, other->num_bytes_to_set_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BenchmarkProtolConfig::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BenchmarkProtolConfig_descriptor_;
+  metadata.reflection = BenchmarkProtolConfig_reflection_;
   return metadata;
 }
 

@@ -21,6 +21,7 @@ typedef enum dbgp_protocols_s {
   // runs baseline, but sleeps (this is for use for gulfs to wake up later so
   // pathlets can advertise through them).
   dbgp_protocol_baseline_sleeper = 2,
+  dbgp_protocol_benchmark = 3,
 
   /* Replacement protocols */
   dbgp_replacement_none = 1000,

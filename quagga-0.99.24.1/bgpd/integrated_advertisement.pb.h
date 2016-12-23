@@ -40,12 +40,14 @@ class PathCost;
 class LastWiserNode;
 class Pathlets;
 class Pathlet;
+class BenchmarkProtocol;
 
 enum Protocol {
   P_UNKNOWN = 0,
   P_WISER = 1,
   P_PATHLETS = 2,
-  P_BASELINE = 3
+  P_BENCHMARK = 3,
+  P_BASELINE = 4
 };
 bool Protocol_IsValid(int value);
 const Protocol Protocol_MIN = P_UNKNOWN;
@@ -823,6 +825,90 @@ class Pathlet : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static Pathlet* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class BenchmarkProtocol : public ::google::protobuf::Message {
+ public:
+  BenchmarkProtocol();
+  virtual ~BenchmarkProtocol();
+
+  BenchmarkProtocol(const BenchmarkProtocol& from);
+
+  inline BenchmarkProtocol& operator=(const BenchmarkProtocol& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BenchmarkProtocol& default_instance();
+
+  void Swap(BenchmarkProtocol* other);
+
+  // implements Message ----------------------------------------------
+
+  BenchmarkProtocol* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BenchmarkProtocol& from);
+  void MergeFrom(const BenchmarkProtocol& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes some_bytes = 1;
+  inline bool has_some_bytes() const;
+  inline void clear_some_bytes();
+  static const int kSomeBytesFieldNumber = 1;
+  inline const ::std::string& some_bytes() const;
+  inline void set_some_bytes(const ::std::string& value);
+  inline void set_some_bytes(const char* value);
+  inline void set_some_bytes(const void* value, size_t size);
+  inline ::std::string* mutable_some_bytes();
+  inline ::std::string* release_some_bytes();
+  inline void set_allocated_some_bytes(::std::string* some_bytes);
+
+  // @@protoc_insertion_point(class_scope:BenchmarkProtocol)
+ private:
+  inline void set_has_some_bytes();
+  inline void clear_has_some_bytes();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* some_bytes_;
+  friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
+  friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
+
+  void InitAsDefaultInstance();
+  static BenchmarkProtocol* default_instance_;
+};
 // ===================================================================
 
 
@@ -1470,6 +1556,86 @@ inline void Pathlet::set_is_two_hop(::google::protobuf::uint32 value) {
   set_has_is_two_hop();
   is_two_hop_ = value;
   // @@protoc_insertion_point(field_set:Pathlet.is_two_hop)
+}
+
+// -------------------------------------------------------------------
+
+// BenchmarkProtocol
+
+// optional bytes some_bytes = 1;
+inline bool BenchmarkProtocol::has_some_bytes() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void BenchmarkProtocol::set_has_some_bytes() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void BenchmarkProtocol::clear_has_some_bytes() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void BenchmarkProtocol::clear_some_bytes() {
+  if (some_bytes_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    some_bytes_->clear();
+  }
+  clear_has_some_bytes();
+}
+inline const ::std::string& BenchmarkProtocol::some_bytes() const {
+  // @@protoc_insertion_point(field_get:BenchmarkProtocol.some_bytes)
+  return *some_bytes_;
+}
+inline void BenchmarkProtocol::set_some_bytes(const ::std::string& value) {
+  set_has_some_bytes();
+  if (some_bytes_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    some_bytes_ = new ::std::string;
+  }
+  some_bytes_->assign(value);
+  // @@protoc_insertion_point(field_set:BenchmarkProtocol.some_bytes)
+}
+inline void BenchmarkProtocol::set_some_bytes(const char* value) {
+  set_has_some_bytes();
+  if (some_bytes_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    some_bytes_ = new ::std::string;
+  }
+  some_bytes_->assign(value);
+  // @@protoc_insertion_point(field_set_char:BenchmarkProtocol.some_bytes)
+}
+inline void BenchmarkProtocol::set_some_bytes(const void* value, size_t size) {
+  set_has_some_bytes();
+  if (some_bytes_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    some_bytes_ = new ::std::string;
+  }
+  some_bytes_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:BenchmarkProtocol.some_bytes)
+}
+inline ::std::string* BenchmarkProtocol::mutable_some_bytes() {
+  set_has_some_bytes();
+  if (some_bytes_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    some_bytes_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:BenchmarkProtocol.some_bytes)
+  return some_bytes_;
+}
+inline ::std::string* BenchmarkProtocol::release_some_bytes() {
+  clear_has_some_bytes();
+  if (some_bytes_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = some_bytes_;
+    some_bytes_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void BenchmarkProtocol::set_allocated_some_bytes(::std::string* some_bytes) {
+  if (some_bytes_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete some_bytes_;
+  }
+  if (some_bytes) {
+    set_has_some_bytes();
+    some_bytes_ = some_bytes;
+  } else {
+    clear_has_some_bytes();
+    some_bytes_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:BenchmarkProtocol.some_bytes)
 }
 
 

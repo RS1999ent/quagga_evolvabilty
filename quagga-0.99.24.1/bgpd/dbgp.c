@@ -5,6 +5,7 @@
  */
 
 #include "bgpd/dbgp.h"
+#include "bgpd/benchmark.h"
 #include "bgpd/bgp_aspath.h"
 #include "bgpd/bgp_common.h"
 #include "bgpd/dbgp_lookup.h"
@@ -36,14 +37,16 @@ dbgp_control_info_t *GetControlInformation(struct attr *attr,
   dbgp_control_info_t *control_info;
   // If there is a transitive attribute in there, that means we can retrieve a
   // extra control information from the lookupservice.
-  if (attr->extra != NULL && attr->extra->transit != NULL && attr->extra->transit->length > 0) {
+  if (attr->extra != NULL && attr->extra->transit != NULL &&
+      attr->extra->transit->length > 0) {
     zlog_debug(
         "dbgp::GetControlInformation: There was existing control information "
         "in advert");
     struct attr_extra *extra;
     extra = attr->extra;
     *transit = extra->transit;
-    zlog_debug("dbgp::GetControlInformation: Transit length is: %i", (*transit)->length);
+    zlog_debug("dbgp::GetControlInformation: Transit length is: %i",
+               (*transit)->length);
     control_info = retrieve_control_info(*transit);
     return control_info;
   }
@@ -105,7 +108,9 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer,
     case dbgp_critical_wiser:
       wiser_update_control_info(control_info, peer);
       break;
-
+    case dbgp_protocol_benchmark:
+      benchmark_update_control_info(control_info);
+      break;
     /* Replacement protocols */
     case dbgp_replacement_pathlets:
       new_pathlets_update_control_info(control_info, peer, attr, prefix);
@@ -153,7 +158,8 @@ void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp,
       break;
     /* Replacement protocols */
     case dbgp_replacement_pathlets:
-      new_pathlets_update_control_info_bgpstruct(control_info, bgp, attr, prefix);
+      new_pathlets_update_control_info_bgpstruct(control_info, bgp, attr,
+                                                 prefix);
       break;
 
     default:
@@ -217,7 +223,8 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
   assert(peer != NULL);
   assert(attr != NULL);
   if (peer->bgp->dbgp_protocol == dbgp_protocol_baseline_sleeper ||
-      peer->bgp->dbgp_protocol == dbgp_protocol_baseline) {
+      peer->bgp->dbgp_protocol == dbgp_protocol_baseline ||
+      peer->bgp->dbgp_protocol == dbgp_protocol_benchmark) {
     return DBGP_NOT_FILTERED;
   }
 
@@ -323,7 +330,8 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer,
       case dbgp_replacement_pathlets:
         return (pathlets_output_filter(/* control_info, */ attr, peer, prefix));
         break;
-
+      case dbgp_protocol_benchmark:
+        return DBGP_NOT_FILTERED;
       default:
         assert(0);
     }

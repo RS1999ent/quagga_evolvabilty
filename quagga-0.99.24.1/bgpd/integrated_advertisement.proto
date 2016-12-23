@@ -5,7 +5,8 @@ enum Protocol {
   P_UNKNOWN = 0;
   P_WISER = 1;
   P_PATHLETS = 2;
-  P_BASELINE = 3;
+  P_BENCHMARK = 3;
+  P_BASELINE = 4;
 }
 
 // The toplevel message of a simple integrated advertisement (doesn't encode
@@ -74,4 +75,10 @@ message Pathlet {
   repeated uint32 path_vector = 4;
   // if this is a two hop, then this will be set to 1
   optional uint32 is_two_hop = 5;
+}
+
+// holds some bytes to encode for benchmarking purposes (advertisement size)
+message BenchmarkProtocol {
+  // bytes to take up space
+  optional bytes some_bytes = 1;
 }

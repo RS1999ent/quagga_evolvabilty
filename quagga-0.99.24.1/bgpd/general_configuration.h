@@ -1,19 +1,15 @@
 #ifndef BGPD_GENERAL_CONFIGURATION_H
 #define BGPD_GENERAL_CONFIGURATION_H
-#include "quagga_config.pb.h"
-#include "wiser_config.h"
 #include "pathlet_config.h"
+#include "quagga_config.pb.h"
 #include "shared_enum_definitions.h"
+#include "wiser_config.h"
 
-enum kCProtocolType{
-  CPT_UNKNOWN,
-  CPT_WISER
-};
+enum kCProtocolType { CPT_UNKNOWN, CPT_WISER };
 
 struct GeneralConfiguration {
-
-public:
-  GeneralConfiguration(){}
+ public:
+  GeneralConfiguration() {}
   GeneralConfiguration(Configuration general_configuration);
 
   // Gets the protocol being used on this router from the configuration in an
@@ -38,26 +34,31 @@ public:
   */
   int IsRemoteAsAnIslandMember(int remote_as);
 
+  /* GetBenchmarkBytes returns the number of bytes to write for the
+     BenchmarkProtocolConfig. We assume that, if called, the configuration
+     exists.
+
+     Returns: the number of bytes to serialize.
+  */
+  int GetBenchmarkBytes();
+
   /* Creates and returns a reference to the WiserConfig class (that is the */
   /* object that works with the wiserconfig protobuf). */
-  
+
   /* Returns a reference to a Wiserconfig (if it exists). Null if it doesn't */
   /* exist. */
   WiserConfig* GetWiserConfig();
 
-
   /* Creates and returns a reference to the PathletConfig class (that is the */
   /* object that works with the wiserconfig protobuf). */
-  
-  /* Returns a reference to a PathletConfig (if it exists). Null if it doesn't */
+
+  /* Returns a reference to a PathletConfig (if it exists). Null if it doesn't
+   */
   /* exist. */
   PathletConfig* GetPathletConfig();
 
-
-private:
-
+ private:
   Configuration general_configuration_;
-
 };
 
 #endif

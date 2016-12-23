@@ -30,6 +30,8 @@ int IsRemoteAsAnIslandMember(GeneralConfigurationHandle general_config_handle,
 WiserConfigHandle GetWiserConfig(
     GeneralConfigurationHandle general_config_handle);
 
+uint32_t GetBenchmarkBytes(GeneralConfigurationHandle general_config_handle);
+
 // pathletInternalState handle creator
 typedef struct PathletInternalState* PathletInternalStateHandle;
 char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state,

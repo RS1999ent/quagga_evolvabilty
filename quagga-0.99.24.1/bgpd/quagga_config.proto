@@ -5,7 +5,8 @@ enum ProtocolType {
   PT_WISER = 1;
   PT_PATHLETS = 2;
   PT_BASELINE_SLEEPER = 3;
-  PT_BASELINE = 4;
+  PT_BENCHMARK = 4;
+  PT_BASELINE = 5;
 }
 
 // Toplevel message the holds the configuration information for Quagga and
@@ -21,6 +22,8 @@ message Configuration {
   optional WiserProtocolConfig wiser_protocol_config = 4;
   // Protocol configuration for Pathlets
   optional PathletProtoConfig pathlet_config = 5;
+  // Dummy protocol config for benchmarking
+  optional BenchmarkProtolConfig benchmark_protocol_config = 6;
 }
 
 // Holds information for nodes running the wiser protocol. Thus far, this is
@@ -78,4 +81,10 @@ message ManualPathlet{
   optional uint32 vnode1 = 1;
   optional uint32 vnode2 = 2;
   optional string destination = 3;
+}
+
+// Configuration for benchmarking
+message BenchmarkProtolConfig{
+  // the number of bytes to encode in a dummy update
+  optional uint32 num_bytes_to_set = 1;
 }

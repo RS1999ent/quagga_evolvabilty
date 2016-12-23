@@ -434,7 +434,8 @@ void MergePathletInformationIntoGraph(
 }
 
 // int* GetPathVectorForOutgoingPathlet(
-//     PathletInternalStateHandle pathlet_internal_state, char* serialized_advert,
+//     PathletInternalStateHandle pathlet_internal_state, char*
+//     serialized_advert,
 //     int advert_size, const char* ip_address, int* path_vector-size) {}
 
 char* GenerateInternalPathletControlInfo(
@@ -570,4 +571,73 @@ uint32_t* GetPathletPathVectorForAssociatedIp(
     pos++;
   }
   return return_int_arr;
+}
+
+// benchmarking functions below here
+
+char* SetBenchmarkIABytes(char* serialized_advert, int advert_size,
+                          int num_bytes_to_set, int* modified_advert_size) {
+  IntegratedAdvertisement working_advertisement;
+  if (advert_size != 0) {
+    working_advertisement.ParseFromArray(serialized_advert, advert_size);
+  }
+
+  // Get a benchmark path group descriptor if it exists
+
+  PathGroupDescriptor* benchmark_path_group_descriptor =
+      GetProtocolPathGroupDescriptor(&working_advertisement,
+                                     Protocol::P_BENCHMARK);
+
+  // If there was no existing path group descriptor, then add it
+  if (benchmark_path_group_descriptor == NULL) {
+    benchmark_path_group_descriptor =
+        working_advertisement.add_path_group_descriptors();
+    benchmark_path_group_descriptor->set_protocol(Protocol::P_BENCHMARK);
+  }
+
+  // Get the keyvalue corresponding to benchmark bytes
+  KeyValue* mutable_key_value = GetCreateKeyValueFromPathGroupDesc(
+      benchmark_path_group_descriptor, "Bytes");
+
+  BenchmarkProtocol benchmark_protocol;
+  // Fill the benchmark protocol with bytes. Takes in the benchmark protocol and
+  // the number of bytes to fill
+  {
+    char* byte_buffer = new char[num_bytes_to_set];
+    benchmark_protocol.set_some_bytes(byte_buffer);
+    delete[] byte_buffer;
+  }
+
+  mutable_key_value->set_value(benchmark_protocol.SerializeAsString());
+
+  // working_advertisement.PrintDebugString();
+
+  *modified_advert_size = working_advertisement.ByteSize();
+  char* modified_advert = (char*)malloc(*modified_advert_size);
+
+  working_advertisement.SerializeToArray(modified_advert,
+                                         *modified_advert_size);
+
+  return modified_advert;
+}
+
+int GetBenchmarkIABytesSize(char* serialized_advert, int advert_size) {
+  // Parse the advertisement
+  IntegratedAdvertisement proto_advert;
+  proto_advert.ParseFromArray(serialized_advert, advert_size);
+
+  // Get the benchmark descriptor (we are assuming that it is always there)
+  PathGroupDescriptor* benchmark_path_group_descriptor =
+      GetProtocolPathGroupDescriptor(&proto_advert, Protocol::P_BENCHMARK);
+
+  if (benchmark_path_group_descriptor == NULL) {
+    return 0;
+  }
+
+  // Get the path cost from the assumed existent keyvalue
+  KeyValue* benchmark_bytes_kv =
+      GetPathGroupKeyValue(benchmark_path_group_descriptor, "Bytes");
+  BenchmarkProtocol benchmark_protocol;
+  benchmark_protocol.ParseFromString(benchmark_bytes_kv->value());
+  return benchmark_protocol.google::protobuf::Message::ByteSize();
 }

@@ -42,6 +42,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* Pathlet_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   Pathlet_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BenchmarkProtocol_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BenchmarkProtocol_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* Protocol_descriptor_ = NULL;
 
 }  // namespace
@@ -182,6 +185,21 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Pathlet));
+  BenchmarkProtocol_descriptor_ = file->message_type(8);
+  static const int BenchmarkProtocol_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtocol, some_bytes_),
+  };
+  BenchmarkProtocol_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BenchmarkProtocol_descriptor_,
+      BenchmarkProtocol::default_instance_,
+      BenchmarkProtocol_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtocol, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtocol, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BenchmarkProtocol));
   Protocol_descriptor_ = file->enum_type(0);
 }
 
@@ -211,6 +229,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     Pathlets_descriptor_, &Pathlets::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     Pathlet_descriptor_, &Pathlet::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BenchmarkProtocol_descriptor_, &BenchmarkProtocol::default_instance());
 }
 
 }  // namespace
@@ -232,6 +252,8 @@ void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto() {
   delete Pathlets_reflection_;
   delete Pathlet::default_instance_;
   delete Pathlet_reflection_;
+  delete BenchmarkProtocol::default_instance_;
+  delete BenchmarkProtocol_reflection_;
 }
 
 void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
@@ -255,9 +277,10 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
     "\r\"&\n\010Pathlets\022\032\n\010pathlets\030\001 \003(\0132\010.Pathle"
     "t\"d\n\007Pathlet\022\013\n\003fid\030\001 \001(\r\022\016\n\006vnodes\030\002 \003("
     "\r\022\023\n\013destination\030\003 \001(\t\022\023\n\013path_vector\030\004 "
-    "\003(\r\022\022\n\nis_two_hop\030\005 \001(\r*F\n\010Protocol\022\r\n\tP"
-    "_UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020\002\022"
-    "\016\n\nP_BASELINE\020\003", 655);
+    "\003(\r\022\022\n\nis_two_hop\030\005 \001(\r\"\'\n\021BenchmarkProt"
+    "ocol\022\022\n\nsome_bytes\030\001 \001(\014*W\n\010Protocol\022\r\n\t"
+    "P_UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020\002"
+    "\022\017\n\013P_BENCHMARK\020\003\022\016\n\nP_BASELINE\020\004", 713);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "integrated_advertisement.proto", &protobuf_RegisterTypes);
   IntegratedAdvertisement::default_instance_ = new IntegratedAdvertisement();
@@ -268,6 +291,7 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
   LastWiserNode::default_instance_ = new LastWiserNode();
   Pathlets::default_instance_ = new Pathlets();
   Pathlet::default_instance_ = new Pathlet();
+  BenchmarkProtocol::default_instance_ = new BenchmarkProtocol();
   IntegratedAdvertisement::default_instance_->InitAsDefaultInstance();
   PathGroupDescriptor::default_instance_->InitAsDefaultInstance();
   HopDescriptor::default_instance_->InitAsDefaultInstance();
@@ -276,6 +300,7 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
   LastWiserNode::default_instance_->InitAsDefaultInstance();
   Pathlets::default_instance_->InitAsDefaultInstance();
   Pathlet::default_instance_->InitAsDefaultInstance();
+  BenchmarkProtocol::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_integrated_5fadvertisement_2eproto);
 }
 
@@ -295,6 +320,7 @@ bool Protocol_IsValid(int value) {
     case 1:
     case 2:
     case 3:
+    case 4:
       return true;
     default:
       return false;
@@ -2538,6 +2564,237 @@ void Pathlet::Swap(Pathlet* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = Pathlet_descriptor_;
   metadata.reflection = Pathlet_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int BenchmarkProtocol::kSomeBytesFieldNumber;
+#endif  // !_MSC_VER
+
+BenchmarkProtocol::BenchmarkProtocol()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:BenchmarkProtocol)
+}
+
+void BenchmarkProtocol::InitAsDefaultInstance() {
+}
+
+BenchmarkProtocol::BenchmarkProtocol(const BenchmarkProtocol& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:BenchmarkProtocol)
+}
+
+void BenchmarkProtocol::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  some_bytes_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BenchmarkProtocol::~BenchmarkProtocol() {
+  // @@protoc_insertion_point(destructor:BenchmarkProtocol)
+  SharedDtor();
+}
+
+void BenchmarkProtocol::SharedDtor() {
+  if (some_bytes_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete some_bytes_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void BenchmarkProtocol::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BenchmarkProtocol::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BenchmarkProtocol_descriptor_;
+}
+
+const BenchmarkProtocol& BenchmarkProtocol::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_integrated_5fadvertisement_2eproto();
+  return *default_instance_;
+}
+
+BenchmarkProtocol* BenchmarkProtocol::default_instance_ = NULL;
+
+BenchmarkProtocol* BenchmarkProtocol::New() const {
+  return new BenchmarkProtocol;
+}
+
+void BenchmarkProtocol::Clear() {
+  if (has_some_bytes()) {
+    if (some_bytes_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+      some_bytes_->clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BenchmarkProtocol::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:BenchmarkProtocol)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional bytes some_bytes = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_some_bytes()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:BenchmarkProtocol)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:BenchmarkProtocol)
+  return false;
+#undef DO_
+}
+
+void BenchmarkProtocol::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:BenchmarkProtocol)
+  // optional bytes some_bytes = 1;
+  if (has_some_bytes()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+      1, this->some_bytes(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:BenchmarkProtocol)
+}
+
+::google::protobuf::uint8* BenchmarkProtocol::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:BenchmarkProtocol)
+  // optional bytes some_bytes = 1;
+  if (has_some_bytes()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        1, this->some_bytes(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:BenchmarkProtocol)
+  return target;
+}
+
+int BenchmarkProtocol::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional bytes some_bytes = 1;
+    if (has_some_bytes()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
+          this->some_bytes());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BenchmarkProtocol::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BenchmarkProtocol* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BenchmarkProtocol*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BenchmarkProtocol::MergeFrom(const BenchmarkProtocol& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_some_bytes()) {
+      set_some_bytes(from.some_bytes());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BenchmarkProtocol::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BenchmarkProtocol::CopyFrom(const BenchmarkProtocol& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BenchmarkProtocol::IsInitialized() const {
+
+  return true;
+}
+
+void BenchmarkProtocol::Swap(BenchmarkProtocol* other) {
+  if (other != this) {
+    std::swap(some_bytes_, other->some_bytes_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BenchmarkProtocol::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BenchmarkProtocol_descriptor_;
+  metadata.reflection = BenchmarkProtocol_reflection_;
   return metadata;
 }
 

@@ -136,3 +136,38 @@ extern "C" void CreatePathletsFromIA(
 extern "C" uint32_t* GetPathletPathVectorForAssociatedIp(
     PathletInternalStateHandle pathlet_internal_state, const char* ip_address,
     uint32_t* path_vector_size);
+
+
+///////////////////////////////
+// Benchmark specific funcs //
+/////////////////////////////
+
+/* SetBenchmarkIABytes takes in a serialized advert and size and fills up a
+   BenchmarkProtocol message with num_bytes_to_set
+
+   Arguments:
+      serialized_advert: ptr to the serialized advertisement. Ownership is
+      retained by caller advert_size: the size of the serialized_advert.
+      Expected >=0
+      num_bytes_to_set: the number of dummy bytes to fill the advertisement up
+      with
+      modified_advert_size: The size of the advertisement after the benchmark
+      bytes were added
+
+   Returns: A ptr to a new serialized advertisement. Ownership is passed to
+      caller.
+*/
+extern "C" char* SetBenchmarkIABytes(char* serialized_advert, int advert_size, int num_bytes_to_set, int* modified_advert_size);
+
+
+/* GetBenchmarkIABytesSize returns the size of the bytes that are stored for the
+   benchmark protocol. Mainly used for deserializing the packet to get this
+   value.
+
+   Arguments:
+      serialized_advert: the advert to try and get the bytes from
+      advert_size: the size of this serialized advert
+
+   Returns: the size of raw bytes stored by the benchmark protocol
+*/
+extern "C" int GetBenchmarkIABytesSize(char* serialized_advert, int advert_size);

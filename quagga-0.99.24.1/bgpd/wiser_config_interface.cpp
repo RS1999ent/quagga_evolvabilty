@@ -86,6 +86,11 @@ WiserConfigHandle GetWiserConfig(
   return general_config_handle->GetWiserConfig();
 }
 
+  uint32_t GetBenchmarkBytes(GeneralConfigurationHandle general_config_handle)
+  {
+    return general_config_handle->GetBenchmarkBytes();
+  }
+
 std::mutex internal_state_mutex;
 char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state,
                              int* size) {
