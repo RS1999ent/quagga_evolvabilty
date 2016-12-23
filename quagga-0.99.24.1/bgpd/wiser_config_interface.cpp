@@ -214,16 +214,20 @@ char* GetPathletsToSendString(
   return return_buffer;
 }
 
-void GetManualTwoHop(PathletConfigHandle pathlet_config, char* one_hop_ip,
-                     int* vnode1, int* vnode2, char* destination) {
+char* GetManualTwoHop(PathletConfigHandle pathlet_config, char* one_hop_ip,
+                      int* vnode1, int* vnode2) {
   int found_one;
+  char* return_buffer = NULL;
   ManualPathlet man_pathlet =
-      pathlet_config->GetManualTwoHop(one_hop_ip, &found_one);
+    pathlet_config->GetManualTwoHop(string(one_hop_ip), &found_one);
   if (found_one == 1) {
     *vnode1 = man_pathlet.vnode1();
     *vnode2 = man_pathlet.vnode2();
-    strcpy(destination, man_pathlet.destination().c_str());
+    return_buffer = (char*)malloc(256);
+    strcpy(return_buffer, man_pathlet.destination().c_str());
+    return return_buffer;
   } else {
     *vnode1 = -1;
+    return NULL;
   }
 }

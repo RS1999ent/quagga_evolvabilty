@@ -63,8 +63,8 @@ PathletInternalStateHandle CreatePathletInternalState(
     PathletConfigHandle pathlet_config);
 int IsIslandBorderRouter(PathletConfigHandle pathlet_config);
 char* GetPrivateIp(PathletConfigHandle pathlet_config);
-void GetManualTwoHop(PathletConfigHandle pathlet_config, char* one_hop_ip,
-                     int* vnode1, int* vnode2, char* destination);
+char* GetManualTwoHop(PathletConfigHandle pathlet_config, char* one_hop_ip,
+                      int* vnode1, int* vnode2);
 
 #ifdef __cplusplus
 }

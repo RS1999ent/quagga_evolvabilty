@@ -28,15 +28,17 @@ struct PathletConfig {
   // Gets the private slash 24 associated with this ip
   string GetPrivateIp() { return pathlet_config_.private_slash24_ip(); }
 
-  ManualPathlet GetManualTwoHop(char* one_hop_ip, int* found1) {
+  ManualPathlet GetManualTwoHop(string one_hop_ip, int* found1) {
     *found1 = 0;
     for (Filter filter : pathlet_config_.filters()) {
       string filter_ip = filter.one_hop_ip();
-      if (strcmp(one_hop_ip, filter_ip.c_str()) == 0) {
+      if (one_hop_ip.compare(filter_ip) == 0) {
         *found1 = 1;
         return filter.pathlet_to_advertise();
       }
     }
+    ManualPathlet man_pathlet;
+    return man_pathlet;
   }
 
  private:
