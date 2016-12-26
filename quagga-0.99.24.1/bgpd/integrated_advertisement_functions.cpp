@@ -631,7 +631,7 @@ int GetBenchmarkIABytesSize(char* serialized_advert, int advert_size) {
       GetProtocolPathGroupDescriptor(&proto_advert, Protocol::P_BENCHMARK);
 
   if (benchmark_path_group_descriptor == NULL) {
-    return 0;
+    return -1;
   }
 
   // Get the path cost from the assumed existent keyvalue

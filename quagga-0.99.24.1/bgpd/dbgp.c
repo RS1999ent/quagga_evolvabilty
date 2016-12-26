@@ -82,7 +82,8 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer,
   assert(peer != NULL);
   assert(attr != NULL);
   if (peer->bgp->dbgp_protocol == dbgp_protocol_baseline_sleeper ||
-      peer->bgp->dbgp_protocol == dbgp_protocol_baseline) {
+      peer->bgp->dbgp_protocol == dbgp_protocol_baseline ||
+      peer->bgp->dbgp_protocol == dbgp_protocol_benchmark) {
     return;
   }
 
@@ -108,9 +109,9 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer,
     case dbgp_critical_wiser:
       wiser_update_control_info(control_info, peer);
       break;
-    case dbgp_protocol_benchmark:
-      benchmark_update_control_info(control_info);
-      break;
+    /* case dbgp_protocol_benchmark: */
+    /*   benchmark_update_control_info(control_info); */
+    /*   break; */
     /* Replacement protocols */
     case dbgp_replacement_pathlets:
       new_pathlets_update_control_info(control_info, peer, attr, prefix);
@@ -193,7 +194,9 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, struct bgp_info *exist,
     case dbgp_protocol_baseline_sleeper:
       return (bgp_info_cmp(bgp, new, exist, path_eq));
       break;
-
+    case dbgp_protocol_benchmark:
+      return (bgp_info_cmp(bgp, new, exist, path_eq));
+      break;
     /* critical fixes */
     case dbgp_critical_wiser:
       return (wiser_info_cmp(bgp, new, exist, path_eq));
@@ -223,8 +226,7 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
   assert(peer != NULL);
   assert(attr != NULL);
   if (peer->bgp->dbgp_protocol == dbgp_protocol_baseline_sleeper ||
-      peer->bgp->dbgp_protocol == dbgp_protocol_baseline ||
-      peer->bgp->dbgp_protocol == dbgp_protocol_benchmark) {
+      peer->bgp->dbgp_protocol == dbgp_protocol_baseline) {
     return DBGP_NOT_FILTERED;
   }
 
@@ -246,6 +248,8 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
         return DBGP_NOT_FILTERED;
         break;
 
+      case dbgp_protocol_benchmark:
+        return benchmark_input_filter(control_info);
       /* Critical fixes */
       case dbgp_critical_wiser:
         return (wiser_input_filter(control_info, attr, peer));
@@ -331,7 +335,7 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer,
         return (pathlets_output_filter(/* control_info, */ attr, peer, prefix));
         break;
       case dbgp_protocol_benchmark:
-        return DBGP_NOT_FILTERED;
+        return benchmark_output_filter(attr);
       default:
         assert(0);
     }
