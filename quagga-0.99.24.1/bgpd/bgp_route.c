@@ -60,6 +60,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/dbgp.h"
+#include "bgpd/bgp_benchmark_structs.h"
 
 /* Extern from bgp_dump.c */
 extern const char *bgp_origin_str[];
@@ -68,6 +69,73 @@ extern const char *bgp_origin_long_str[];
 // end to end clock
 clock_t start_end_to_end, end_end_to_end;
 int clock_lock = 0;
+
+// DBGP BENCHMARK
+
+// initialization and definition of global variable keeping track of the bgp
+// benchmark stats
+BgpBenchmarkStatsPtr bgp_benchmark_stats = NULL;
+
+// After kThroughputStatsTickRate advertisements, prints the throughput
+static const int kThroughputStatsTickRate = 1000;
+
+/*
+  GetNanoSecDuration returns the difference in nanoseconds between the current
+  time (the time when this function was called) and the start time
+
+  Arguments:
+  start_time: the time where the duration is started from (i.e. the start
+  time to this current time is the duration)
+
+  Returns: The difference in nanoseconds
+*/
+int64_t GetNanoSecDuration(struct timespec start_time){
+  struct timespec end_time;
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_time);
+  int64_t diffInNanos = end_time.tv_nsec - start_time.tv_nsec;
+  zlog_debug("GetNanoSecDuration: startimenano %d, endtimenano %d", end_time.tv_nsec, start_time.tv_nsec);
+  zlog_debug("GetNanoSecDuration: diff nanoseconds %ld",diffInNanos);
+  return diffInNanos;
+}
+
+/*
+PrintBenchmarkStats prints the high level statistics regarding end to end
+performance.
+
+Arguments:
+   bgp_benchmark_stats: the BgpBenchmarkStats structure that holds the data
+   necessary to determine the various statistics
+*/
+void PrintBenchmarkStats(struct BgpBenchmarkStats bgp_benchmark_stats){
+  
+  double advertisement_throughput = 0; //advertisement throughput per second
+  // calculate the advertisement throughput
+  {
+    int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats.start_time);
+    double seconds = (double)nanosec_duration / (double)1000000000;
+    advertisement_throughput = bgp_benchmark_stats.advertisements_seen / seconds;
+    zlog_info("PrintBenchmarkStats: nanosec dur %ld, seconds %f, tput %f", nanosec_duration, seconds, advertisement_throughput);
+  }
+  zlog_info("PrintBenchmarkStats: Advertisement processed per second: %f", advertisement_throughput);
+
+  // calculate average deserialization latency
+  {
+    double average_nanosec_deserialization = (double) bgp_benchmark_stats.deserialization_latency.total_durations / (double) bgp_benchmark_stats.deserialization_latency.num_measurements;
+    zlog_info("PrintBenchmarkStats: Average bgp deserialization latency (ms) %f", average_nanosec_deserialization / 1000000);
+  }
+
+  // calculate average processing latency
+  {
+    double average_nanosec_deserialization = (double) bgp_benchmark_stats.processing_latency.total_durations / (double) bgp_benchmark_stats.processing_latency.num_measurements;
+    zlog_info("PrintBenchmarkStats: Average bgp processing latency (ms) %f", average_nanosec_deserialization / 1000000);
+  }
+
+  // calculate average end to end latency
+  {
+    double average_nanosec_deserialization = (double) bgp_benchmark_stats.end_to_end_latency.total_durations / (double) bgp_benchmark_stats.end_to_end_latency.num_measurements;
+    zlog_info("PrintBenchmarkStats: Average bgp end_to_end (ms) %f", average_nanosec_deserialization / 1000000);
+  }
+}
 
 static struct bgp_node *
 bgp_afi_node_get (struct bgp_table *table, afi_t afi, safi_t safi, struct prefix *p,
@@ -1864,6 +1932,26 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   const char *reason;
   char buf[SU_ADDRSTRLEN];
 
+  // DBGP BENCHMARK Create the bgp_benchmark_stats if it doesn't exist. If it
+  // doesn't exist (null), that means this is the first advert. Initialize it
+  {
+    if (bgp_benchmark_stats == NULL) {
+      bgp_benchmark_stats = (struct BgpBenchmarkStats*)malloc(sizeof(struct BgpBenchmarkStats));
+      bgp_benchmark_stats->advertisements_seen = 0;
+      bgp_benchmark_stats->deserialization_latency.total_durations = 0;
+      bgp_benchmark_stats->deserialization_latency.num_measurements = 0;
+      bgp_benchmark_stats->processing_latency.total_durations = 0;
+      bgp_benchmark_stats->processing_latency.num_measurements = 0;
+      bgp_benchmark_stats->end_to_end_latency.total_durations = 0;
+      bgp_benchmark_stats->end_to_end_latency.num_measurements = 0;
+      // only want to do this once (this is for throughput)
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &bgp_benchmark_stats->start_time); 
+    }
+  }
+  if (bgp_benchmark_stats != NULL) {
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
+  }
+
   /* @note: rajas - Some clarifications 
    * 1) rn bgp_afi_node_get() actually
    * returns all routes from all neighbors for the specified prefix.
@@ -2194,6 +2282,30 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   /* Process change. */
   bgp_process (bgp, rn, afi, safi);
 
+  /* DGBP BENCHMARK*/
+  // Update finished processing, increment the counter. Print throughput stats
+  // every kThroughputStatsTickRate updates received
+  {
+    // update processing latency
+    {
+      int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
+      bgp_benchmark_stats->processing_latency.total_durations += nanosec_duration;
+      bgp_benchmark_stats->processing_latency.num_measurements++;
+    }
+
+    // update end to end latency
+    {
+      int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->end_to_end_latency.bgp_end_to_end_timer.start_time);
+      bgp_benchmark_stats->end_to_end_latency.total_durations += nanosec_duration;
+      bgp_benchmark_stats->end_to_end_latency.num_measurements++;
+    }
+    bgp_benchmark_stats->advertisements_seen++;
+    // if this is divisible by kThroughputStatsTickRate, then print statistics
+    if (bgp_benchmark_stats->advertisements_seen % kThroughputStatsTickRate == 0) {
+      PrintBenchmarkStats(*bgp_benchmark_stats);
+    }
+  }
+
   return 0;
 
   /* This BGP update is filtered.  Log the reason then update BGP
@@ -2224,6 +2336,13 @@ bgp_update (struct peer *peer, struct prefix *p, struct attr *attr,
   struct bgp *bgp;
   int ret;
 
+  // DBGP BENCHMARK
+  // end bgp deserialization, update the timer. COMPANION_START1
+  if(bgp_benchmark_stats != NULL){
+    int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
+    bgp_benchmark_stats->deserialization_latency.total_durations += nanosec_duration;
+    bgp_benchmark_stats->deserialization_latency.num_measurements++;
+  }
   ret = bgp_update_main (peer, p, attr, afi, safi, type, sub_type, prd, tag,
           soft_reconfig);
 

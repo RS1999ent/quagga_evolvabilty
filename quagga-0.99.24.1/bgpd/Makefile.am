@@ -28,7 +28,7 @@ noinst_HEADERS = bgp_aspath.h bgp_attr.h bgp_community.h bgp_debug.h bgp_fsm.h	\
 	wiser_config_interface.h wiser.h bgp_common.h general_configuration.h					\
 	shared_enum_definitions.h integrated_advertisement.pb.cc											\
 	integrated_advertisement_functions.h pathlet_internal_state.h									\
-	pathlet_config.h pathlets.h benchmark.h
+	pathlet_config.h pathlets.h benchmark.h bgp_benchmark_structs.h
 
 bgpd_SOURCES = bgp_main.c
 bgpd_LDADD = libbgp.a ../lib/libzebra.la @LIBCAP@ @LIBM@ @LIBHIREDIS@ @PROTOBUF_LIBS@ @libstdcxx_LIBS@ 

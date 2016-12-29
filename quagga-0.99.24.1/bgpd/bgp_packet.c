@@ -47,6 +47,11 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_mplsvpn.h"
 #include "bgpd/bgp_advertise.h"
 #include "bgpd/bgp_vty.h"
+#include "bgpd/bgp_benchmark_structs.h"
+
+
+// DBGP BENCHMARK
+extern BgpBenchmarkStatsPtr bgp_benchmark_stats;
 
 int stream_put_prefix (struct stream *, struct prefix *);
 
@@ -2476,6 +2481,14 @@ bgp_read (struct thread *thread)
   struct peer *peer;
   bgp_size_t size;
   char notify_data_length[2];
+
+  // DBGP BENCHMARK
+  // start traditional bgp serialization timer. chekc for null becaues first
+  // update is the one that creates it COMPANION_START1
+  if(bgp_benchmark_stats != NULL) {
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &bgp_benchmark_stats->end_to_end_latency.bgp_end_to_end_timer.start_time);
+  }
 
   /* Yes first of all get peer pointer. */
   peer = THREAD_ARG (thread);
