@@ -2481,13 +2481,38 @@ bgp_read (struct thread *thread)
   struct peer *peer;
   bgp_size_t size;
   char notify_data_length[2];
+  // DBGP BENCHMARK Create the bgp_benchmark_stats if it doesn't exist. If it
+  // doesn't exist (null), that means this is the first advert. Initialize it
+  {
+    if (bgp_benchmark_stats == NULL) {
+      bgp_benchmark_stats = (struct BgpBenchmarkStats*)malloc(sizeof(struct BgpBenchmarkStats));
+      bgp_benchmark_stats->advertisements_seen = 0;
+      bgp_benchmark_stats->deserialization_latency.total_durations = 0;
+      bgp_benchmark_stats->deserialization_latency.num_measurements = 0;
+      bgp_benchmark_stats->deserialization_latency.current_duration = 0;
+
+      bgp_benchmark_stats->processing_latency.total_durations = 0;
+      bgp_benchmark_stats->processing_latency.num_measurements = 0;
+      bgp_benchmark_stats->processing_latency.current_duration = 0;
+
+      bgp_benchmark_stats->lookup_service_latency.total_durations = 0;
+      bgp_benchmark_stats->lookup_service_latency.num_measurements = 0;
+      bgp_benchmark_stats->lookup_service_latency.current_duration = 0;
+
+      bgp_benchmark_stats->end_to_end_latency.total_durations = 0;
+      bgp_benchmark_stats->end_to_end_latency.num_measurements = 0;
+
+      // only want to do this once (this is for throughput)
+      clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->start_time); 
+    }
+  }
 
   // DBGP BENCHMARK
   // start traditional bgp serialization timer. chekc for null becaues first
   // update is the one that creates it COMPANION_START1
   if(bgp_benchmark_stats != NULL) {
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &bgp_benchmark_stats->end_to_end_latency.bgp_end_to_end_timer.start_time);
+    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
+    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->end_to_end_latency.bgp_end_to_end_timer.start_time);
   }
 
   /* Yes first of all get peer pointer. */

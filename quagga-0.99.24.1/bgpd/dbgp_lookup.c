@@ -17,6 +17,9 @@
 #include "bgpd/bgp_attr.h"
 #include "bgpd/dbgp_lookup.h"
 #include "hiredis/hiredis.h"
+#include "bgpd/bgp_benchmark_structs.h"
+
+extern BgpBenchmarkStatsPtr bgp_benchmark_stats;
 
 
 /* ********************* Global vars ************************** */
@@ -205,12 +208,21 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   assert(transit->length == sizeof(dbgp_lookup_key_t));
 
   /* Get D-BGP control info from lookup service */
-  clock_t start_lookup_latency, end_lookup_latency;
-  start_lookup_latency = clock();
+  // DBGP BENCHMARK
+  if(bgp_benchmark_stats != NULL) {
+    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->lookup_service_latency.bgp_lookupservice_timer.start_time);
+    UpdateProcessingCurrentDuration(&bgp_benchmark_stats->processing_latency);
+  }
+  /* clock_t start_lookup_latency, end_lookup_latency; */
+  /* start_lookup_latency = clock(); */
   c = connect_to_redis();
   reply = redisCommand(c, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
-  end_lookup_latency = clock();
-  zlog_debug("dbgp_lookup::retrieve_control_info: took ticks: %ld", end_lookup_latency - start_lookup_latency);
+  if(bgp_benchmark_stats != NULL) {
+    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
+    UpdateLookupServiceCurrentDuration(&bgp_benchmark_stats->lookup_service_latency);
+  }
+  /* end_lookup_latency = clock(); */
+  /* zlog_debug("dbgp_lookup::retrieve_control_info: took ticks: %ld", end_lookup_latency - start_lookup_latency); */
 
   if(reply->type == REDIS_REPLY_ERROR) {
     zlog_err("%s:, failed to retrieve D-BGP control info. Key=%"PRIu32"",

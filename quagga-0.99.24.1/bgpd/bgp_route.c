@@ -91,11 +91,61 @@ static const int kThroughputStatsTickRate = 1000;
 */
 int64_t GetNanoSecDuration(struct timespec start_time){
   struct timespec end_time;
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_time);
-  int64_t diffInNanos = end_time.tv_nsec - start_time.tv_nsec;
-  zlog_debug("GetNanoSecDuration: startimenano %d, endtimenano %d", end_time.tv_nsec, start_time.tv_nsec);
-  zlog_debug("GetNanoSecDuration: diff nanoseconds %ld",diffInNanos);
-  return diffInNanos;
+  clock_gettime(CLOCK_REALTIME, &end_time);
+  int64_t diffInSecs = end_time.tv_sec - start_time.tv_sec;
+  int64_t diffInNsec = end_time.tv_nsec - start_time.tv_nsec;
+  int64_t total_diff = diffInSecs * 1000000000 + diffInNsec;
+  /* zlog_debug("GetNanoSecDuration: startime: %ld secs, %ld nsec",start_time.tv_sec, start_time.tv_nsec); */
+  /* zlog_debug("GetNanoSecDuration: end_time: %ld secs, %ld nsec",end_time.tv_sec, end_time.tv_nsec); */
+  /* zlog_debug("GetNanoSecDuration: diff nanoseconds (long) %ld", total_diff); */
+  return total_diff;
+}
+
+// 2d0 cleanup repeated functions (have one type of struct that holds the info
+// instead of separate structs)
+/*
+  UpdateDeserializationCurrentDuration updates the current duration of the
+  current measurement for deserialzation for an advertisement. Will get the
+  duration from the start time in the structure to the current time. Assumes
+  start time is already set
+
+  Arguments:
+     deserialization_latency: the struct containing deserialztion measurments to update
+ */
+void UpdateDeserializationCurrentDuration(struct DeserializationLatency* deserialization_latency){
+  int64_t nanosec_duration = GetNanoSecDuration(deserialization_latency->bgp_deserialization_timer.start_time);
+  assert(nanosec_duration > 0);
+  deserialization_latency->current_duration += nanosec_duration;
+}
+
+/*
+  UpdateProcessingCurrentDuration updates the current duration of the current
+  measurement for processing latency for an advertisement. Will get the
+  duration from the start time in the structure to the current time. Assumes
+  start time is already set
+
+  Arguments:
+  processing_latency: the struct containing deserialztion measurments to update
+*/
+void UpdateProcessingCurrentDuration(struct ProcessingLatency* processing_latency){
+  int64_t nanosec_duration = GetNanoSecDuration(processing_latency->bgp_update_main_timer.start_time);
+  assert(nanosec_duration > 0);
+  processing_latency->current_duration += nanosec_duration;
+}
+
+/*
+  UpdateLookupServiceCurrentDuration updates the current duration of the current
+  measurement for lookupservice latency for an advertisement. Will get the
+  duration from the start time in the structure to the current time. Assumes
+  start time is already set
+
+  Arguments:
+  lookupservice_latency: the struct containing deserialztion measurments to update
+*/
+void UpdateLookupServiceCurrentDuration(struct LookUpServiceLatency* lookupservice_latency){
+  int64_t nanosec_duration = GetNanoSecDuration(lookupservice_latency->bgp_lookupservice_timer.start_time);
+  assert(nanosec_duration > 0);
+  lookupservice_latency->current_duration += nanosec_duration;
 }
 
 /*
@@ -134,6 +184,13 @@ void PrintBenchmarkStats(struct BgpBenchmarkStats bgp_benchmark_stats){
   {
     double average_nanosec_deserialization = (double) bgp_benchmark_stats.end_to_end_latency.total_durations / (double) bgp_benchmark_stats.end_to_end_latency.num_measurements;
     zlog_info("PrintBenchmarkStats: Average bgp end_to_end (ms) %f", average_nanosec_deserialization / 1000000);
+  }
+
+  // calculate average lookupservice latency
+  {
+    double average_nanosec_deserialization = (double) bgp_benchmark_stats.lookup_service_latency.total_durations / (double) bgp_benchmark_stats.lookup_service_latency.num_measurements;
+    zlog_info("PrintBenchmarkStats: Average bgp lookupservice latency (ms) %f", average_nanosec_deserialization / 1000000);
+    
   }
 }
 
@@ -1932,24 +1989,8 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   const char *reason;
   char buf[SU_ADDRSTRLEN];
 
-  // DBGP BENCHMARK Create the bgp_benchmark_stats if it doesn't exist. If it
-  // doesn't exist (null), that means this is the first advert. Initialize it
-  {
-    if (bgp_benchmark_stats == NULL) {
-      bgp_benchmark_stats = (struct BgpBenchmarkStats*)malloc(sizeof(struct BgpBenchmarkStats));
-      bgp_benchmark_stats->advertisements_seen = 0;
-      bgp_benchmark_stats->deserialization_latency.total_durations = 0;
-      bgp_benchmark_stats->deserialization_latency.num_measurements = 0;
-      bgp_benchmark_stats->processing_latency.total_durations = 0;
-      bgp_benchmark_stats->processing_latency.num_measurements = 0;
-      bgp_benchmark_stats->end_to_end_latency.total_durations = 0;
-      bgp_benchmark_stats->end_to_end_latency.num_measurements = 0;
-      // only want to do this once (this is for throughput)
-      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &bgp_benchmark_stats->start_time); 
-    }
-  }
   if (bgp_benchmark_stats != NULL) {
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
+    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
   }
 
   /* @note: rajas - Some clarifications 
@@ -2286,19 +2327,46 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   // Update finished processing, increment the counter. Print throughput stats
   // every kThroughputStatsTickRate updates received
   {
-    // update processing latency
-    {
-      int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
-      bgp_benchmark_stats->processing_latency.total_durations += nanosec_duration;
-      bgp_benchmark_stats->processing_latency.num_measurements++;
-    }
 
     // update end to end latency
     {
+      zlog_debug("bgp_update_main: before GetNanoSecDuration for end_to_end");
       int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->end_to_end_latency.bgp_end_to_end_timer.start_time);
       bgp_benchmark_stats->end_to_end_latency.total_durations += nanosec_duration;
       bgp_benchmark_stats->end_to_end_latency.num_measurements++;
     }
+
+    // record lookupservice latency (add current_duration to total_duration,
+    // reset it to 0 and increment num_measurements)
+    {
+      int64_t current_duration = bgp_benchmark_stats->lookup_service_latency.current_duration;
+      bgp_benchmark_stats->lookup_service_latency.current_duration = 0;
+      bgp_benchmark_stats->lookup_service_latency.total_durations += current_duration;
+      bgp_benchmark_stats->lookup_service_latency.num_measurements++;
+    }
+
+    // record deserialization latency (add current_duration to toaltal_duration,
+    // reset it to 0 and increment num_measurements)
+    {
+      int64_t current_duration = bgp_benchmark_stats->deserialization_latency.current_duration;
+      bgp_benchmark_stats->deserialization_latency.current_duration = 0;
+      bgp_benchmark_stats->deserialization_latency.total_durations += current_duration;
+      bgp_benchmark_stats->deserialization_latency.num_measurements++;
+    }
+
+    // update processing latency
+    {
+      UpdateProcessingCurrentDuration(&bgp_benchmark_stats->processing_latency);
+
+      int64_t current_duration = bgp_benchmark_stats->processing_latency.current_duration;
+      bgp_benchmark_stats->processing_latency.current_duration = 0;
+      bgp_benchmark_stats->processing_latency.total_durations += current_duration;
+      bgp_benchmark_stats->processing_latency.num_measurements++;
+      /* int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time); */
+      /* bgp_benchmark_stats->processing_latency.total_durations += nanosec_duration; */
+      /* bgp_benchmark_stats->processing_latency.num_measurements++; */
+    }
+
     bgp_benchmark_stats->advertisements_seen++;
     // if this is divisible by kThroughputStatsTickRate, then print statistics
     if (bgp_benchmark_stats->advertisements_seen % kThroughputStatsTickRate == 0) {
@@ -2339,9 +2407,10 @@ bgp_update (struct peer *peer, struct prefix *p, struct attr *attr,
   // DBGP BENCHMARK
   // end bgp deserialization, update the timer. COMPANION_START1
   if(bgp_benchmark_stats != NULL){
-    int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
-    bgp_benchmark_stats->deserialization_latency.total_durations += nanosec_duration;
-    bgp_benchmark_stats->deserialization_latency.num_measurements++;
+    UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency);
+    /* int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time); */
+    /* bgp_benchmark_stats->deserialization_latency.total_durations += nanosec_duration; */
+    /* bgp_benchmark_stats->deserialization_latency.num_measurements++; */
   }
   ret = bgp_update_main (peer, p, attr, afi, safi, type, sub_type, prd, tag,
           soft_reconfig);

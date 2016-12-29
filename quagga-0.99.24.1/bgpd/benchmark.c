@@ -7,9 +7,11 @@
 #include "bgpd/dbgp.h"
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/wiser_config_interface.h"
+#include "bgpd/bgp_benchmark_structs.h"
 
 /* ********************* Global vars ************************** */
 extern GeneralConfigurationHandle general_configuration_;
+extern BgpBenchmarkStatsPtr bgp_benchmark_stats;
 char* SetBenchmarkIABytes(char* serialized_advert, int advert_size,
                           int num_bytes_to_set, int* modified_advert_size);
 int GetBenchmarkIABytesSize(char* serialized_advert, int advert_size);
@@ -74,16 +76,27 @@ dbgp_control_info_t *GetControlInformation2(struct attr *attr,
 
 dbgp_filtered_status_t benchmark_input_filter(
     dbgp_control_info_t* control_info) {
+  // DBGP BENCHMARK
+  // Deserialization step, start timer for deserialziation latency
+  if(bgp_benchmark_stats != NULL) {
+    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
+  }
+
   // see if there are bytes in there already
   int num_bytes =
       GetBenchmarkIABytesSize(control_info->integrated_advertisement,
                               control_info->integrated_advertisement_size);
-  zlog_debug("benchmark_update_control_info: num bytes found in advert: %d",
+  // end deserialization step update deserialization_latency.current_duration
+  if(bgp_benchmark_stats != NULL) {
+    UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency);
+  }
+
+  zlog_debug("benchmark_input_filter: num bytes found in advert: %d",
              num_bytes);
-  zlog_debug(
-      "benchmark_update_control_info: advert received: %s",
-      SerializedAdverToString(control_info->integrated_advertisement,
-                              control_info->integrated_advertisement_size));
+  /* zlog_debug( */
+  /*     "benchmark_update_control_info: advert received: %s", */
+  /*     SerializedAdverToString(control_info->integrated_advertisement, */
+  /*                             control_info->integrated_advertisement_size)); */
   return DBGP_NOT_FILTERED;
 }
 
