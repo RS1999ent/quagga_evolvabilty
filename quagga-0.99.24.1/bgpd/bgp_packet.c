@@ -2487,8 +2487,10 @@ bgp_read (struct thread *thread)
     if (bgp_benchmark_stats == NULL) {
       bgp_benchmark_stats = (struct BgpBenchmarkStats*)malloc(sizeof(struct BgpBenchmarkStats));
       bgp_benchmark_stats->advertisements_seen = 0;
-      bgp_benchmark_stats->deserialization_latency.total_durations = 0;
-      bgp_benchmark_stats->deserialization_latency.num_measurements = 0;
+      bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization = 0;
+      bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization_beagle = 0;
+      bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization = 0;
+      bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization_beagle = 0;
       bgp_benchmark_stats->deserialization_latency.current_duration = 0;
 
       bgp_benchmark_stats->processing_latency.total_durations = 0;
@@ -2511,8 +2513,17 @@ bgp_read (struct thread *thread)
   // start traditional bgp serialization timer. chekc for null becaues first
   // update is the one that creates it COMPANION_START1
   if(bgp_benchmark_stats != NULL) {
-    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
-    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->end_to_end_latency.bgp_end_to_end_timer.start_time);
+    zlog_debug("why aren't you moving?");
+    // deserialization bookkeeping
+    {
+      clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
+      bgp_benchmark_stats->deserialization_latency.moved = 1;
+    }
+    // end to end bookkeeping
+    {
+      clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->end_to_end_latency.bgp_end_to_end_timer.start_time);
+      bgp_benchmark_stats->end_to_end_latency.moved = 1;
+    }
   }
 
   /* Yes first of all get peer pointer. */

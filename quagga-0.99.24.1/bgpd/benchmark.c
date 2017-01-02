@@ -79,7 +79,7 @@ dbgp_filtered_status_t benchmark_input_filter(
   // DBGP BENCHMARK
   // Deserialization step, start timer for deserialziation latency
   if(bgp_benchmark_stats != NULL) {
-    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
+    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_timer.start_time);
   }
 
   // see if there are bytes in there already
@@ -88,7 +88,10 @@ dbgp_filtered_status_t benchmark_input_filter(
                               control_info->integrated_advertisement_size);
   // end deserialization step update deserialization_latency.current_duration
   if(bgp_benchmark_stats != NULL) {
-    UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency);
+    int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_timer.start_time);
+    bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization_beagle += nanosec_duration;
+    bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization_beagle++;
+    /* UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency); */
   }
 
   zlog_debug("benchmark_input_filter: num bytes found in advert: %d",

@@ -26,6 +26,10 @@ struct EndToEndLatency {
   // timer for the endtoend (bgp_read to end of bgp_update_main) latency
   // endtime might not be used
   struct BenchmarkTimer bgp_end_to_end_timer;
+  // True if bgp_read set this. Therefore, we can update the total_durations.
+  // This is because, it seems quagga batch reads packets so a start time is not
+  // updated every time.
+  int moved;
   int64_t total_durations; // the sum total of all durations measured (nanoseconds)
   int64_t num_measurements; // The number of measurements made
 };
@@ -34,14 +38,21 @@ struct EndToEndLatency {
 struct DeserializationLatency {
   // timer for the traditional bgp deserialization. May not hold end_time
   struct BenchmarkTimer bgp_deserialization_timer;
+  struct BenchmarkTimer bgp_deserialization_beagle_timer;
+  // True if bgp_read set this. Therefore, we can update the total_durations.
+  // This is because, it seems quagga batch reads packets so a start time is not
+  // updated every time.
+  int moved;
   // the total duration measured for one particular advert. This is necessary
   // for when the deserialization work is spread out (one in the traditional bgp
   // deserialization and one for when we deserialized the IA). This value is
   // added to total_durations when there is no more deserialization latency
   // necessary to measure
-  int64_t current_duration; 
-  int64_t total_durations; // the sum total of all durations measured (nanoseconds)
-  int64_t num_measurements; // The number of measurements made
+  int64_t current_duration;
+  int64_t total_durations_bgp_deserialization; // the sum total of all durations measured (nanoseconds) for the bgp deserialization part
+  int64_t num_measurements_bgp_deserialization; // The number of measurements made for the trraditional bgp deserializatino part
+  int64_t total_durations_bgp_deserialization_beagle; // the sum total of all durations measured (nanoseconds) for beagle
+  int64_t num_measurements_bgp_deserialization_beagle; // The number of measurements made for beagle deserialization
 };
 
 // structure to capture statistics for lookup service latency
