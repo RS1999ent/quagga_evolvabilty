@@ -1991,6 +1991,12 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   char buf[SU_ADDRSTRLEN];
 
   if (bgp_benchmark_stats != NULL) {
+    // if advertisements seen is 0 and we are hiere, we see the first update.
+    // Start the throughptu timer
+    if(bgp_benchmark_stats->advertisements_seen == 0)
+      {
+        clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->start_time); 
+      }
     clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
   }
 

@@ -604,8 +604,12 @@ char* SetBenchmarkIABytes(char* serialized_advert, int advert_size,
   // the number of bytes to fill
   {
     char* byte_buffer = new char[num_bytes_to_set];
+    // go through and put a 1 in the byte
+    for(int i = 0; i < num_bytes_to_set; i++){
+      byte_buffer[i] = 1;
+    }
     benchmark_protocol.set_some_bytes(byte_buffer);
-    delete[] byte_buffer;
+    // delete[] byte_buffer;
   }
 
   mutable_key_value->set_value(benchmark_protocol.SerializeAsString());

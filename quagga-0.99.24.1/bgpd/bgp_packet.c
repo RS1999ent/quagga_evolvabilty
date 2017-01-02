@@ -2505,7 +2505,7 @@ bgp_read (struct thread *thread)
       bgp_benchmark_stats->end_to_end_latency.num_measurements = 0;
 
       // only want to do this once (this is for throughput)
-      clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->start_time); 
+      /* clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->start_time);  */
     }
   }
 
