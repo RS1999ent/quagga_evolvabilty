@@ -93,6 +93,6 @@ void UpdateDeserializationCurrentDuration(struct DeserializationLatency* deseria
 
 void UpdateLookupServiceCurrentDuration(struct LookUpServiceLatency* lookupservice_latency);
 
-void UpdateProcessingCurrentDuration(struct ProcessingLatency* processing_latency);
+extern void UpdateProcessingCurrentDuration(struct ProcessingLatency* processing_latency);
 
 #endif

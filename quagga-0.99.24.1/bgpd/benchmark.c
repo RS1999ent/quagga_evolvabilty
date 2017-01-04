@@ -76,10 +76,11 @@ dbgp_control_info_t *GetControlInformation2(struct attr *attr,
 
 dbgp_filtered_status_t benchmark_input_filter(
     dbgp_control_info_t* control_info) {
-  // DBGP BENCHMARK
-  // Deserialization step, start timer for deserialziation latency
+  // DBGP BENCHMARK Deserialization step, start timer for deserialziation
+  // latency. End processing timer for deserialziation
   if(bgp_benchmark_stats != NULL) {
     clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_timer.start_time);
+    UpdateProcessingCurrentDuration(&bgp_benchmark_stats->processing_latency);
   }
 
   // see if there are bytes in there already
@@ -91,6 +92,9 @@ dbgp_filtered_status_t benchmark_input_filter(
     int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_timer.start_time);
     bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization_beagle += nanosec_duration;
     bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization_beagle++;
+    // start processing timer again
+    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
+
     /* UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency); */
   }
 

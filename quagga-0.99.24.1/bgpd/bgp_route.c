@@ -77,7 +77,7 @@ int clock_lock = 0;
 BgpBenchmarkStatsPtr bgp_benchmark_stats = NULL;
 
 // After kThroughputStatsTickRate advertisements, prints the throughput
-static const int kThroughputStatsTickRate = 500;
+static const int kThroughputStatsTickRate = 1;
 
 /*
   GetNanoSecDuration returns the difference in nanoseconds between the current
@@ -158,7 +158,12 @@ Arguments:
 */
 void PrintBenchmarkStats(struct BgpBenchmarkStats bgp_benchmark_stats){
   
+  // these are set in the various closures below
   double advertisement_throughput = 0; //advertisement throughput per second
+  double deserialization_latency = 0;
+  double processing_latency = 0;
+  double end_to_end_latency = 0;
+  double lookup_service_latency = 0;
   // calculate the advertisement throughput
   {
     int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats.start_time);
@@ -172,27 +177,33 @@ void PrintBenchmarkStats(struct BgpBenchmarkStats bgp_benchmark_stats){
   {
     double average_nanosec_deserialization_traditional = (double) bgp_benchmark_stats.deserialization_latency.total_durations_bgp_deserialization / (double) bgp_benchmark_stats.deserialization_latency.num_measurements_bgp_deserialization;
     double average_nanosec_deserialization_beagle = (double) bgp_benchmark_stats.deserialization_latency.total_durations_bgp_deserialization_beagle / (double) bgp_benchmark_stats.deserialization_latency.num_measurements_bgp_deserialization_beagle;
-    zlog_info("PrintBenchmarkStats: Average bgp deserialization latency: traditional %f, beagle %f, sum %f (ms)", average_nanosec_deserialization_traditional / 1000000, average_nanosec_deserialization_beagle / 1000000, (average_nanosec_deserialization_beagle + average_nanosec_deserialization_traditional) / 1000000);
+    deserialization_latency= (average_nanosec_deserialization_beagle + average_nanosec_deserialization_traditional) / 1000000;
+    zlog_info("PrintBenchmarkStats: Average bgp deserialization latency: traditional %f, beagle %f, sum %f (ms)", average_nanosec_deserialization_traditional / 1000000, average_nanosec_deserialization_beagle / 1000000, deserialization_latency);
   }
 
   // calculate average processing latency
   {
     double average_nanosec_deserialization = (double) bgp_benchmark_stats.processing_latency.total_durations / (double) bgp_benchmark_stats.processing_latency.num_measurements;
-    zlog_info("PrintBenchmarkStats: Average bgp processing latency (ms) %f", average_nanosec_deserialization / 1000000);
+    processing_latency = average_nanosec_deserialization / 1000000;
+    zlog_info("PrintBenchmarkStats: Average bgp processing latency (ms) %f", processing_latency);
   }
 
   // calculate average end to end latency
   {
     double average_nanosec_deserialization = (double) bgp_benchmark_stats.end_to_end_latency.total_durations / (double) bgp_benchmark_stats.end_to_end_latency.num_measurements;
-    zlog_info("PrintBenchmarkStats: Average bgp end_to_end (ms) %f", average_nanosec_deserialization / 1000000);
+    end_to_end_latency = average_nanosec_deserialization / 1000000;
+    zlog_info("PrintBenchmarkStats: Average bgp end_to_end (ms) %f",end_to_end_latency);
   }
 
   // calculate average lookupservice latency
   {
     double average_nanosec_deserialization = (double) bgp_benchmark_stats.lookup_service_latency.total_durations / (double) bgp_benchmark_stats.lookup_service_latency.num_measurements;
-    zlog_info("PrintBenchmarkStats: Average bgp lookupservice latency (ms) %f", average_nanosec_deserialization / 1000000);
-    
+    lookup_service_latency = average_nanosec_deserialization / 1000000;
+    zlog_info("PrintBenchmarkStats: Average bgp lookupservice latency (ms) %f", lookup_service_latency);
   }
+  // comma separated (throughput, deserialziation, processing, lookupservice,
+  // end to end)
+  zlog_debug("PrintBenchmarkStats: comma separated: %f, %f, %f, %f, %f", advertisement_throughput, deserialization_latency, processing_latency, lookup_service_latency, end_to_end_latency);
 }
 
 static struct bgp_node *

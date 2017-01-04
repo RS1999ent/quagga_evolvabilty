@@ -1,4 +1,8 @@
+#ifndef BGPD_INTEGRATED_ADVERTISEMENT_FUNCTIONS_H
+#define BGPD_INTEGRATED_ADVERTISEMENT_FUNCTIONS_H
+
 #include "wiser_config_interface.h"
+
 /* Creates a empty integrated advertisement and returns a reference to its
    serialized form.
 
@@ -171,3 +175,4 @@ extern "C" char* SetBenchmarkIABytes(char* serialized_advert, int advert_size, i
    Returns: the size of raw bytes stored by the benchmark protocol
 */
 extern "C" int GetBenchmarkIABytesSize(char* serialized_advert, int advert_size);
+#endif
