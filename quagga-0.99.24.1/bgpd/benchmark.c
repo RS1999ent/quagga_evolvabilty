@@ -79,8 +79,9 @@ dbgp_filtered_status_t benchmark_input_filter(
   // DBGP BENCHMARK Deserialization step, start timer for deserialziation
   // latency. End processing timer for deserialziation
   if(bgp_benchmark_stats != NULL) {
-    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_timer.start_time);
-    UpdateProcessingCurrentDuration(&bgp_benchmark_stats->processing_latency);
+    /* clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_timer.start_time); */
+    StartContiguousStatsDuration(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_stats);
+    UpdateContiguousStatsDuration(&bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats);
   }
 
   // see if there are bytes in there already
@@ -89,12 +90,18 @@ dbgp_filtered_status_t benchmark_input_filter(
                               control_info->integrated_advertisement_size);
   // end deserialization step update deserialization_latency.current_duration
   if(bgp_benchmark_stats != NULL) {
-    int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_timer.start_time);
-    bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization_beagle += nanosec_duration;
-    bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization_beagle++;
-    // start processing timer again
-    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
 
+    UpdateContiguousStatsDuration(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_stats);
+    EndContiguousStatsMeasurement(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_stats);
+    /* int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_timer.start_time); */
+    /* bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization_beagle += nanosec_duration; */
+    /* bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization_beagle++; */
+    // start processing timer again
+    StartContiguousStatsDuration(&bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats);
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug("benchmark_input_filter: current time for bgp_nlri_parse (ms) %f", bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats.current_duration / 1000000.0);
+    /* clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time); */
+    
     /* UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency); */
   }
 

@@ -211,14 +211,14 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   // DBGP BENCHMARK
   if(bgp_benchmark_stats != NULL) {
     clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->lookup_service_latency.bgp_lookupservice_timer.start_time);
-    UpdateProcessingCurrentDuration(&bgp_benchmark_stats->processing_latency);
+    UpdateContiguousStatsDuration(&bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats);
   }
   /* clock_t start_lookup_latency, end_lookup_latency; */
   /* start_lookup_latency = clock(); */
   c = connect_to_redis();
   reply = redisCommand(c, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
   if(bgp_benchmark_stats != NULL) {
-    clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->processing_latency.bgp_update_main_timer.start_time);
+    StartContiguousStatsDuration(&bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats);
     UpdateLookupServiceCurrentDuration(&bgp_benchmark_stats->lookup_service_latency);
   }
   /* end_lookup_latency = clock(); */

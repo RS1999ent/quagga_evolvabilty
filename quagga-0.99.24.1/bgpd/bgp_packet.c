@@ -2487,15 +2487,13 @@ bgp_read (struct thread *thread)
     if (bgp_benchmark_stats == NULL) {
       bgp_benchmark_stats = (struct BgpBenchmarkStats*)malloc(sizeof(struct BgpBenchmarkStats));
       bgp_benchmark_stats->advertisements_seen = 0;
-      bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization = 0;
-      bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization_beagle = 0;
-      bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization = 0;
-      bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization_beagle = 0;
-      bgp_benchmark_stats->deserialization_latency.current_duration = 0;
+      bgp_benchmark_stats->started_advert_timer= 0;
 
-      bgp_benchmark_stats->processing_latency.total_durations = 0;
-      bgp_benchmark_stats->processing_latency.num_measurements = 0;
-      bgp_benchmark_stats->processing_latency.current_duration = 0;
+      InitializeContiguousStruct(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats);
+      InitializeContiguousStruct(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_beagle_stats);
+
+      InitializeContiguousStruct(&bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats);
+      InitializeContiguousStruct(&bgp_benchmark_stats->processing_latency.bgp_process_main_stats);
 
       bgp_benchmark_stats->lookup_service_latency.total_durations = 0;
       bgp_benchmark_stats->lookup_service_latency.num_measurements = 0;
@@ -2516,8 +2514,10 @@ bgp_read (struct thread *thread)
     zlog_debug("why aren't you moving?");
     // deserialization bookkeeping
     {
-      clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time);
-      bgp_benchmark_stats->deserialization_latency.moved = 1;
+      if(!bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats.contiguous_separation){
+        StartContiguousStatsDuration(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats);
+        /* bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats.contiguous_separation = 1; */
+      }
     }
     // end to end bookkeeping
     {
@@ -2645,6 +2645,9 @@ bgp_read (struct thread *thread)
       break;
     case BGP_MSG_UPDATE:
       peer->readtime = bgp_recent_clock ();
+      // DBGP BENCHMARK, if we received update, we can keep the deserialization
+      // timer going
+      bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats.contiguous_separation = 1;
       bgp_update_receive (peer, size);
       break;
     case BGP_MSG_NOTIFY:
