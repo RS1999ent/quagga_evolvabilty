@@ -2,6 +2,7 @@
 
 #include "bgpd/benchmark.h"
 #include "bgpd/bgp_aspath.h"
+#include "bgpd/bgp_debug.h"
 #include "bgpd/bgp_common.h"
 #include "bgpd/bgp_route.h"
 #include "bgpd/dbgp.h"
@@ -40,22 +41,25 @@ dbgp_control_info_t *GetControlInformation2(struct attr *attr,
   // extra control information from the lookupservice.
   if (attr->extra != NULL && attr->extra->transit != NULL &&
       attr->extra->transit->length > 0) {
-    zlog_debug(
-        "dbgp::GetControlInformation: There was existing control information "
-        "in advert");
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug(
+                 "dbgp::GetControlInformation: There was existing control information "
+                 "in advert");
     struct attr_extra *extra;
     extra = attr->extra;
     *transit = extra->transit;
-    zlog_debug("dbgp::GetControlInformation: Transit length is: %i",
-               (*transit)->length);
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug("dbgp::GetControlInformation: Transit length is: %i",
+                 (*transit)->length);
     control_info = retrieve_control_info(*transit);
     return control_info;
   }
   // Otherwise, there was no transitive attribute in there.  Therefore create a
   // space for it.
-  zlog_debug(
-      "dbgp::GetControlInformation: There was no existing control information, "
-      "so create it");
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug(
+               "dbgp::GetControlInformation: There was no existing control information, "
+               "so create it");
   bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
   control_info = malloc(sizeof(dbgp_protocol_t));
   // Create serialized empty integrated_advertisement and set the appropriate
@@ -105,8 +109,9 @@ dbgp_filtered_status_t benchmark_input_filter(
     /* UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency); */
   }
 
-  zlog_debug("benchmark_input_filter: num bytes found in advert: %d",
-             num_bytes);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("benchmark_input_filter: num bytes found in advert: %d",
+               num_bytes);
   /* zlog_debug( */
   /*     "benchmark_update_control_info: advert received: %s", */
   /*     SerializedAdverToString(control_info->integrated_advertisement, */
@@ -119,21 +124,24 @@ void benchmark_update_control_info(dbgp_control_info_t* control_info) {
   int num_bytes =
       GetBenchmarkIABytesSize(control_info->integrated_advertisement,
                               control_info->integrated_advertisement_size);
-  zlog_debug("benchmark_update_control_info: num bytes found in advert: %d",
-             num_bytes);
-  zlog_debug(
-      "benchmark_update_control_info: advert received: %s",
-      SerializedAdverToString(control_info->integrated_advertisement,
-                              control_info->integrated_advertisement_size));
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("benchmark_update_control_info: num bytes found in advert: %d",
+               num_bytes);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug(
+               "benchmark_update_control_info: advert received: %s",
+               SerializedAdverToString(control_info->integrated_advertisement,
+                                       control_info->integrated_advertisement_size));
   // if there are no bytes in advert, then we are originating advert, set it.
   if (num_bytes == -1) {
     // set the benchmark bytes in control information
     {
       uint32_t num_bytes_to_set = GetBenchmarkBytes(general_configuration_);
-      zlog_debug("benchmark_update_control_info: setting %d bytes",
-                 num_bytes_to_set);
+      if (BGP_DEBUG (update, UPDATE_IN))  
+        zlog_debug("benchmark_update_control_info: setting %d bytes",
+                   num_bytes_to_set);
       char* old_integrated_advertisement =
-          control_info->integrated_advertisement;
+        control_info->integrated_advertisement;
       int old_integrated_advertisement_size =
           control_info->integrated_advertisement_size;
       int new_size;
@@ -144,10 +152,11 @@ void benchmark_update_control_info(dbgp_control_info_t* control_info) {
       control_info->integrated_advertisement =
           new_integrated_advertisement_info;
       control_info->integrated_advertisement_size = new_size;
-      zlog_debug(
-          "benchmark_update_control_info: new advertisement: %s",
-          SerializedAdverToString(control_info->integrated_advertisement,
-                                  control_info->integrated_advertisement_size));
+      if (BGP_DEBUG (update, UPDATE_IN))  
+        zlog_debug(
+                   "benchmark_update_control_info: new advertisement: %s",
+                   SerializedAdverToString(control_info->integrated_advertisement,
+                                           control_info->integrated_advertisement_size));
     }
   }
 }
@@ -156,14 +165,16 @@ dbgp_filtered_status_t benchmark_output_filter(struct attr* attr) {
   // if either the transit or extra is null, then we haven't inserted benchmark
   // information into advert (we are announcing it), therefore insert it
   if (attr->extra == NULL || attr->extra->transit == NULL) {
-    zlog_debug(
-        "benchmark_output_filter: no transit or extra, means we are announcing "
-        "it. Update control info to put benchmark info in");
-    zlog_debug("benchmark_output_filter: aspath of attr: %s",
-               attr->aspath->str);
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug(
+                 "benchmark_output_filter: no transit or extra, means we are announcing "
+                 "it. Update control info to put benchmark info in");
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug("benchmark_output_filter: aspath of attr: %s",
+                 attr->aspath->str);
     uint32_t num_bytes_to_set = GetBenchmarkBytes(general_configuration_);
     if(num_bytes_to_set > 0) {
-
+      
     dbgp_control_info_t* control_info;
     struct transit* transit;
 
@@ -171,8 +182,9 @@ dbgp_filtered_status_t benchmark_output_filter(struct attr* attr) {
     assert(attr != NULL);
     control_info = GetControlInformation2(attr, &transit);
     assert(transit != NULL);
-    zlog_debug("benchmark_output_filter: setting %d bytes",
-               num_bytes_to_set);
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug("benchmark_output_filter: setting %d bytes",
+                 num_bytes_to_set);
     char* old_integrated_advertisement = control_info->integrated_advertisement;
     int old_integrated_advertisement_size =
         control_info->integrated_advertisement_size;
@@ -183,10 +195,11 @@ dbgp_filtered_status_t benchmark_output_filter(struct attr* attr) {
     free(old_integrated_advertisement);
     control_info->integrated_advertisement = new_integrated_advertisement_info;
     control_info->integrated_advertisement_size = new_size;
-    zlog_debug(
-        "benchmark_output_filter: new advertisement: %s",
-        SerializedAdverToString(control_info->integrated_advertisement,
-                                control_info->integrated_advertisement_size));
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug(
+                 "benchmark_output_filter: new advertisement: %s",
+                 SerializedAdverToString(control_info->integrated_advertisement,
+                                         control_info->integrated_advertisement_size));
     // Insert the updated control information into the lookup service and insert
     // the key into the the transitive attribute.
     dbgp_result_status_t success = set_control_info(transit, control_info);

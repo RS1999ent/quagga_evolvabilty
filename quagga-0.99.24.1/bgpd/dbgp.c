@@ -5,6 +5,7 @@
  */
 
 #include "bgpd/dbgp.h"
+#include "bgpd/bgp_debug.h"
 #include "bgpd/benchmark.h"
 #include "bgpd/bgp_aspath.h"
 #include "bgpd/bgp_common.h"
@@ -39,22 +40,26 @@ dbgp_control_info_t *GetControlInformation(struct attr *attr,
   // extra control information from the lookupservice.
   if (attr->extra != NULL && attr->extra->transit != NULL &&
       attr->extra->transit->length > 0) {
-    zlog_debug(
-        "dbgp::GetControlInformation: There was existing control information "
-        "in advert");
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug(
+                 "dbgp::GetControlInformation: There was existing control information "
+                 "in advert");
     struct attr_extra *extra;
     extra = attr->extra;
     *transit = extra->transit;
-    zlog_debug("dbgp::GetControlInformation: Transit length is: %i",
-               (*transit)->length);
+
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug("dbgp::GetControlInformation: Transit length is: %i",
+                 (*transit)->length);
     control_info = retrieve_control_info(*transit);
     return control_info;
   }
   // Otherwise, there was no transitive attribute in there.  Therefore create a
   // space for it.
-  zlog_debug(
-      "dbgp::GetControlInformation: There was no existing control information, "
-      "so create it");
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug(
+               "dbgp::GetControlInformation: There was no existing control information, "
+               "so create it");
   bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
   control_info = malloc(sizeof(dbgp_protocol_t));
   // Create serialized empty integrated_advertisement and set the appropriate
@@ -73,7 +78,8 @@ dbgp_control_info_t *GetControlInformation(struct attr *attr,
 
 void dbgp_update_control_info(struct attr *attr, struct peer *peer,
                               struct prefix *prefix) {
-  zlog_debug("dbgp::dbgp_update_control_info: aspath of attr: %s",
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp::dbgp_update_control_info: aspath of attr: %s",
              attr->aspath->str);
   dbgp_control_info_t *control_info;
   struct transit *transit;
@@ -94,8 +100,9 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer,
     return;
   }
 
-  zlog_debug("dbgp::dbgp_update_control_info: protocol type: %i",
-             peer->bgp->dbgp_protocol);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp::dbgp_update_control_info: protocol type: %i",
+               peer->bgp->dbgp_protocol);
 
   switch (peer->bgp->dbgp_protocol) {
     /* Just BGP */
@@ -129,8 +136,9 @@ void dbgp_update_control_info(struct attr *attr, struct peer *peer,
 
 void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp,
                                         struct prefix *prefix) {
-  zlog_debug("dbgp::dbgp_update_control_info: aspath of attr: %s",
-             attr->aspath->str);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp::dbgp_update_control_info: aspath of attr: %s",
+               attr->aspath->str);
   dbgp_control_info_t *control_info;
   struct transit *transit;
 
@@ -149,9 +157,10 @@ void dbgp_update_control_info_bgpstruct(struct attr *attr, struct bgp *bgp,
     return;
   }
 
-  zlog_debug("dbgp::dbgp_update_control_info: protocol type: %i",
-             bgp->dbgp_protocol);
-
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp::dbgp_update_control_info: protocol type: %i",
+               bgp->dbgp_protocol);
+  
   switch (bgp->dbgp_protocol) {
     /* Just BGP */
     case dbgp_protocol_baseline:
@@ -217,7 +226,9 @@ int dbgp_info_cmp(struct bgp *bgp, struct bgp_info *new, struct bgp_info *exist,
 
 dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
                                          struct prefix *prefix) {
-  zlog_debug("dbgp::dbgp_input_filter: aspath of attr: %s", attr->aspath->str);
+
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp::dbgp_input_filter: aspath of attr: %s", attr->aspath->str);
   dbgp_control_info_t *control_info;
   struct attr_extra *extra;
   struct transit *transit;
@@ -270,7 +281,8 @@ dbgp_filtered_status_t dbgp_input_filter(struct attr *attr, struct peer *peer,
 
 dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer,
                                           struct prefix *prefix) {
-  zlog_debug("dbgp::dbgp_output_filter: aspath of attr: %s", attr->aspath->str);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp::dbgp_output_filter: aspath of attr: %s", attr->aspath->str);
   dbgp_control_info_t *control_info;
   struct attr_extra *extra;
   struct transit *transit;
@@ -279,11 +291,13 @@ dbgp_filtered_status_t dbgp_output_filter(struct attr *attr, struct peer *peer,
   // debug what protocol the router thinks its running
   char *prefix_buf = malloc(256);
   prefix2str(prefix, prefix_buf, 256);
-  zlog_debug("dbgp::dbgp_output_filter: protocol type: %i",
-             peer->bgp->dbgp_protocol);
-  zlog_debug("dbgp::dbgp_output_filter: prefix: %s", prefix_buf);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp::dbgp_output_filter: protocol type: %i",
+               peer->bgp->dbgp_protocol);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp::dbgp_output_filter: prefix: %s", prefix_buf);
   free(prefix_buf);
-
+  
   // If aspath is 0, then this the first thing going through, so there will be
   // no extra attributes, return not filtered.
   /* unsigned int aspath_length = aspath_size(attr->aspath); */

@@ -16,6 +16,7 @@
 #include "bgpd/bgpd.h"
 #include "bgpd/bgp_attr.h"
 #include "bgpd/dbgp_lookup.h"
+#include "bgpd/bgp_debug.h"
 #include "hiredis/hiredis.h"
 #include "bgpd/bgp_benchmark_structs.h"
 
@@ -231,8 +232,8 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   }
 
   control_info = unpack_redis_reply(reply->str, reply->len);
-  zlog_debug("dbgp_lookup::retrieve_control_info: Key retrieving %i", *(dbgp_lookup_key_t *) transit->val);
-
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp_lookup::retrieve_control_info: Key retrieving %i", *(dbgp_lookup_key_t *) transit->val);
   free(reply);
   free(c);
 
@@ -278,8 +279,10 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   c = connect_to_redis();
   reply = redisCommand(c, "SET %"PRIu32" %s", *key, packed_val);
   end_lookup_latency = clock();
-  zlog_debug("dbgp_lookup::set_control_info: took ticks: %ld", end_lookup_latency - start_lookup_latency);
 
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp_lookup::set_control_info: took ticks: %ld", end_lookup_latency - start_lookup_latency);
+  
   if (reply->type == REDIS_REPLY_ERROR) {
     zlog_err("%s: failed to store control info.  Key=%"PRIu32", control info=%s", 
 	     __func__, *key, packed_val);
@@ -289,7 +292,8 @@ dbgp_result_status_t set_control_info(struct transit *transit,
   /* Add key to advertisement */
   transit->length = sizeof(dbgp_lookup_key_t);
   transit->val = (u_char *)key;
-  zlog_debug("dbgp_lookup::set_control_info: Key set in lookup service: %i", *key);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp_lookup::set_control_info: Key set in lookup service: %i", *key);
 
   free(reply); 
   free(c);
@@ -326,7 +330,8 @@ void IncrementWiserCosts(int as1, int as2, int increment_by){
   sprintf(increment_by_str, "%i", increment_by);
   sprintf(command, "INCRBY %s %s", key, increment_by_str);
 
-  zlog_debug("dbgp_lookup::IncrementWiserCosts: Command sent to Redis: %s", command);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp_lookup::IncrementWiserCosts: Command sent to Redis: %s", command);
   
 
   c = connect_to_redis();
@@ -365,16 +370,19 @@ int RetrieveWiserCosts(int as1, int as2)
     assert(0);
   }
   if(reply->type == REDIS_REPLY_NIL) {
-    zlog_debug("dbgp_lookup::RetreiveWiserCosts: Key (%i-%i) did not exist for retrieving", as1, as2);
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug("dbgp_lookup::RetreiveWiserCosts: Key (%i-%i) did not exist for retrieving", as1, as2);
     return -1;
   }
   if(reply->type != REDIS_REPLY_INTEGER){
-    zlog_debug("dbgp_lookup::RetrieveWiserCosts: Key(%i-%i) exist and got back STRING cost %s", as1, as2, reply->str);
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_debug("dbgp_lookup::RetrieveWiserCosts: Key(%i-%i) exist and got back STRING cost %s", as1, as2, reply->str);
     return strtol(reply->str, NULL, 0);
   }
 
   int return_val = reply->integer;
-  zlog_debug("dbgp_lookup::RetrieveWiserCosts: Key(%i-%i) exist and got back cost %i", as1, as2, return_val);
+  if (BGP_DEBUG (update, UPDATE_IN))  
+    zlog_debug("dbgp_lookup::RetrieveWiserCosts: Key(%i-%i) exist and got back cost %i", as1, as2, return_val);
   free(reply);
   free(c);
 
