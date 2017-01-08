@@ -1780,6 +1780,21 @@ bgp_update_receive (struct peer *peer, bgp_size_t size)
      Address Family and Subsequent Address Family. */
   if (peer->afc[AFI_IP][SAFI_UNICAST])
     {
+
+      // DBGP BENCHMARK
+      // end bgp deserialization, update the timer. COMPANION_START1
+      if(bgp_benchmark_stats != NULL){
+        
+        /* UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency); */
+        if (bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats.contiguous_separation){
+          UpdateContiguousStatsDuration(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats);
+          EndContiguousStatsMeasurement(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats);
+          /* int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time); */
+          /* bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization += nanosec_duration; */
+          /* bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization++; */
+          bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats.contiguous_separation = 0;
+        }
+      }
       if (withdraw.length)
 	bgp_nlri_parse (peer, NULL, &withdraw);
 

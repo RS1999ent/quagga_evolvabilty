@@ -109,9 +109,9 @@ dbgp_filtered_status_t benchmark_input_filter(
     /* UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency); */
   }
 
-  if (BGP_DEBUG (update, UPDATE_IN))  
+  if (BGP_DEBUG (update, UPDATE_IN))
     zlog_debug("benchmark_input_filter: num bytes found in advert: %d",
-               num_bytes);
+             num_bytes);
   /* zlog_debug( */
   /*     "benchmark_update_control_info: advert received: %s", */
   /*     SerializedAdverToString(control_info->integrated_advertisement, */

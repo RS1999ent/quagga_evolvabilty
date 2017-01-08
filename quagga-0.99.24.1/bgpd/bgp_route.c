@@ -61,6 +61,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/dbgp_lookup.h"
 #include "bgpd/dbgp.h"
 #include "bgpd/bgp_benchmark_structs.h"
+#include "math.h"
 
 /* Extern from bgp_dump.c */
 extern const char *bgp_origin_str[];
@@ -77,10 +78,10 @@ int clock_lock = 0;
 BgpBenchmarkStatsPtr bgp_benchmark_stats = NULL;
 
 // After kThroughputStatsTickRate advertisements, prints the throughput
-static const int kThroughputStatsTickRate = 500;
+static const int kThroughputStatsTickRate = 100;
 // the rate at which to print out the time that bgp_update_main ended for x
 // amount of adverts.
-static const int kPrintTimeForAdvertsRate = 1000;
+static const int kPrintTimeForAdvertsRate = 100;
 
 /*
   GetNanoSecDuration returns the difference in nanoseconds between the current
@@ -101,6 +102,26 @@ int64_t GetNanoSecDuration(struct timespec start_time){
   /* zlog_debug("GetNanoSecDuration: startime: %ld secs, %ld nsec",start_time.tv_sec, start_time.tv_nsec); */
   /* zlog_debug("GetNanoSecDuration: end_time: %ld secs, %ld nsec",end_time.tv_sec, end_time.tv_nsec); */
   /* zlog_debug("GetNanoSecDuration: diff nanoseconds (long) %ld", total_diff); */
+  return total_diff;
+}
+
+/*
+  timespec_elapsed computes the time elapsed (in nanoseconds) betwen the start
+  time and the end time
+
+  Arguments:
+     start_time: the time that we want to compute the duation from
+     end_time: the time we want to stop at
+
+  returns: the time elapsed in nanoseconds.
+ */
+uint64_t
+timespec_elapsed (struct timespec start_time, struct timespec end_time)
+{
+  int64_t diffInSecs = end_time.tv_sec - start_time.tv_sec;
+  int64_t diffInNsec = end_time.tv_nsec - start_time.tv_nsec;
+  int64_t total_diff = diffInSecs * 1000000000 + diffInNsec;
+  assert(total_diff > 0);
   return total_diff;
 }
 
@@ -225,6 +246,10 @@ void PrintBenchmarkStats(struct BgpBenchmarkStats bgp_benchmark_stats){
   {
     double average_nanosec_deserialization_traditional = (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_stats.total_durations / (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_stats.num_measurements;
     double average_nanosec_deserialization_beagle = (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_beagle_stats.total_durations / (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_beagle_stats.num_measurements;
+    // if average beagle desiaralizing is not a number, means we are working with default protocol, make it 0.
+    if(isnan(average_nanosec_deserialization_beagle)) {
+      average_nanosec_deserialization_beagle = 0;
+    }
     deserialization_latency= (average_nanosec_deserialization_beagle + average_nanosec_deserialization_traditional) / 1000000;
     zlog_info("PrintBenchmarkStats: Average bgp deserialization latency: traditional %f, beagle %f, sum %f (ms)", average_nanosec_deserialization_traditional / 1000000, average_nanosec_deserialization_beagle / 1000000, deserialization_latency);
   }
@@ -239,9 +264,14 @@ void PrintBenchmarkStats(struct BgpBenchmarkStats bgp_benchmark_stats){
 
   // calculate average end to end latency
   {
-    double average_nanosec_deserialization = (double) bgp_benchmark_stats.end_to_end_latency.total_durations / (double) bgp_benchmark_stats.end_to_end_latency.num_measurements;
-    end_to_end_latency = average_nanosec_deserialization / 1000000;
-    zlog_info("PrintBenchmarkStats: Average bgp end_to_end (ms) %f",end_to_end_latency);
+
+    double elapsed_time = (double) timespec_elapsed(bgp_benchmark_stats.start_time, bgp_benchmark_stats.end_time) / 1000000; 
+    zlog_debug("elapsed time is: %f", elapsed_time);
+    double average_latency_per_advert =  elapsed_time / (double) bgp_benchmark_stats.advertisements_seen;
+    end_to_end_latency = average_latency_per_advert;
+    /* double average_nanosec_deserialization = (double) bgp_benchmark_stats.end_to_end_latency.total_durations / (double) bgp_benchmark_stats.end_to_end_latency.num_measurements; */
+    /* end_to_end_latency = average_nanosec_deserialization / 1000000; */
+    zlog_info("PrintBenchmarkStats: Average bgp end_to_end (ms) %f", average_latency_per_advert);
   }
 
   // calculate average lookupservice latency
@@ -1643,6 +1673,7 @@ bgp_process_main (struct work_queue *wq, void *data)
       // update throughtput stats (just increment advertisements seen)
       {
         bgp_benchmark_stats->advertisements_seen++;
+        clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->end_time);
       }
       // statistics printing
       {
@@ -2525,20 +2556,6 @@ bgp_update (struct peer *peer, struct prefix *p, struct attr *attr,
   struct bgp *bgp;
   int ret;
 
-  // DBGP BENCHMARK
-  // end bgp deserialization, update the timer. COMPANION_START1
-  if(bgp_benchmark_stats != NULL){
-
-    /* UpdateDeserializationCurrentDuration(&bgp_benchmark_stats->deserialization_latency); */
-    if (bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats.contiguous_separation){
-      UpdateContiguousStatsDuration(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats);
-      EndContiguousStatsMeasurement(&bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats);
-      /* int64_t nanosec_duration = GetNanoSecDuration(bgp_benchmark_stats->deserialization_latency.bgp_deserialization_timer.start_time); */
-      /* bgp_benchmark_stats->deserialization_latency.total_durations_bgp_deserialization += nanosec_duration; */
-      /* bgp_benchmark_stats->deserialization_latency.num_measurements_bgp_deserialization++; */
-        bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats.contiguous_separation = 0;
-    }
-  }
   ret = bgp_update_main (peer, p, attr, afi, safi, type, sub_type, prd, tag,
           soft_reconfig);
 
