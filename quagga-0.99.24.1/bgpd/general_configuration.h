@@ -42,6 +42,23 @@ struct GeneralConfiguration {
   */
   int GetBenchmarkBytes();
 
+  /* IsInMemoryBenchmarkConfig returns whether this is an experiment where we
+     want to create the advert and put in in memory, bypassing the lookup
+     service.
+
+     Returns: 1 if the value is set to 1, 0 otherwise or if the config doesn't exist
+   */
+  int IsInMemoryBenchmarkConfig();
+
+  /* IsAdhocInLookupserviceBenchmarkConfig returns whether this is an experiment
+     where we want to create the advert locally and put it in the lookupservice
+     with a locally created key that will be used for any advertisements that
+     come in
+
+     Returns: 1 if the value is set to 1, 0 otherwise or if the config doesn't exist.
+  */
+  int IsAdhocInLookupserviceBenchmarkConfig();
+
   /* Creates and returns a reference to the WiserConfig class (that is the */
   /* object that works with the wiserconfig protobuf). */
 

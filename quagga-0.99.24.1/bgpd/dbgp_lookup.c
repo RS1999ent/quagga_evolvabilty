@@ -190,9 +190,11 @@ dbgp_result_status_t insert_sentinel(struct transit *transit)
 }
   
 
+// used so that one redis connection is used for retrieving control information.
+// SEt on the first entrance in to retrieve_control_info
+static redisContext *retrieve_connection_context = NULL;
 dbgp_control_info_t *retrieve_control_info(struct transit * transit)
 {
-  redisContext *c;
   redisReply* reply;
   dbgp_control_info_t *control_info;
 
@@ -216,27 +218,42 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   }
   /* clock_t start_lookup_latency, end_lookup_latency; */
   /* start_lookup_latency = clock(); */
-  c = connect_to_redis();
-  reply = redisCommand(c, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
-  if(bgp_benchmark_stats != NULL) {
-    StartContiguousStatsDuration(&bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats);
-    UpdateLookupServiceCurrentDuration(&bgp_benchmark_stats->lookup_service_latency);
+  int got_value = 1; // status variable that allows for multiple attempts at
+                     // getting the value. Set 0 if failes so loop loops
+  // make it so that it will repeatedly try and get the key if it failes.
+  int attempts = 0;// number of attempts at getting the key. will fail at 1000
+  if(retrieve_connection_context == NULL){
+    retrieve_connection_context = connect_to_redis();
   }
-  /* end_lookup_latency = clock(); */
-  /* zlog_debug("dbgp_lookup::retrieve_control_info: took ticks: %ld", end_lookup_latency - start_lookup_latency); */
-
-  if(reply->type == REDIS_REPLY_ERROR) {
-    zlog_err("%s:, failed to retrieve D-BGP control info. Key=%"PRIu32"",
-	     __func__, *(dbgp_lookup_key_t *)transit->val);
-    assert(0);
-  }
-
+  do{
+    got_value = 1;
+    reply = redisCommand(retrieve_connection_context, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
+    if(bgp_benchmark_stats != NULL) {
+      StartContiguousStatsDuration(&bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats);
+      UpdateLookupServiceCurrentDuration(&bgp_benchmark_stats->lookup_service_latency);
+    }
+    /* end_lookup_latency = clock(); */
+    /* zlog_debug("dbgp_lookup::retrieve_control_info: took ticks: %ld", end_lookup_latency - start_lookup_latency); */
+    
+    if(reply == NULL || reply->type == REDIS_REPLY_ERROR) {
+      zlog_err("%s:, failed to retrieve D-BGP control info. Key=%"PRIu32"",
+               __func__, *(dbgp_lookup_key_t *)transit->val);
+      attempts++;
+      usleep(100000);
+      got_value = 0; // here if we didn't get the value so try again
+      if (attempts == 1000)
+        {
+          assert(0);
+        }
+      /* assert(0); */
+    }
+  } while(got_value == 0);
+  
   control_info = unpack_redis_reply(reply->str, reply->len);
   if (BGP_DEBUG (update, UPDATE_IN))  
     zlog_debug("dbgp_lookup::retrieve_control_info: Key retrieving %i", *(dbgp_lookup_key_t *) transit->val);
   free(reply);
-  free(c);
-
+  /* redisFree(retrieve_connection_context); */
   return(control_info);
 }
 

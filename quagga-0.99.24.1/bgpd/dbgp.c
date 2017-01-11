@@ -13,9 +13,11 @@
 #include "bgpd/pathlets.h"
 #include "bgpd/wiser.h"
 #include "bgpd/wiser_config_interface.h"
+#include "bgpd/bgp_benchmark_structs.h"
 
 /* ********************* Global vars ************************** */
 extern GeneralConfigurationHandle general_configuration_;
+extern BgpBenchmarkExperimentDataPtr bgp_benchmark_experiment_data_;
 /* ********************* Private functions ********************* */
 
 /* Function that gets control information to be updated. If it already exists in
@@ -35,43 +37,65 @@ extern GeneralConfigurationHandle general_configuration_;
 dbgp_control_info_t *GetControlInformation(struct attr *attr,
                                            struct transit **transit) {
   assert(attr != NULL);
-  dbgp_control_info_t *control_info;
-  // If there is a transitive attribute in there, that means we can retrieve a
-  // extra control information from the lookupservice.
-  if (attr->extra != NULL && attr->extra->transit != NULL &&
-      attr->extra->transit->length > 0) {
+  // special case for bgp benchmark experiment
+  if(GetProtocolType(general_configuration_) == dbgp_protocol_benchmark)
+    {
+      // if it is an in memory experiment, then return the control information
+      // in the struct, set transit to the transit (should be unused, but there
+      // is an assert that requires this to be non null)
+      //otherwise, retrieve the information from the lookup service (should be
+      //set already)
+      if(bgp_benchmark_experiment_data_->which_adhoc == IN_MEMORY)
+        {
+          *transit = bgp_benchmark_experiment_data_->transit;
+          return bgp_benchmark_experiment_data_->control_info;
+        }
+      else if(bgp_benchmark_experiment_data_->which_adhoc == IN_LOOKUPSERVICE)
+        {
+          *transit = bgp_benchmark_experiment_data_->transit;
+          return retrieve_control_info(*transit);
+        }
+    }
+  // this was the original function!
+  else {
+    dbgp_control_info_t *control_info;
+    // If there is a transitive attribute in there, that means we can retrieve a
+    // extra control information from the lookupservice.
+    if (attr->extra != NULL && attr->extra->transit != NULL &&
+        attr->extra->transit->length > 0) {
+      if (BGP_DEBUG (update, UPDATE_IN))  
+        zlog_debug(
+                   "dbgp::GetControlInformation: There was existing control information "
+                   "in advert");
+      struct attr_extra *extra;
+      extra = attr->extra;
+      *transit = extra->transit;
+
+      if (BGP_DEBUG (update, UPDATE_IN))  
+        zlog_debug("dbgp::GetControlInformation: Transit length is: %i",
+                   (*transit)->length);
+      control_info = retrieve_control_info(*transit);
+      return control_info;
+    }
+    // Otherwise, there was no transitive attribute in there.  Therefore create a
+    // space for it.
     if (BGP_DEBUG (update, UPDATE_IN))  
       zlog_debug(
-                 "dbgp::GetControlInformation: There was existing control information "
-                 "in advert");
-    struct attr_extra *extra;
-    extra = attr->extra;
-    *transit = extra->transit;
+                 "dbgp::GetControlInformation: There was no existing control information, "
+                 "so create it");
+    bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
+    control_info = malloc(sizeof(dbgp_protocol_t));
+    // Create serialized empty integrated_advertisement and set the appropriate
+    // fields in the control information. This is effectively setting the size to
+    // be 0 at the moment and the integrated_advertisement being NULL
+    control_info->integrated_advertisement = NULL;
+    control_info->integrated_advertisement_size = 0;
 
-    if (BGP_DEBUG (update, UPDATE_IN))  
-      zlog_debug("dbgp::GetControlInformation: Transit length is: %i",
-                 (*transit)->length);
-    control_info = retrieve_control_info(*transit);
+    /* control_info->sentinel = 0; */
+    *transit = attr->extra->transit;
+    assert(*transit != NULL);
     return control_info;
   }
-  // Otherwise, there was no transitive attribute in there.  Therefore create a
-  // space for it.
-  if (BGP_DEBUG (update, UPDATE_IN))  
-    zlog_debug(
-               "dbgp::GetControlInformation: There was no existing control information, "
-               "so create it");
-  bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t));
-  control_info = malloc(sizeof(dbgp_protocol_t));
-  // Create serialized empty integrated_advertisement and set the appropriate
-  // fields in the control information. This is effectively setting the size to
-  // be 0 at the moment and the integrated_advertisement being NULL
-  control_info->integrated_advertisement = NULL;
-  control_info->integrated_advertisement_size = 0;
-
-  /* control_info->sentinel = 0; */
-  *transit = attr->extra->transit;
-  assert(*transit != NULL);
-  return control_info;
 }
 
 /* ********************* Public functions ********************* */

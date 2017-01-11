@@ -1,6 +1,8 @@
 #ifndef BGPD_BGPBENCHMARKSTRUCTS_H
 #define BGPD_BGPBENCHMARKSTRUCTS_H
 
+#include "bgpd/dbgp_lookup.h"
+
 // DBGP BENCHMARK Holds data regarding collecting statistics for benchmarks
 
 // generic timer.
@@ -85,7 +87,23 @@ struct BgpBenchmarkStats {
   struct EndToEndLatency end_to_end_latency;
 };
 
+enum WhichAdhoc{
+  IN_MEMORY,
+  IN_LOOKUPSERVICE
+};
+// Holds data associated with the benchmark experiment for using control
+// information in memory, etc
+struct BgpBenchmarkExperimentData{
+  // in memory control information
+  dbgp_control_info_t *control_info;
+  // will hold the lookup service key for retrieving adhoc control information
+  // from the lookupservice
+  struct transit *transit;
+  enum WhichAdhoc which_adhoc;
+};
+
 typedef struct BgpBenchmarkStats* BgpBenchmarkStatsPtr;
+typedef struct BgpBenchmarkExperimentData* BgpBenchmarkExperimentDataPtr;
 
 int64_t GetNanoSecDuration(struct timespec start_time);
 

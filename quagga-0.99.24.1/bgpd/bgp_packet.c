@@ -2526,7 +2526,7 @@ bgp_read (struct thread *thread)
   // start traditional bgp serialization timer. chekc for null becaues first
   // update is the one that creates it COMPANION_START1
   if(bgp_benchmark_stats != NULL) {
-    zlog_debug("why aren't you moving?");
+    /* zlog_debug("why aren't you moving?"); */
     // deserialization bookkeeping
     {
       if(!bgp_benchmark_stats->deserialization_latency.bgp_deserialization_stats.contiguous_separation){

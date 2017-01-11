@@ -156,6 +156,8 @@ extern void bgp_attr_extra_free (struct attr *);
 extern struct transit *bgp_attr_extra_transit_get(struct attr *, int length);
 /* D-BGP addition */
 extern void bgp_attr_extra_transit_free(struct attr *);
+extern struct transit *
+bgp_attr_extra_transit_new2(int length);
 
 extern void bgp_attr_dup (struct attr *, struct attr *);
 extern struct attr *bgp_attr_intern (struct attr *attr);

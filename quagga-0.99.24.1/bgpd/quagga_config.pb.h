@@ -1020,16 +1020,36 @@ class BenchmarkProtolConfig : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 num_bytes_to_set() const;
   inline void set_num_bytes_to_set(::google::protobuf::uint32 value);
 
+  // optional uint32 in_memory = 2;
+  inline bool has_in_memory() const;
+  inline void clear_in_memory();
+  static const int kInMemoryFieldNumber = 2;
+  inline ::google::protobuf::uint32 in_memory() const;
+  inline void set_in_memory(::google::protobuf::uint32 value);
+
+  // optional uint32 adhoc_in_lookupservice = 3;
+  inline bool has_adhoc_in_lookupservice() const;
+  inline void clear_adhoc_in_lookupservice();
+  static const int kAdhocInLookupserviceFieldNumber = 3;
+  inline ::google::protobuf::uint32 adhoc_in_lookupservice() const;
+  inline void set_adhoc_in_lookupservice(::google::protobuf::uint32 value);
+
   // @@protoc_insertion_point(class_scope:BenchmarkProtolConfig)
  private:
   inline void set_has_num_bytes_to_set();
   inline void clear_has_num_bytes_to_set();
+  inline void set_has_in_memory();
+  inline void clear_has_in_memory();
+  inline void set_has_adhoc_in_lookupservice();
+  inline void clear_has_adhoc_in_lookupservice();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint32 num_bytes_to_set_;
+  ::google::protobuf::uint32 in_memory_;
+  ::google::protobuf::uint32 adhoc_in_lookupservice_;
   friend void  protobuf_AddDesc_quagga_5fconfig_2eproto();
   friend void protobuf_AssignDesc_quagga_5fconfig_2eproto();
   friend void protobuf_ShutdownFile_quagga_5fconfig_2eproto();
@@ -2034,6 +2054,54 @@ inline void BenchmarkProtolConfig::set_num_bytes_to_set(::google::protobuf::uint
   set_has_num_bytes_to_set();
   num_bytes_to_set_ = value;
   // @@protoc_insertion_point(field_set:BenchmarkProtolConfig.num_bytes_to_set)
+}
+
+// optional uint32 in_memory = 2;
+inline bool BenchmarkProtolConfig::has_in_memory() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void BenchmarkProtolConfig::set_has_in_memory() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void BenchmarkProtolConfig::clear_has_in_memory() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void BenchmarkProtolConfig::clear_in_memory() {
+  in_memory_ = 0u;
+  clear_has_in_memory();
+}
+inline ::google::protobuf::uint32 BenchmarkProtolConfig::in_memory() const {
+  // @@protoc_insertion_point(field_get:BenchmarkProtolConfig.in_memory)
+  return in_memory_;
+}
+inline void BenchmarkProtolConfig::set_in_memory(::google::protobuf::uint32 value) {
+  set_has_in_memory();
+  in_memory_ = value;
+  // @@protoc_insertion_point(field_set:BenchmarkProtolConfig.in_memory)
+}
+
+// optional uint32 adhoc_in_lookupservice = 3;
+inline bool BenchmarkProtolConfig::has_adhoc_in_lookupservice() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void BenchmarkProtolConfig::set_has_adhoc_in_lookupservice() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void BenchmarkProtolConfig::clear_has_adhoc_in_lookupservice() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void BenchmarkProtolConfig::clear_adhoc_in_lookupservice() {
+  adhoc_in_lookupservice_ = 0u;
+  clear_has_adhoc_in_lookupservice();
+}
+inline ::google::protobuf::uint32 BenchmarkProtolConfig::adhoc_in_lookupservice() const {
+  // @@protoc_insertion_point(field_get:BenchmarkProtolConfig.adhoc_in_lookupservice)
+  return adhoc_in_lookupservice_;
+}
+inline void BenchmarkProtolConfig::set_adhoc_in_lookupservice(::google::protobuf::uint32 value) {
+  set_has_adhoc_in_lookupservice();
+  adhoc_in_lookupservice_ = value;
+  // @@protoc_insertion_point(field_set:BenchmarkProtolConfig.adhoc_in_lookupservice)
 }
 
 

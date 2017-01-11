@@ -5453,12 +5453,18 @@ bgp_init (void)
   bgp_debug_init ();
 
   /* ADDING DEBUG ON BY DEFAULT */
-  DEBUG_ON (normal, NORMAL);
-  DEBUG_ON (events, EVENTS);
-  DEBUG_ON (filter, FILTER);
-  DEBUG_ON (update, UPDATE_IN);
-  DEBUG_ON (update, UPDATE_OUT);
-  DEBUG_ON (zebra, ZEBRA);
+  /* DEBUG_ON (normal, NORMAL); */
+  /* DEBUG_ON (events, EVENTS); */
+  /* DEBUG_ON (filter, FILTER); */
+  /* DEBUG_ON (update, UPDATE_IN); */
+  /* DEBUG_ON (update, UPDATE_OUT); */
+  /* DEBUG_ON (zebra, ZEBRA); */
+  /* DEBUG_OFF (normal, NORMAL); */
+  /* DEBUG_OFF (events, EVENTS); */
+  /* DEBUG_OFF (filter, FILTER); */
+  /* DEBUG_OFF (update, UPDATE_IN); */
+  /* DEBUG_OFF (update, UPDATE_OUT); */
+  /* DEBUG_OFF (zebra, ZEBRA); */
 
   bgp_dump_init ();
   bgp_route_init ();

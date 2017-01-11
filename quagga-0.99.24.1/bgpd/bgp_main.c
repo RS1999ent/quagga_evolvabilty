@@ -50,6 +50,12 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 #include "bgpd/bgp_filter.h"
 #include "bgpd/bgp_zebra.h"
 #include "bgpd/wiser_config_interface.h"
+#include "bgpd/dbgp_lookup.h"
+#include "bgpd/bgp_benchmark_structs.h"
+
+// DBGP BENCHMARK globals
+char* SetBenchmarkIABytes(char* serialized_advert, int advert_size,
+                          int num_bytes_to_set, int* modified_advert_size);
 
 /* bgpd options, we use GNU getopt library. */
 static const struct option longopts[] = 
@@ -109,6 +115,7 @@ GeneralConfigurationHandle general_configuration_;
 WiserConfigHandle wiser_config_;
 PathletConfigHandle pathlet_config_;
 PathletInternalStateHandle pathlet_internal_state_;
+BgpBenchmarkExperimentDataPtr bgp_benchmark_experiment_data_;
 
 
 
@@ -481,6 +488,53 @@ main (int argc, char **argv)
 	       vty_port, 
 	       (bm->address ? bm->address : "<all>"),
 	       bm->port);
+
+  // DBGP BENCHMARK do the adhoc stuff here depending on configuration options
+  {
+    /* sleep(30); */
+    if(GetProtocolType(general_configuration_) == dbgp_protocol_benchmark){
+      // create the global struct
+      bgp_benchmark_experiment_data_ = malloc(sizeof(struct BgpBenchmarkExperimentData));
+      // create the advert here, we will need to use it either way
+      dbgp_control_info_t *control_info = malloc(sizeof(dbgp_protocol_t));
+      control_info->integrated_advertisement = NULL;
+      control_info->integrated_advertisement_size = 0;
+      // set the control information
+      {
+        uint32_t num_bytes_to_set = GetBenchmarkBytes(general_configuration_);
+        char* old_integrated_advertisement = control_info->integrated_advertisement;
+        int old_integrated_advertisement_size =
+          control_info->integrated_advertisement_size;
+        int new_size;
+        char* new_integrated_advertisement_info = SetBenchmarkIABytes(
+                                                                      old_integrated_advertisement, old_integrated_advertisement_size,
+                                                                      num_bytes_to_set, &new_size);
+        free(old_integrated_advertisement);
+        control_info->integrated_advertisement = new_integrated_advertisement_info;
+        control_info->integrated_advertisement_size = new_size;
+      }
+      // Set up the bgp_benchmark_experiment_data
+      {
+        bgp_benchmark_experiment_data_->control_info = control_info;
+        bgp_benchmark_experiment_data_->transit = bgp_attr_extra_transit_new2(sizeof(dbgp_lookup_key_t));
+      }
+
+      // Set which_adhoc and place the control information in the lookup service
+      // if the configuration option is set
+      {
+        if(IsInMemoryBenchmarkConfig(general_configuration_)){
+          zlog_debug("bgp_main: Is in memory");
+          bgp_benchmark_experiment_data_->which_adhoc = IN_MEMORY;
+        }
+        else if(IsAdhocInLookupserviceBenchmarkConfig(general_configuration_)){
+          zlog_debug("bgp_main: Is in lookupservice");
+          bgp_benchmark_experiment_data_->which_adhoc = IN_LOOKUPSERVICE;
+          set_control_info(bgp_benchmark_experiment_data_->transit, bgp_benchmark_experiment_data_->control_info);
+        }
+      }
+
+    }
+  }
 
   /* Start finite state machine, here we go! */
   while (thread_fetch (master, &thread))

@@ -324,6 +324,17 @@ bgp_attr_extra_transit_new(int length)
   return transit;
 }
 
+struct transit *
+bgp_attr_extra_transit_new2(int length) 
+{
+  struct transit *transit;
+
+  transit = XCALLOC(MTYPE_TRANSIT, sizeof(struct transit));
+  transit->val = XCALLOC(MTYPE_TRANSIT_VAL, length);
+
+  return transit;
+}
+
 void
 bgp_attr_extra_transit_free(struct attr *attr)
 {
@@ -2681,6 +2692,10 @@ bgp_packet_attribute (struct bgp *bgp, struct peer *peer,
   if (attr->extra && attr->extra->transit) {
 
   /* First do a htonl translation on the lookup key */
+    if(attr->extra->transit->length != sizeof(dbgp_lookup_key_t)){
+      zlog_debug("bgp_packet_attribute: transit not equal to lookupkey size with size: %d",attr->extra->transit->length );
+      zlog_debug("bgp_packet_attribute: transit is %d", *attr->extra->transit->val );
+    }
     assert(attr->extra->transit->length == sizeof(dbgp_lookup_key_t));
     memcpy((void *)&transit_val, attr->extra->transit->val, attr->extra->transit->length);
     transit_val = htonl(transit_val);

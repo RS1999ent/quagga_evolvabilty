@@ -1672,7 +1672,8 @@ bgp_process_main (struct work_queue *wq, void *data)
       }
       // update throughtput stats (just increment advertisements seen)
       {
-        bgp_benchmark_stats->advertisements_seen++;
+        // moving this to update_main, after bgp_input filter
+        /* bgp_benchmark_stats->advertisements_seen++; */
         clock_gettime(CLOCK_REALTIME, &bgp_benchmark_stats->end_time);
       }
       // statistics printing
@@ -2264,10 +2265,19 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
    *  protocol-specific information and a lookup key */
   // BUG: dbgp_input_filter formerly had attr going int, changed to new_attr
   // NO longer assuming this is called before update control info
+  struct timespec start_clock;
+  clock_gettime(CLOCK_REALTIME, &start_clock);
   if (dbgp_input_filter(&new_attr, peer, p) == DBGP_FILTERED) {
     bgp_attr_flush(&new_attr);
     reason = "dbgp_protocol_specific_filtered";
     goto filtered;
+  }
+  int64_t duration = GetNanoSecDuration(start_clock);
+  zlog_debug("bgp_update_main: input filter took: %f", duration / 1000000.0);
+
+  // increment advertisements seen (this used to be in bgp_process_main)
+  if(bgp_benchmark_stats != NULL){
+    bgp_benchmark_stats->advertisements_seen++;
   }
   /** @note:  D-BGP: update control info before best-path selection here */
   /* Need to do this BEFORE EVER interning the new attribute */

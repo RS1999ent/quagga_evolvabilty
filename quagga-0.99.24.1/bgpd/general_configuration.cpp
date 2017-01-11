@@ -67,3 +67,20 @@ PathletConfig* GeneralConfiguration::GetPathletConfig() {
 int GeneralConfiguration::GetBenchmarkBytes() {
   return general_configuration_.benchmark_protocol_config().num_bytes_to_set();
 }
+
+
+int GeneralConfiguration::IsInMemoryBenchmarkConfig()
+{
+  if(general_configuration_.has_benchmark_protocol_config() && general_configuration_.benchmark_protocol_config().has_in_memory()){
+    return general_configuration_.benchmark_protocol_config().in_memory();
+  }
+  return 0;
+}
+
+int GeneralConfiguration::IsAdhocInLookupserviceBenchmarkConfig(){
+
+  if(general_configuration_.has_benchmark_protocol_config() && general_configuration_.benchmark_protocol_config().has_adhoc_in_lookupservice()){
+    return general_configuration_.benchmark_protocol_config().adhoc_in_lookupservice();
+  }
+  return 0;
+}

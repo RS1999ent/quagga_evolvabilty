@@ -208,8 +208,10 @@ void protobuf_AssignDesc_quagga_5fconfig_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ManualPathlet));
   BenchmarkProtolConfig_descriptor_ = file->message_type(9);
-  static const int BenchmarkProtolConfig_offsets_[1] = {
+  static const int BenchmarkProtolConfig_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtolConfig, num_bytes_to_set_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtolConfig, in_memory_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtolConfig, adhoc_in_lookupservice_),
   };
   BenchmarkProtolConfig_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -309,11 +311,13 @@ void protobuf_AddDesc_quagga_5fconfig_2eproto() {
     "\n\006Filter\022\022\n\none_hop_ip\030\001 \001(\t\022,\n\024pathlet_"
     "to_advertise\030\002 \001(\0132\016.ManualPathlet\"D\n\rMa"
     "nualPathlet\022\016\n\006vnode1\030\001 \001(\r\022\016\n\006vnode2\030\002 "
-    "\001(\r\022\023\n\013destination\030\003 \001(\t\"1\n\025BenchmarkPro"
-    "tolConfig\022\030\n\020num_bytes_to_set\030\001 \001(\r*y\n\014P"
-    "rotocolType\022\016\n\nPT_UNKNOWN\020\000\022\014\n\010PT_WISER\020"
-    "\001\022\017\n\013PT_PATHLETS\020\002\022\027\n\023PT_BASELINE_SLEEPE"
-    "R\020\003\022\020\n\014PT_BENCHMARK\020\004\022\017\n\013PT_BASELINE\020\005", 998);
+    "\001(\r\022\023\n\013destination\030\003 \001(\t\"d\n\025BenchmarkPro"
+    "tolConfig\022\030\n\020num_bytes_to_set\030\001 \001(\r\022\021\n\ti"
+    "n_memory\030\002 \001(\r\022\036\n\026adhoc_in_lookupservice"
+    "\030\003 \001(\r*y\n\014ProtocolType\022\016\n\nPT_UNKNOWN\020\000\022\014"
+    "\n\010PT_WISER\020\001\022\017\n\013PT_PATHLETS\020\002\022\027\n\023PT_BASE"
+    "LINE_SLEEPER\020\003\022\020\n\014PT_BENCHMARK\020\004\022\017\n\013PT_B"
+    "ASELINE\020\005", 1049);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "quagga_config.proto", &protobuf_RegisterTypes);
   Configuration::default_instance_ = new Configuration();
@@ -3059,6 +3063,8 @@ void ManualPathlet::Swap(ManualPathlet* other) {
 
 #ifndef _MSC_VER
 const int BenchmarkProtolConfig::kNumBytesToSetFieldNumber;
+const int BenchmarkProtolConfig::kInMemoryFieldNumber;
+const int BenchmarkProtolConfig::kAdhocInLookupserviceFieldNumber;
 #endif  // !_MSC_VER
 
 BenchmarkProtolConfig::BenchmarkProtolConfig()
@@ -3080,6 +3086,8 @@ BenchmarkProtolConfig::BenchmarkProtolConfig(const BenchmarkProtolConfig& from)
 void BenchmarkProtolConfig::SharedCtor() {
   _cached_size_ = 0;
   num_bytes_to_set_ = 0u;
+  in_memory_ = 0u;
+  adhoc_in_lookupservice_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -3115,7 +3123,21 @@ BenchmarkProtolConfig* BenchmarkProtolConfig::New() const {
 }
 
 void BenchmarkProtolConfig::Clear() {
-  num_bytes_to_set_ = 0u;
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<BenchmarkProtolConfig*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  ZR_(num_bytes_to_set_, adhoc_in_lookupservice_);
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -3137,6 +3159,36 @@ bool BenchmarkProtolConfig::MergePartialFromCodedStream(
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &num_bytes_to_set_)));
           set_has_num_bytes_to_set();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_in_memory;
+        break;
+      }
+
+      // optional uint32 in_memory = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_in_memory:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &in_memory_)));
+          set_has_in_memory();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_adhoc_in_lookupservice;
+        break;
+      }
+
+      // optional uint32 adhoc_in_lookupservice = 3;
+      case 3: {
+        if (tag == 24) {
+         parse_adhoc_in_lookupservice:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &adhoc_in_lookupservice_)));
+          set_has_adhoc_in_lookupservice();
         } else {
           goto handle_unusual;
         }
@@ -3174,6 +3226,16 @@ void BenchmarkProtolConfig::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->num_bytes_to_set(), output);
   }
 
+  // optional uint32 in_memory = 2;
+  if (has_in_memory()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->in_memory(), output);
+  }
+
+  // optional uint32 adhoc_in_lookupservice = 3;
+  if (has_adhoc_in_lookupservice()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->adhoc_in_lookupservice(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -3187,6 +3249,16 @@ void BenchmarkProtolConfig::SerializeWithCachedSizes(
   // optional uint32 num_bytes_to_set = 1;
   if (has_num_bytes_to_set()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->num_bytes_to_set(), target);
+  }
+
+  // optional uint32 in_memory = 2;
+  if (has_in_memory()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->in_memory(), target);
+  }
+
+  // optional uint32 adhoc_in_lookupservice = 3;
+  if (has_adhoc_in_lookupservice()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->adhoc_in_lookupservice(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -3206,6 +3278,20 @@ int BenchmarkProtolConfig::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->num_bytes_to_set());
+    }
+
+    // optional uint32 in_memory = 2;
+    if (has_in_memory()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->in_memory());
+    }
+
+    // optional uint32 adhoc_in_lookupservice = 3;
+    if (has_adhoc_in_lookupservice()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->adhoc_in_lookupservice());
     }
 
   }
@@ -3238,6 +3324,12 @@ void BenchmarkProtolConfig::MergeFrom(const BenchmarkProtolConfig& from) {
     if (from.has_num_bytes_to_set()) {
       set_num_bytes_to_set(from.num_bytes_to_set());
     }
+    if (from.has_in_memory()) {
+      set_in_memory(from.in_memory());
+    }
+    if (from.has_adhoc_in_lookupservice()) {
+      set_adhoc_in_lookupservice(from.adhoc_in_lookupservice());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -3262,6 +3354,8 @@ bool BenchmarkProtolConfig::IsInitialized() const {
 void BenchmarkProtolConfig::Swap(BenchmarkProtolConfig* other) {
   if (other != this) {
     std::swap(num_bytes_to_set_, other->num_bytes_to_set_);
+    std::swap(in_memory_, other->in_memory_);
+    std::swap(adhoc_in_lookupservice_, other->adhoc_in_lookupservice_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

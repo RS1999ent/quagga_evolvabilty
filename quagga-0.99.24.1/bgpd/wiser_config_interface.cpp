@@ -86,10 +86,17 @@ WiserConfigHandle GetWiserConfig(
   return general_config_handle->GetWiserConfig();
 }
 
-  uint32_t GetBenchmarkBytes(GeneralConfigurationHandle general_config_handle)
-  {
-    return general_config_handle->GetBenchmarkBytes();
-  }
+uint32_t GetBenchmarkBytes(GeneralConfigurationHandle general_config_handle) {
+  return general_config_handle->GetBenchmarkBytes();
+}
+uint32_t IsInMemoryBenchmarkConfig(
+    GeneralConfigurationHandle general_config_handle) {
+  return general_config_handle->IsInMemoryBenchmarkConfig();
+}
+uint32_t IsAdhocInLookupserviceBenchmarkConfig(
+    GeneralConfigurationHandle general_config_handle) {
+  return general_config_handle->IsAdhocInLookupserviceBenchmarkConfig();
+}
 
 std::mutex internal_state_mutex;
 char* ConvertGraphToPathlets(PathletInternalStateHandle pathlet_internal_state,
@@ -224,7 +231,7 @@ char* GetManualTwoHop(PathletConfigHandle pathlet_config, char* one_hop_ip,
   int found_one;
   char* return_buffer = NULL;
   ManualPathlet man_pathlet =
-    pathlet_config->GetManualTwoHop(string(one_hop_ip), &found_one);
+      pathlet_config->GetManualTwoHop(string(one_hop_ip), &found_one);
   if (found_one == 1) {
     *vnode1 = man_pathlet.vnode1();
     *vnode2 = man_pathlet.vnode2();
