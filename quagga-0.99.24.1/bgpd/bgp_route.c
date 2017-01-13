@@ -1678,13 +1678,22 @@ bgp_process_main (struct work_queue *wq, void *data)
       }
       // statistics printing
       {
-        if (bgp_benchmark_stats->advertisements_seen % kThroughputStatsTickRate == 0) {
+        /* if (bgp_benchmark_stats->advertisements_seen % kThroughputStatsTickRate == 0) { */
+        /*   PrintBenchmarkStats(*bgp_benchmark_stats); */
+        /* } */
+        /* if(bgp_benchmark_stats->advertisements_seen % kPrintTimeForAdvertsRate == 0){ */
+        /*   struct timespec time; */
+        /*   clock_gettime(CLOCK_REALTIME, &time); */
+        /*   zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec); */
+        /* } */
+        if (bgp_benchmark_stats->advertisements_seen > 900000) {
           PrintBenchmarkStats(*bgp_benchmark_stats);
         }
-        if(bgp_benchmark_stats->advertisements_seen % kPrintTimeForAdvertsRate == 0){
+        if(bgp_benchmark_stats->advertisements_seen > 900000){
           struct timespec time;
           clock_gettime(CLOCK_REALTIME, &time);
           zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec);
+          exit(1);
         }
       }
     }
@@ -2265,15 +2274,15 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
    *  protocol-specific information and a lookup key */
   // BUG: dbgp_input_filter formerly had attr going int, changed to new_attr
   // NO longer assuming this is called before update control info
-  struct timespec start_clock;
-  clock_gettime(CLOCK_REALTIME, &start_clock);
+  /* struct timespec start_clock; */
+  /* clock_gettime(CLOCK_REALTIME, &start_clock); */
   if (dbgp_input_filter(&new_attr, peer, p) == DBGP_FILTERED) {
     bgp_attr_flush(&new_attr);
     reason = "dbgp_protocol_specific_filtered";
     goto filtered;
   }
-  int64_t duration = GetNanoSecDuration(start_clock);
-  zlog_debug("bgp_update_main: input filter took: %f", duration / 1000000.0);
+  /* int64_t duration = GetNanoSecDuration(start_clock); */
+  /* zlog_debug("bgp_update_main: input filter took: %f", duration / 1000000.0); */
 
   // increment advertisements seen (this used to be in bgp_process_main)
   if(bgp_benchmark_stats != NULL){
@@ -2283,7 +2292,18 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
   /* Need to do this BEFORE EVER interning the new attribute */
   dbgp_update_control_info(&new_attr, peer, p);
 
-
+  // DBGP BENCHMARK
+  {
+    // record lookupservice latency (add current_duration to total_duration,
+    // reset it to 0 and increment num_measurements)
+    {
+      int64_t current_duration = bgp_benchmark_stats->lookup_service_latency.current_duration;
+      bgp_benchmark_stats->lookup_service_latency.current_duration = 0;
+      bgp_benchmark_stats->lookup_service_latency.total_durations += current_duration;
+      bgp_benchmark_stats->lookup_service_latency.num_measurements++;
+    }
+  }
+  
   attr_new = bgp_attr_intern (&new_attr);
 
   /* If the update is implicit withdraw. */
@@ -2493,14 +2513,6 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
     /*   } */
     /* } */
 
-    // record lookupservice latency (add current_duration to total_duration,
-    // reset it to 0 and increment num_measurements)
-    {
-      int64_t current_duration = bgp_benchmark_stats->lookup_service_latency.current_duration;
-      bgp_benchmark_stats->lookup_service_latency.current_duration = 0;
-      bgp_benchmark_stats->lookup_service_latency.total_durations += current_duration;
-      bgp_benchmark_stats->lookup_service_latency.num_measurements++;
-    }
 
     // record deserialization latency (add current_duration to toaltal_duration,
     // reset it to 0 and increment num_measurements). moved has to be true to

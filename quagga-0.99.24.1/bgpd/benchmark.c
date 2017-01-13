@@ -164,7 +164,7 @@ void benchmark_update_control_info(dbgp_control_info_t* control_info) {
 dbgp_filtered_status_t benchmark_output_filter(struct attr* attr) {
   // if either the transit or extra is null, then we haven't inserted benchmark
   // information into advert (we are announcing it), therefore insert it
-  if (attr->extra == NULL || attr->extra->transit == NULL) {
+  if (attr->extra == NULL || attr->extra->transit == NULL || attr->extra->transit->length == 0) {
     if (BGP_DEBUG (update, UPDATE_IN))  
       zlog_debug(
                  "benchmark_output_filter: no transit or extra, means we are announcing "

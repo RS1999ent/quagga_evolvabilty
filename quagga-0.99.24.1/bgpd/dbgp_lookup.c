@@ -228,6 +228,7 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   do{
     got_value = 1;
     reply = redisCommand(retrieve_connection_context, "GET %"PRIu32"", *(dbgp_lookup_key_t *)transit->val);
+    /* usleep(1000); */
     if(bgp_benchmark_stats != NULL) {
       StartContiguousStatsDuration(&bgp_benchmark_stats->processing_latency.bgp_nlri_parse_stats);
       UpdateLookupServiceCurrentDuration(&bgp_benchmark_stats->lookup_service_latency);
@@ -253,6 +254,22 @@ dbgp_control_info_t *retrieve_control_info(struct transit * transit)
   if (BGP_DEBUG (update, UPDATE_IN))  
     zlog_debug("dbgp_lookup::retrieve_control_info: Key retrieving %i", *(dbgp_lookup_key_t *) transit->val);
   free(reply);
+
+  // DBGP BENCHMARK
+  // do redis things to try and clear cache
+  {
+    /* retrieve_connection_context->err = 0; */
+    /* memset(retrieve_connection_context->errstr, '\0', strlen(retrieve_connection_context->errstr)); */
+
+    /* sdsfree(retrieve_connection_context->obuf); */
+    /* redisReaderFree(retrieve_connection_context->reader); */
+
+    /* retrieve_connection_context->obuf = sdsempty(); */
+    /* retrieve_connection_context->reader = redisReaderCreate(); */
+    /* redisReconnect(retrieve_connection_context); */
+    /* redisReaderFree(retrieve_connection_context->reader); */
+    /* retrieve_connection_context->reader = redisReaderCreate(); */
+  }
   /* redisFree(retrieve_connection_context); */
   return(control_info);
 }
