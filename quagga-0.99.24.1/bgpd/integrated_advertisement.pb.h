@@ -892,6 +892,18 @@ class BenchmarkProtocol : public ::google::protobuf::Message {
   inline ::std::string* release_some_bytes();
   inline void set_allocated_some_bytes(::std::string* some_bytes);
 
+  // repeated int32 repeated_ints = 2;
+  inline int repeated_ints_size() const;
+  inline void clear_repeated_ints();
+  static const int kRepeatedIntsFieldNumber = 2;
+  inline ::google::protobuf::int32 repeated_ints(int index) const;
+  inline void set_repeated_ints(int index, ::google::protobuf::int32 value);
+  inline void add_repeated_ints(::google::protobuf::int32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
+      repeated_ints() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
+      mutable_repeated_ints();
+
   // @@protoc_insertion_point(class_scope:BenchmarkProtocol)
  private:
   inline void set_has_some_bytes();
@@ -902,6 +914,7 @@ class BenchmarkProtocol : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* some_bytes_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::int32 > repeated_ints_;
   friend void  protobuf_AddDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_AssignDesc_integrated_5fadvertisement_2eproto();
   friend void protobuf_ShutdownFile_integrated_5fadvertisement_2eproto();
@@ -1636,6 +1649,36 @@ inline void BenchmarkProtocol::set_allocated_some_bytes(::std::string* some_byte
     some_bytes_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:BenchmarkProtocol.some_bytes)
+}
+
+// repeated int32 repeated_ints = 2;
+inline int BenchmarkProtocol::repeated_ints_size() const {
+  return repeated_ints_.size();
+}
+inline void BenchmarkProtocol::clear_repeated_ints() {
+  repeated_ints_.Clear();
+}
+inline ::google::protobuf::int32 BenchmarkProtocol::repeated_ints(int index) const {
+  // @@protoc_insertion_point(field_get:BenchmarkProtocol.repeated_ints)
+  return repeated_ints_.Get(index);
+}
+inline void BenchmarkProtocol::set_repeated_ints(int index, ::google::protobuf::int32 value) {
+  repeated_ints_.Set(index, value);
+  // @@protoc_insertion_point(field_set:BenchmarkProtocol.repeated_ints)
+}
+inline void BenchmarkProtocol::add_repeated_ints(::google::protobuf::int32 value) {
+  repeated_ints_.Add(value);
+  // @@protoc_insertion_point(field_add:BenchmarkProtocol.repeated_ints)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
+BenchmarkProtocol::repeated_ints() const {
+  // @@protoc_insertion_point(field_list:BenchmarkProtocol.repeated_ints)
+  return repeated_ints_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
+BenchmarkProtocol::mutable_repeated_ints() {
+  // @@protoc_insertion_point(field_mutable_list:BenchmarkProtocol.repeated_ints)
+  return &repeated_ints_;
 }
 
 

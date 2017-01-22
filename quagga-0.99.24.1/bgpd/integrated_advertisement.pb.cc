@@ -186,8 +186,9 @@ void protobuf_AssignDesc_integrated_5fadvertisement_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Pathlet));
   BenchmarkProtocol_descriptor_ = file->message_type(8);
-  static const int BenchmarkProtocol_offsets_[1] = {
+  static const int BenchmarkProtocol_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtocol, some_bytes_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BenchmarkProtocol, repeated_ints_),
   };
   BenchmarkProtocol_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -277,10 +278,11 @@ void protobuf_AddDesc_integrated_5fadvertisement_2eproto() {
     "\r\"&\n\010Pathlets\022\032\n\010pathlets\030\001 \003(\0132\010.Pathle"
     "t\"d\n\007Pathlet\022\013\n\003fid\030\001 \001(\r\022\016\n\006vnodes\030\002 \003("
     "\r\022\023\n\013destination\030\003 \001(\t\022\023\n\013path_vector\030\004 "
-    "\003(\r\022\022\n\nis_two_hop\030\005 \001(\r\"\'\n\021BenchmarkProt"
-    "ocol\022\022\n\nsome_bytes\030\001 \001(\014*W\n\010Protocol\022\r\n\t"
-    "P_UNKNOWN\020\000\022\013\n\007P_WISER\020\001\022\016\n\nP_PATHLETS\020\002"
-    "\022\017\n\013P_BENCHMARK\020\003\022\016\n\nP_BASELINE\020\004", 713);
+    "\003(\r\022\022\n\nis_two_hop\030\005 \001(\r\">\n\021BenchmarkProt"
+    "ocol\022\022\n\nsome_bytes\030\001 \001(\014\022\025\n\rrepeated_int"
+    "s\030\002 \003(\005*W\n\010Protocol\022\r\n\tP_UNKNOWN\020\000\022\013\n\007P_"
+    "WISER\020\001\022\016\n\nP_PATHLETS\020\002\022\017\n\013P_BENCHMARK\020\003"
+    "\022\016\n\nP_BASELINE\020\004", 736);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "integrated_advertisement.proto", &protobuf_RegisterTypes);
   IntegratedAdvertisement::default_instance_ = new IntegratedAdvertisement();
@@ -2572,6 +2574,7 @@ void Pathlet::Swap(Pathlet* other) {
 
 #ifndef _MSC_VER
 const int BenchmarkProtocol::kSomeBytesFieldNumber;
+const int BenchmarkProtocol::kRepeatedIntsFieldNumber;
 #endif  // !_MSC_VER
 
 BenchmarkProtocol::BenchmarkProtocol()
@@ -2637,6 +2640,7 @@ void BenchmarkProtocol::Clear() {
       some_bytes_->clear();
     }
   }
+  repeated_ints_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -2659,6 +2663,25 @@ bool BenchmarkProtocol::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(16)) goto parse_repeated_ints;
+        break;
+      }
+
+      // repeated int32 repeated_ints = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_repeated_ints:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 1, 16, input, this->mutable_repeated_ints())));
+        } else if (tag == 18) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, this->mutable_repeated_ints())));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_repeated_ints;
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -2694,6 +2717,12 @@ void BenchmarkProtocol::SerializeWithCachedSizes(
       1, this->some_bytes(), output);
   }
 
+  // repeated int32 repeated_ints = 2;
+  for (int i = 0; i < this->repeated_ints_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(
+      2, this->repeated_ints(i), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2709,6 +2738,12 @@ void BenchmarkProtocol::SerializeWithCachedSizes(
     target =
       ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         1, this->some_bytes(), target);
+  }
+
+  // repeated int32 repeated_ints = 2;
+  for (int i = 0; i < this->repeated_ints_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteInt32ToArray(2, this->repeated_ints(i), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -2731,6 +2766,16 @@ int BenchmarkProtocol::ByteSize() const {
     }
 
   }
+  // repeated int32 repeated_ints = 2;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->repeated_ints_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        Int32Size(this->repeated_ints(i));
+    }
+    total_size += 1 * this->repeated_ints_size() + data_size;
+  }
+
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -2756,6 +2801,7 @@ void BenchmarkProtocol::MergeFrom(const ::google::protobuf::Message& from) {
 
 void BenchmarkProtocol::MergeFrom(const BenchmarkProtocol& from) {
   GOOGLE_CHECK_NE(&from, this);
+  repeated_ints_.MergeFrom(from.repeated_ints_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_some_bytes()) {
       set_some_bytes(from.some_bytes());
@@ -2784,6 +2830,7 @@ bool BenchmarkProtocol::IsInitialized() const {
 void BenchmarkProtocol::Swap(BenchmarkProtocol* other) {
   if (other != this) {
     std::swap(some_bytes_, other->some_bytes_);
+    repeated_ints_.Swap(&other->repeated_ints_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

@@ -601,15 +601,22 @@ char* SetBenchmarkIABytes(char* serialized_advert, int advert_size,
 
   BenchmarkProtocol benchmark_protocol;
   // Fill the benchmark protocol with bytes. Takes in the benchmark protocol and
-  // the number of bytes to fill
+  // the number of bytes to fill. Currently uses the repeated int32 field for this
   {
-    char* byte_buffer = new char[num_bytes_to_set];
-    // go through and put a 1 in the byte
-    for(int i = 0; i < num_bytes_to_set; i++){
-      byte_buffer[i] = 1;
+    // old way setting the number of bytes directly
+    // char* byte_buffer = new char[num_bytes_to_set];
+    // // go through and put a 1 in the byte
+    // for(int i = 0; i < num_bytes_to_set; i++){
+    //   byte_buffer[i] = 1;
+    // }
+    // benchmark_protocol.set_some_bytes(byte_buffer);
+    // // delete[] byte_buffer;
+
+    // new way using rpeated int32 field. Therefore, num ints corresponds to
+    // num_bytes_to_set / 4
+    for(int i = 0; i < num_bytes_to_set / 4; i++){
+      benchmark_protocol.add_repeated_ints(1);
     }
-    benchmark_protocol.set_some_bytes(byte_buffer);
-    // delete[] byte_buffer;
   }
 
   mutable_key_value->set_value(benchmark_protocol.SerializeAsString());

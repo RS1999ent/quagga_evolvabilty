@@ -81,4 +81,7 @@ message Pathlet {
 message BenchmarkProtocol {
   // bytes to take up space
   optional bytes some_bytes = 1;
+  // repeated ints to take up the same amount of space as some-bytes, either or
+  // none may be used in practice
+  repeated int32 repeated_ints = 2;
 }
