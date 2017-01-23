@@ -615,7 +615,7 @@ char* SetBenchmarkIABytes(char* serialized_advert, int advert_size,
     // new way using rpeated int32 field. Therefore, num ints corresponds to
     // num_bytes_to_set / 4
     for(int i = 0; i < num_bytes_to_set / 4; i++){
-      benchmark_protocol.add_repeated_ints(1);
+      benchmark_protocol.add_repeated_ints(2147483647);
     }
   }
 
