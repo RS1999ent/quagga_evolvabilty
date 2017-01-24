@@ -1562,6 +1562,7 @@ bgp_process_rsclient (struct work_queue *wq, void *data)
   return WQ_SUCCESS;
 }
 
+static int num_times_processmain_called = 0;
 static wq_item_status
 bgp_process_main (struct work_queue *wq, void *data)
 {
@@ -1576,6 +1577,7 @@ bgp_process_main (struct work_queue *wq, void *data)
   struct bgp_info_pair old_and_new;
   struct listnode *node, *nnode;
   struct peer *peer;
+  num_times_processmain_called++;
 
   // DBGP BENCHMARK
   // start the processing timer for bgp_process main.
@@ -1686,10 +1688,11 @@ bgp_process_main (struct work_queue *wq, void *data)
         /*   clock_gettime(CLOCK_REALTIME, &time); */
         /*   zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec); */
         /* } */
-        if (bgp_benchmark_stats->advertisements_seen > 900000) {
+        if (bgp_benchmark_stats->advertisements_seen % kThroughputStatsTickRate == 0) {
+          zlog_debug("bgp_process_main: num times processmain called %d", num_times_processmain_called);
           PrintBenchmarkStats(*bgp_benchmark_stats);
         }
-        if(bgp_benchmark_stats->advertisements_seen > 900000){
+        if(bgp_benchmark_stats->advertisements_seen % kThroughputStatsTickRate == 0){
           struct timespec time;
           clock_gettime(CLOCK_REALTIME, &time);
           zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec);
