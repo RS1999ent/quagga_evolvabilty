@@ -634,29 +634,23 @@ char* SetBenchmarkIABytes(char* serialized_advert, int advert_size,
 
 int GetBenchmarkIABytesSize(char* serialized_advert, int advert_size) {
 
-  for(int64_t i = 0; i < 10000000000; i++)
-    {
-      
-    }
-  return 1;
-
 
   // Parse the advertisement
-  // IntegratedAdvertisement proto_advert;
-  // proto_advert.ParseFromArray(serialized_advert, advert_size);
+  IntegratedAdvertisement proto_advert;
+  proto_advert.ParseFromArray(serialized_advert, advert_size);
 
-  // // Get the benchmark descriptor (we are assuming that it is always there)
-  // PathGroupDescriptor* benchmark_path_group_descriptor =
-  //     GetProtocolPathGroupDescriptor(&proto_advert, Protocol::P_BENCHMARK);
+  // Get the benchmark descriptor (we are assuming that it is always there)
+  PathGroupDescriptor* benchmark_path_group_descriptor =
+      GetProtocolPathGroupDescriptor(&proto_advert, Protocol::P_BENCHMARK);
 
-  // if (benchmark_path_group_descriptor == NULL) {
-  //   return -1;
-  // }
+  if (benchmark_path_group_descriptor == NULL) {
+    return -1;
+  }
 
-  // // Get the path cost from the assumed existent keyvalue
-  // KeyValue* benchmark_bytes_kv =
-  //     GetPathGroupKeyValue(benchmark_path_group_descriptor, "Bytes");
-  // BenchmarkProtocol benchmark_protocol;
-  // benchmark_protocol.ParseFromString(benchmark_bytes_kv->value());
-  // return benchmark_protocol.google::protobuf::Message::ByteSize();
+  // Get the path cost from the assumed existent keyvalue
+  KeyValue* benchmark_bytes_kv =
+      GetPathGroupKeyValue(benchmark_path_group_descriptor, "Bytes");
+  BenchmarkProtocol benchmark_protocol;
+  benchmark_protocol.ParseFromString(benchmark_bytes_kv->value());
+  return benchmark_protocol.google::protobuf::Message::ByteSize();
 }

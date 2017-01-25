@@ -525,6 +525,7 @@ main (int argc, char **argv)
         if(IsInMemoryBenchmarkConfig(general_configuration_)){
           zlog_debug("bgp_main: Is in memory");
           bgp_benchmark_experiment_data_->which_adhoc = IN_MEMORY;
+          zlog_debug("bgp_main: Serialized advert size %d", bgp_benchmark_experiment_data_->control_info->integrated_advertisement_size);
         }
         else if(IsAdhocInLookupserviceBenchmarkConfig(general_configuration_)){
           zlog_debug("bgp_main: Is in lookupservice");
