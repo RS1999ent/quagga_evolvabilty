@@ -244,8 +244,10 @@ void PrintBenchmarkStats(struct BgpBenchmarkStats bgp_benchmark_stats){
 
   // calculate average deserialization latency
   {
-    double average_nanosec_deserialization_traditional = (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_stats.total_durations / (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_stats.num_measurements;
-    double average_nanosec_deserialization_beagle = (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_beagle_stats.total_durations / (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_beagle_stats.num_measurements;
+    /* double average_nanosec_deserialization_traditional = (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_stats.total_durations / (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_stats.num_measurements; */
+    double average_nanosec_deserialization_traditional = (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_stats.total_durations / (double) bgp_benchmark_stats.advertisements_seen;
+    /* double average_nanosec_deserialization_beagle = (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_beagle_stats.total_durations / (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_beagle_stats.num_measurements; */
+    double average_nanosec_deserialization_beagle = (double) bgp_benchmark_stats.deserialization_latency.bgp_deserialization_beagle_stats.total_durations / (double) bgp_benchmark_stats.advertisements_seen;
     // if average beagle desiaralizing is not a number, means we are working with default protocol, make it 0.
     if(isnan(average_nanosec_deserialization_beagle)) {
       average_nanosec_deserialization_beagle = 0;
@@ -256,8 +258,10 @@ void PrintBenchmarkStats(struct BgpBenchmarkStats bgp_benchmark_stats){
 
   // calculate average processing latency
   {
-    double average_nanosec_bgp_nlri_parse_duration = (double) bgp_benchmark_stats.processing_latency.bgp_nlri_parse_stats.total_durations / (double) bgp_benchmark_stats.processing_latency.bgp_nlri_parse_stats.num_measurements;
-    double average_nanosec_bgp_process_main_duration = (double) bgp_benchmark_stats.processing_latency.bgp_process_main_stats.total_durations / (double) bgp_benchmark_stats.processing_latency.bgp_process_main_stats.num_measurements;
+    /* double average_nanosec_bgp_nlri_parse_duration = (double) bgp_benchmark_stats.processing_latency.bgp_nlri_parse_stats.total_durations / (double) bgp_benchmark_stats.processing_latency.bgp_nlri_parse_stats.num_measurements; */
+    double average_nanosec_bgp_nlri_parse_duration = (double) bgp_benchmark_stats.processing_latency.bgp_nlri_parse_stats.total_durations / (double) bgp_benchmark_stats.advertisements_seen;
+    /* double average_nanosec_bgp_process_main_duration = (double) bgp_benchmark_stats.processing_latency.bgp_process_main_stats.total_durations / (double) bgp_benchmark_stats.processing_latency.bgp_process_main_stats.num_measurements; */
+    double average_nanosec_bgp_process_main_duration = (double) bgp_benchmark_stats.processing_latency.bgp_process_main_stats.total_durations / (double) bgp_benchmark_stats.advertisements_seen;
     processing_latency = (average_nanosec_bgp_process_main_duration + average_nanosec_bgp_nlri_parse_duration) / 1000000;
     zlog_info("PrintBenchmarkStats: Average bgp processing latency (ms) %f (%f: bgp_process_main, %f: bgp_nlri_parse)", processing_latency, average_nanosec_bgp_process_main_duration / 1000000, average_nanosec_bgp_nlri_parse_duration / 1000000);
   }
@@ -1563,6 +1567,7 @@ bgp_process_rsclient (struct work_queue *wq, void *data)
 }
 
 static int num_times_processmain_called = 0;
+static int num_times_exit_early = 0;
 static wq_item_status
 bgp_process_main (struct work_queue *wq, void *data)
 {
@@ -1605,6 +1610,8 @@ bgp_process_main (struct work_queue *wq, void *data)
           UNSET_FLAG (rn->flags, BGP_NODE_PROCESS_SCHEDULED);
           // DBGP BENCHMARK, stop processing clock before return
           {
+            num_times_exit_early++; // increment the number of times that we
+                                    // exit early
             if(bgp_benchmark_stats != NULL){
               // update processing latency
               {
@@ -1690,13 +1697,13 @@ bgp_process_main (struct work_queue *wq, void *data)
         /* } */
         if (bgp_benchmark_stats->advertisements_seen % kThroughputStatsTickRate == 0) {
           zlog_debug("bgp_process_main: num times processmain called %d", num_times_processmain_called);
+          zlog_debug("bgp_process_main: num times exit early %d", num_times_exit_early);
           PrintBenchmarkStats(*bgp_benchmark_stats);
         }
         if(bgp_benchmark_stats->advertisements_seen % kThroughputStatsTickRate == 0){
           struct timespec time;
           clock_gettime(CLOCK_REALTIME, &time);
           zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec);
-          exit(1);
         }
       }
     }
