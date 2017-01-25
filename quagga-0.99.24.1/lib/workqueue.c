@@ -338,7 +338,8 @@ work_queue_run (struct thread *thread)
     if ( !(cycles % wq->cycles.granularity) 
         && thread_should_yield (thread))
       {
-        yielded = 1;
+        /* yielded = 1; */
+        yielded = 0;
         goto stats;
       }
   }
