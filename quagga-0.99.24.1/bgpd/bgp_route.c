@@ -1097,7 +1097,9 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
   if (attr->extra->transit == NULL) {
     char buf[256];
     prefix2str (p, buf, sizeof (buf));
-    zlog_info("bgp_route::bgp_announce_check: Found an advertisement w/o existing D-BGP info: %s\n", buf);
+
+      if (BGP_DEBUG (update, UPDATE_IN))  
+        zlog_info("bgp_route::bgp_announce_check: Found an advertisement w/o existing D-BGP info: %s\n", buf);
 
     // This no longer necessary
     /* bgp_attr_extra_transit_get(attr, sizeof(dbgp_lookup_key_t)); */
@@ -1106,7 +1108,8 @@ bgp_announce_check (struct bgp_info *ri, struct peer *peer, struct prefix *p,
 
   if(clock_lock != 0){
     end_end_to_end = clock();
-    zlog_info("bgp_route::CLOCK inputclock %ld, outputclock %ld, diff: %ld", start_end_to_end, end_end_to_end, end_end_to_end - start_end_to_end );
+    if (BGP_DEBUG (update, UPDATE_IN))  
+      zlog_info("bgp_route::CLOCK inputclock %ld, outputclock %ld, diff: %ld", start_end_to_end, end_end_to_end, end_end_to_end - start_end_to_end );
   }
 
   return 1;
