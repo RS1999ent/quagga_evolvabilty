@@ -538,10 +538,10 @@ bgp_scan_timer (struct thread *t)
   if (BGP_DEBUG (events, EVENTS))
     zlog_debug ("Performing BGP general scanning");
 
-  bgp_scan (AFI_IP, SAFI_UNICAST);
+  /* bgp_scan (AFI_IP, SAFI_UNICAST); */
 
 #ifdef HAVE_IPV6
-  bgp_scan (AFI_IP6, SAFI_UNICAST);
+  /* bgp_scan (AFI_IP6, SAFI_UNICAST); */
 #endif /* HAVE_IPV6 */
 
   return 0;
