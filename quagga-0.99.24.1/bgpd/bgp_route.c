@@ -1699,12 +1699,12 @@ bgp_process_main (struct work_queue *wq, void *data)
         /*   clock_gettime(CLOCK_REALTIME, &time); */
         /*   zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec); */
         /* } */
-        if (num_times_processmain_called % kThroughputStatsTickRate == 0) {
+        if (bgp_benchmark_stats->advertisements_seen > 900000) {
           zlog_debug("bgp_process_main: num times processmain called %d", num_times_processmain_called);
           zlog_debug("bgp_process_main: num times exit early %d", num_times_exit_early);
           PrintBenchmarkStats(*bgp_benchmark_stats);
         }
-        if(num_times_processmain_called % kThroughputStatsTickRate == 0){
+        if(bgp_benchmark_stats->advertisements_seen > 900000){
           struct timespec time;
           clock_gettime(CLOCK_REALTIME, &time);
           zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec);
@@ -1712,6 +1712,7 @@ bgp_process_main (struct work_queue *wq, void *data)
             {
               zlog_debug("bgp_process_main: bgp_process_array[%ld] = %d", i, bgp_process_array[i]);
             }
+          exit(1);
           zlog_debug("\n");
         }
       }
