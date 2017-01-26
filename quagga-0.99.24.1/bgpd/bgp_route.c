@@ -1705,7 +1705,7 @@ bgp_process_main (struct work_queue *wq, void *data)
           struct timespec time;
           clock_gettime(CLOCK_REALTIME, &time);
           zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec);
-          for(uint64_t i = 0; i < sizeof(bgp_process_array); i++)
+          for(uint64_t i = 0; i < 27; i++)
             {
               zlog_debug("bgp_process_main: bgp_process_array[%ld] = %d", i, bgp_process_array[i]);
             }
