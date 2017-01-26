@@ -37,6 +37,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 /* Global variable to access damping configuration */
 struct bgp_damp_config bgp_damp_cfg;
 static struct bgp_damp_config *damp = &bgp_damp_cfg;
+extern int bgp_process_array[27];
 
 /* Utility macro to add and delete BGP dampening information to no
    used list.  */
@@ -156,6 +157,7 @@ bgp_reuse_timer (struct thread *t)
 	      bgp_info_unset_flag (bdi->rn, bdi->binfo, BGP_INFO_HISTORY);
 	      bgp_aggregate_increment (bgp, &bdi->rn->p, bdi->binfo,
 				       bdi->afi, bdi->safi);   
+        bgp_process_array[0]++;
 	      bgp_process (bgp, bdi->rn, bdi->afi, bdi->safi);
 	    }
 

@@ -46,6 +46,9 @@ struct bgp_nexthop_cache *zlookup_query (struct in_addr);
 struct bgp_nexthop_cache *zlookup_query_ipv6 (struct in6_addr *);
 #endif /* HAVE_IPV6 */
 
+// DBGP_BENCHMARK
+extern int bgp_process_array[27];
+
 /* Only one BGP scan thread are activated at the same time. */
 static struct thread *bgp_scan_thread = NULL;
 
@@ -496,6 +499,7 @@ bgp_scan (afi_t afi, safi_t safi)
 					   afi, SAFI_UNICAST);
 	    }
 	}
+      bgp_process_array[1]++;
       bgp_process (bgp, rn, afi, SAFI_UNICAST);
     }
 

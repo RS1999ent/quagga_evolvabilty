@@ -70,6 +70,7 @@ extern const char *bgp_origin_long_str[];
 // end to end clock
 clock_t start_end_to_end, end_end_to_end;
 int clock_lock = 0;
+int bgp_process_array[27];
 
 // DBGP BENCHMARK
 
@@ -1704,6 +1705,11 @@ bgp_process_main (struct work_queue *wq, void *data)
           struct timespec time;
           clock_gettime(CLOCK_REALTIME, &time);
           zlog_debug("bgp_process_main: num adverts %ld, time %ld secs %ld nsec", bgp_benchmark_stats->advertisements_seen, time.tv_sec, time.tv_nsec);
+          for(uint64_t i = 0; i < sizeof(bgp_process_array); i++)
+            {
+              zlog_debug("bgp_process_main: bgp_process_array[%ld] = %d", i, bgp_process_array[i]);
+            }
+          zlog_debug("\n");
         }
       }
     }
@@ -1892,6 +1898,7 @@ bgp_rib_remove (struct bgp_node *rn, struct bgp_info *ri, struct peer *peer,
   if (!CHECK_FLAG (ri->flags, BGP_INFO_HISTORY))
     bgp_info_delete (rn, ri); /* keep historical info */
     
+  bgp_process_array[2]++;
   bgp_process (peer->bgp, rn, afi, safi);
 }
 
@@ -2048,6 +2055,7 @@ bgp_update_rsclient (struct peer *rsclient, afi_t afi, safi_t safi,
       bgp_info_set_flag (rn, ri, BGP_INFO_VALID);
 
       /* Process change. */
+      bgp_process_array[3]++;
       bgp_process (bgp, rn, afi, safi);
       bgp_unlock_node (rn);
 
@@ -2084,6 +2092,7 @@ bgp_update_rsclient (struct peer *rsclient, afi_t afi, safi_t safi,
   bgp_unlock_node (rn);
   
   /* Process change. */
+  bgp_process_array[4]++;
   bgp_process (bgp, rn, afi, safi);
 
   return;
@@ -2340,6 +2349,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	      if (bgp_damp_update (ri, rn, afi, safi) != BGP_DAMP_SUPPRESSED)
 	        {
                   bgp_aggregate_increment (bgp, p, ri, afi, safi);
+                  bgp_process_array[5]++;
                   bgp_process (bgp, rn, afi, safi);
                 }
 	    }
@@ -2356,6 +2366,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
 	      if (CHECK_FLAG (ri->flags, BGP_INFO_STALE))
 		{
 		  bgp_info_unset_flag (rn, ri, BGP_INFO_STALE);
+      bgp_process_array[6]++;
 		  bgp_process (bgp, rn, afi, safi);
 		}
 	    }
@@ -2446,6 +2457,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
       /* Process change. */
       bgp_aggregate_increment (bgp, p, ri, afi, safi);
 
+      bgp_process_array[7]++;
       bgp_process (bgp, rn, afi, safi);
       bgp_unlock_node (rn);
 
@@ -2504,6 +2516,7 @@ bgp_update_main (struct peer *peer, struct prefix *p, struct attr *attr,
     return -1;
 
   /* Process change. */
+  bgp_process_array[8]++;
   bgp_process (bgp, rn, afi, safi);
 
   /* DGBP BENCHMARK*/
@@ -3504,6 +3517,7 @@ bgp_static_withdraw_rsclient (struct bgp *bgp, struct peer *rsclient,
   if (ri)
     {
       bgp_info_delete (rn, ri);
+      bgp_process_array[9]++;
       bgp_process (bgp, rn, afi, safi);
     }
 
@@ -3636,6 +3650,7 @@ bgp_static_update_rsclient (struct peer *rsclient, struct prefix *p,
           ri->uptime = bgp_clock ();
 
           /* Process change. */
+          bgp_process_array[10]++;
           bgp_process (bgp, rn, afi, safi);
           bgp_unlock_node (rn);
           aspath_unintern (&attr.aspath);
@@ -3660,6 +3675,7 @@ bgp_static_update_rsclient (struct peer *rsclient, struct prefix *p,
   bgp_unlock_node (rn);
   
   /* Process change. */
+  bgp_process_array[11]++;
   bgp_process (bgp, rn, afi, safi);
 
   /* Unintern original. */
@@ -3768,6 +3784,7 @@ bgp_static_update_main (struct bgp *bgp, struct prefix *p,
 
 	  /* Process change. */
 	  bgp_aggregate_increment (bgp, p, ri, afi, safi);
+    bgp_process_array[12]++;
 	  bgp_process (bgp, rn, afi, safi);
 	  bgp_unlock_node (rn);
 	  aspath_unintern (&attr.aspath);
@@ -3795,6 +3812,7 @@ bgp_static_update_main (struct bgp *bgp, struct prefix *p,
   bgp_unlock_node (rn);
   
   /* Process change. */
+  bgp_process_array[13]++;
   bgp_process (bgp, rn, afi, safi);
 
   /* Unintern original. */
@@ -3848,6 +3866,7 @@ bgp_static_update_vpnv4 (struct bgp *bgp, struct prefix *p, afi_t afi,
   bgp_unlock_node (rn);
   
   /* Process change. */
+  bgp_process_array[14]++;
   bgp_process (bgp, rn, afi, safi);
 }
 
@@ -3872,6 +3891,7 @@ bgp_static_withdraw (struct bgp *bgp, struct prefix *p, afi_t afi,
     {
       bgp_aggregate_decrement (bgp, p, ri, afi, safi);
       bgp_info_delete (rn, ri);
+      bgp_process_array[15]++;
       bgp_process (bgp, rn, afi, safi);
     }
 
@@ -3920,6 +3940,7 @@ bgp_static_withdraw_vpnv4 (struct bgp *bgp, struct prefix *p, afi_t afi,
     {
       bgp_aggregate_decrement (bgp, p, ri, afi, safi);
       bgp_info_delete (rn, ri);
+      bgp_process_array[16]++;
       bgp_process (bgp, rn, afi, safi);
     }
 
@@ -4850,6 +4871,7 @@ bgp_aggregate_route (struct bgp *bgp, struct prefix *p, struct bgp_info *rinew,
 	      }
 	  }
 	if (match)
+    bgp_process_array[17]++;
 	  bgp_process (bgp, rn, afi, safi);
       }
   bgp_unlock_node (top);
@@ -4903,6 +4925,7 @@ bgp_aggregate_route (struct bgp *bgp, struct prefix *p, struct bgp_info *rinew,
 
       bgp_info_add (rn, new);
       bgp_unlock_node (rn);
+      bgp_process_array[18]++;
       bgp_process (bgp, rn, afi, safi);
     }
   else
@@ -5069,6 +5092,7 @@ bgp_aggregate_add (struct bgp *bgp, struct prefix *p, afi_t afi, safi_t safi,
 	
 	/* If this node is suppressed, process the change. */
 	if (match)
+    bgp_process_array[19]++;
 	  bgp_process (bgp, rn, afi, safi);
       }
   bgp_unlock_node (top);
@@ -5090,6 +5114,7 @@ bgp_aggregate_add (struct bgp *bgp, struct prefix *p, afi_t afi, safi_t safi,
       bgp_unlock_node (rn);
       
       /* Process change. */
+      bgp_process_array[20]++;
       bgp_process (bgp, rn, afi, safi);
     }
 }
@@ -5141,6 +5166,7 @@ bgp_aggregate_delete (struct bgp *bgp, struct prefix *p, afi_t afi,
 
 	/* If this node was suppressed, process the change. */
 	if (match)
+    bgp_process_array[21]++;
 	  bgp_process (bgp, rn, afi, safi);
       }
   bgp_unlock_node (top);
@@ -5158,6 +5184,7 @@ bgp_aggregate_delete (struct bgp *bgp, struct prefix *p, afi_t afi,
   if (ri)
     {
       bgp_info_delete (rn, ri);
+      bgp_process_array[22]++;
       bgp_process (bgp, rn, afi, safi);
     }
 
@@ -5719,6 +5746,7 @@ bgp_redistribute_add (struct prefix *p, const struct in_addr *nexthop,
  
  		  /* Process change. */
  		  bgp_aggregate_increment (bgp, p, bi, afi, SAFI_UNICAST);
+      bgp_process_array[23]++;
  		  bgp_process (bgp, bn, afi, SAFI_UNICAST);
  		  bgp_unlock_node (bn);
  		  aspath_unintern (&attr.aspath);
@@ -5738,6 +5766,7 @@ bgp_redistribute_add (struct prefix *p, const struct in_addr *nexthop,
 	  bgp_aggregate_increment (bgp, p, new, afi, SAFI_UNICAST);
 	  bgp_info_add (bn, new);
 	  bgp_unlock_node (bn);
+    bgp_process_array[24]++;
 	  bgp_process (bgp, bn, afi, SAFI_UNICAST);
 	}
     }
@@ -5773,6 +5802,7 @@ bgp_redistribute_delete (struct prefix *p, u_char type)
 	    {
 	      bgp_aggregate_decrement (bgp, p, ri, afi, SAFI_UNICAST);
 	      bgp_info_delete (rn, ri);
+        bgp_process_array[25]++;
 	      bgp_process (bgp, rn, afi, SAFI_UNICAST);
 	    }
 	  bgp_unlock_node (rn);
@@ -5801,6 +5831,7 @@ bgp_redistribute_withdraw (struct bgp *bgp, afi_t afi, int type)
 	{
 	  bgp_aggregate_decrement (bgp, &rn->p, ri, afi, SAFI_UNICAST);
 	  bgp_info_delete (rn, ri);
+    bgp_process_array[26]++;
 	  bgp_process (bgp, rn, afi, SAFI_UNICAST);
 	}
     }
